@@ -61,7 +61,7 @@ void Camera::Move(float incr)
     float lz = sin(m_yaw)*cos(m_pitch);
 
 	m_x = m_x + incr*lx;
-	m_y = m_y + incr*ly;
+	//m_y = m_y + incr*ly;
 	m_z = m_z + incr*lz;
 
 	Refresh();

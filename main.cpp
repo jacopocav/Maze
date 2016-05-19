@@ -46,7 +46,7 @@ bool g_mouse_left_down = false;
 bool g_mouse_right_down = false;
 
 // Movement settings
-const float g_translation_speed = 0.01;
+const float g_translation_speed = 0.005;
 const float g_rotation_speed = Camera::M_PI / 180 * 0.2f;
 
 int main(int argc, char **argv) {
