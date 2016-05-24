@@ -9,12 +9,15 @@ ESC - quit
 
 */
 
-#include <GL/freeglut.h>
+#include <GL/glut.h>
 #include <iostream>
+#include <fstream>
 
 #include "Camera.h"
 #include "Maze.h"
 #include "MazeGenerator.h"
+#include "Utils.h"
+#include "MazeCamera.h"
 
 using namespace std;
 
@@ -34,11 +37,9 @@ void Timer(int value);
 
 void Idle();
 
-void Grid();
-
-Camera g_camera;
+Maze *m = MazeGenerator::generateMaze(13, 13);
+MazeCamera g_camera(m);
 bool g_key[256];
-bool g_shift_down = false;
 bool g_fps_mode = false;
 int g_viewport_width = 0;
 int g_viewport_height = 0;
@@ -50,6 +51,19 @@ const float g_translation_speed = 0.002;
 const float g_rotation_speed = Camera::M_PI / 180 * 0.2f;
 
 int main(int argc, char **argv) {
+
+    std::ofstream out;
+    out.open("D:\\Desktop\\maze.txt");
+
+    for (int i = 0; i < m->getHeight(); ++i) {
+        for (int j = 0; j < m->getWidth(); ++j) {
+            out << (m->operator()(i,j) ? " " : "X");
+        }
+        out << "\n";
+    }
+
+    out.close();
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
@@ -70,97 +84,16 @@ int main(int argc, char **argv) {
 
     glutTimerFunc(1, Timer, 0);
 
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-    glMatrixMode (GL_PROJECTION);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glMatrixMode(GL_PROJECTION);
     glEnable(GL_DEPTH_TEST);
-    glLoadIdentity ();
+    glLoadIdentity();
     glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 
     glutMainLoop();
 
     return 0;
 }
-
-void Grid() {
-    glPushMatrix();
-    glColor3f(1, 1, 1);
-
-    for (int i = -50; i < 50; i++) {
-        glBegin(GL_LINES);
-        glVertex3f(i, 0, -50);
-        glVertex3f(i, 0, 50);
-        glEnd();
-    }
-
-    for (int i = -50; i < 50; i++) {
-        glBegin(GL_LINES);
-        glVertex3f(-50, 0, i);
-        glVertex3f(50, 0, i);
-        glEnd();
-    }
-
-    glPopMatrix();
-}
-
-float ang = 0.0;
-float ang2 = 0.0;
-float f = -5.0f;
-float f2 = 0.0;
-float f3 = 0.0;
-
-void floor(float x1, float x2, float y1, float z1, float z2){
-    glBegin(GL_QUADS);
-
-    glColor3f(0.0, 0.0, 0.2);
-    glVertex3f(x2, y1, z1);
-    glVertex3f(x1, y1, z1);
-    glVertex3f(x1, y1, z2);
-    glVertex3f(x2, y1, z2);
-
-    glEnd();
-}
-void cube(float x1, float x2, float y1, float y2, float z1, float z2){
-    glBegin(GL_QUADS);
-
-    glColor3f(8.3, 0.2, 0.0);
-    glVertex3f(x1, y1, z1);
-    glVertex3f(x2, y1, z1);
-    glColor3f(1.3, 7.2, 0.0);
-    glVertex3f(x2, y2, z1);
-    glVertex3f(x1, y2, z1);
-
-    glColor3f(0.3, 9.2, 2.0);
-    glVertex3f(x1, y1, z2);
-    glVertex3f(x2, y1, z2);
-    glColor3f(1.3, 0.2, 9.0);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x1, y2, z2);
-
-    glColor3f(0.3, 7.2, 0.0);
-    glVertex3f(x1, y2, z1);
-    glVertex3f(x2, y2, z1);
-    glColor3f(0.3, 0.2, 9.0);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x1, y2, z2);
-
-    glColor3f(0.3, 0.2, 8.0);
-    glVertex3f(x1, y1, z1);
-    glVertex3f(x1, y2, z1);
-    glColor3f(8.3, 0.2, 2.0);
-    glVertex3f(x1, y2, z2);
-    glVertex3f(x1, y1, z2);
-
-    glColor3f(0.3, 0.2, 8.0);
-    glVertex3f(x2, y1, z1);
-    glVertex3f(x2, y2, z1);
-    glColor3f(9.3, 0.2, 0.0);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x2, y1, z2);
-
-    glEnd();
-}
-
-Maze *m = MazeGenerator::generateMaze(13, 13);
 
 void Display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
@@ -169,24 +102,17 @@ void Display(void) {
 
     g_camera.Refresh();
 
-    //Grid();
+    glRotatef(0.0, 0.0, 1.0, 0.0);
+    glRotatef(0.0, 1.0, 0.0, 0.0);
 
-    /*glColor3f(1, 0, 0);
-    glutSolidCube(1);*/
-
-    //glutSwapBuffers(); //swap the buffers
-
-    glRotatef(ang,0.0,1.0,0.0);
-    glRotatef(ang2,1.0,0.0,0.0);
-
-    glTranslatef(-0.6f,0, 0.6);
+    glTranslatef(-0.6f, 0, 0.6);
 
 
     int i, j;
-    for(i = 0 ; i < m->getHeight(); i++){
-        for(j = 0 ; j < m->getWidth(); j++){
-            if(m->operator()(i,j) == 0) cube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
-            else floor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1));
+    for (i = 0; i < m->getHeight(); i++) {
+        for (j = 0; j < m->getWidth(); j++) {
+            if (m->operator()(i, j) == 0) Utils::cube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
+            else Utils::floor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1));
         }
     }
     glutSwapBuffers();
@@ -223,10 +149,6 @@ void Keyboard(unsigned char key, int x, int y) {
     }
 
     if (glutGetModifiers() == GLUT_ACTIVE_SHIFT) {
-        g_shift_down = true;
-    }
-    else {
-        g_shift_down = false;
     }
 
     g_key[key] = true;

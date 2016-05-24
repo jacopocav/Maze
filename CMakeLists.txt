@@ -3,7 +3,7 @@ project(Maze)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp Camera.h Camera.cpp MazeGenerator.cpp MazeGenerator.h Maze.cpp Maze.h)
+set(SOURCE_FILES main.cpp Camera.h Camera.cpp MazeGenerator.cpp MazeGenerator.h Maze.cpp Maze.h Utils.cpp Utils.h MazeCamera.cpp MazeCamera.h)
 add_executable(Maze ${SOURCE_FILES})
 
 find_package(OpenGL REQUIRED)
