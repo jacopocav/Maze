@@ -2,11 +2,11 @@
 // Created by Admin on 24/05/2016.
 //
 
-#include "Utils.h"
+#include "GlutUtils.h"
 #include <GL/glut.h>
 
 
-void Utils::floor(float x1, float x2, float y1, float z1, float z2){
+void GlutUtils::DrawFloor(float x1, float x2, float y1, float z1, float z2){
     glBegin(GL_QUADS);
 
     glColor3f(0.0, 0.0, 0.2);
@@ -17,7 +17,7 @@ void Utils::floor(float x1, float x2, float y1, float z1, float z2){
 
     glEnd();
 }
-void Utils::cube(float x1, float x2, float y1, float y2, float z1, float z2){
+void GlutUtils::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2){
     glBegin(GL_QUADS);
 
     glColor3f(8.3, 0.2, 0.0);

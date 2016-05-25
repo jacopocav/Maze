@@ -16,7 +16,7 @@ ESC - quit
 #include "Camera.h"
 #include "Maze.h"
 #include "MazeGenerator.h"
-#include "Utils.h"
+#include "GlutUtils.h"
 #include "MazeCamera.h"
 
 using namespace std;
@@ -52,7 +52,7 @@ const float g_rotation_speed = Camera::M_PI / 180 * 0.2f;
 
 int main(int argc, char **argv) {
 
-    std::ofstream out;
+    /*std::ofstream out;
     out.open("D:\\Desktop\\maze.txt");
 
     for (int i = 0; i < m->getHeight(); ++i) {
@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
     }
 
     out.close();
+    */
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -111,8 +112,9 @@ void Display(void) {
     int i, j;
     for (i = 0; i < m->getHeight(); i++) {
         for (j = 0; j < m->getWidth(); j++) {
-            if (m->operator()(i, j) == 0) Utils::cube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
-            else Utils::floor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1));
+            if (m->operator()(i, j) == 0)
+                GlutUtils::DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
+            else GlutUtils::DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1));
         }
     }
     glutSwapBuffers();
