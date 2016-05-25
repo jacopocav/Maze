@@ -10,7 +10,7 @@
 
 class MazeCamera : public Camera {
 public:
-    MazeCamera(Maze *maze) : m_maze(maze), m_last_valid_x(-0.6f), m_last_valid_z(0.6f), Camera() { }
+    MazeCamera(Maze *maze) : m_maze(maze), Camera() { }
 
     virtual void Move(float incr);
 
@@ -22,12 +22,10 @@ public:
 private:
     Maze *m_maze;
 
-    std::pair<unsigned, unsigned> glCoordToMaze();
+    coordinates glCoordToMaze();
 
     bool checkBounds();
 
-    float m_last_valid_x, m_last_valid_z;
-
-    bool checkWinCondition();
+    void checkWinCondition();
 
 };

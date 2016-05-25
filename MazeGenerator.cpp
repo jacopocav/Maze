@@ -10,24 +10,24 @@
 
 
 Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
-    auto C = new std::vector<std::pair<unsigned,unsigned>>();
+    auto C = std::vector<coordinates>();
 
     vector<Direction> directions = {N, S, E, W};
 
     Maze *maze = new Maze(height, width);
 
-    C->push_back(std::pair<unsigned, unsigned>(1, 1));
+    C.push_back(coordinates(1, 1));
 
-    int seed = std::chrono::system_clock::now().time_since_epoch().count();
+    int seed = static_cast<int>(std::chrono::system_clock::now().time_since_epoch().count());
     std::default_random_engine rnd(seed);
 
 
-    while (!C->empty()) {
+    while (!C.empty()) {
         std::shuffle(directions.begin(), directions.end(), rnd);
-        int index = C->size() - 1;
-        auto cell = C->at(index);
-        maze->setCell(cell, true);
-        std::pair<unsigned, unsigned> newCell;
+        int index = C.size() - 1;
+        auto cell = C.at(static_cast<unsigned>(index));
+        maze->set(cell, true);
+        coordinates newCell;
 
         for (int i = 0; i < directions.size(); ++i) {
             newCell = cell;
@@ -49,22 +49,21 @@ Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
                     newCell.second -= 2;
                     break;
             }
-            if (newCell != cell && !maze->operator()(newCell)) {
-                C->push_back(newCell);
-                std::pair<unsigned, unsigned> middleCell((cell.first + newCell.first) / 2,
+            if (newCell != cell && !maze->get(newCell)) {
+                C.push_back(newCell);
+                coordinates middleCell((cell.first + newCell.first) / 2,
                                                          (cell.second + newCell.second) / 2);
-                maze->setCell(middleCell, true);
-                maze->setCell(newCell, true);
+                maze->set(middleCell, true);
+                maze->set(newCell, true);
 
                 index = -1;
                 break;
             }
         }
-        if (index >= 0 && index < C->size()) {
-            C->erase(C->begin() + index);
+        if (index >= 0 && index < C.size()) {
+            C.erase(C.begin() + index);
         }
     }
-    delete C;
     return maze;
 }
 

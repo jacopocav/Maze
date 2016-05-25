@@ -37,6 +37,8 @@ public:
     static void SetFPSMode(bool mode);
 
 private:
+    static void Cleanup();
+
     static Maze *m_maze;
     static MazeCamera g_camera;
     static bool g_key[256];
@@ -49,7 +51,7 @@ private:
 
     static bool just_warped;
 
-// Movement settings
+    // Costanti che definiscono la velocità di movimento/rotazione
     static const float g_translation_speed;
     static const float g_rotation_speed;
     static const float g_keyboard_rotation_multiplier;

@@ -9,10 +9,12 @@
 
 using std::vector;
 
+// Viene utilizzato questo tipo per indicare le coordinate di una cella nel labirinto
+typedef std::pair<unsigned, unsigned> coordinates;
+
 class Maze {
 private:
     vector<vector<bool>> maze;
-    int height, width;
 public:
     Maze(unsigned height, unsigned width);
 
@@ -20,11 +22,11 @@ public:
 
     int getWidth() const;
 
-    bool operator()(int row, int col) const;
+    // Ritornano il valore di una cella
+    bool get(int row, int col) const;
+    bool get(coordinates coord) const;
 
-    bool operator()(std::pair<unsigned, unsigned> coord) const;
-
-    void setCell(int row, int col, bool val);
-
-    void setCell(std::pair<unsigned, unsigned> coord, bool val);
+    // Impostano il valore di una cella
+    void set(int row, int col, bool val);
+    void set(coordinates coord, bool val);
 };

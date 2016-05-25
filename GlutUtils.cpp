@@ -128,7 +128,7 @@ void GlutUtils::Display(void) {
 
     for (int i = 0; i < m_maze->getHeight(); i++) {
         for (int j = 0; j < m_maze->getWidth(); j++) {
-            if (m_maze->operator()(i, j) == 0)
+            if (m_maze->get(i, j) == 0)
                 GlutUtils::DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
             else {
                 bool winFloor = false;
@@ -158,6 +158,7 @@ void GlutUtils::Reshape(int w, int h) {
 
 void GlutUtils::Keyboard(unsigned char key, int x, int y) {
     if (key == 27) {
+        Cleanup();
         exit(0);
     }
 
@@ -305,4 +306,8 @@ void GlutUtils::MouseMotion(int x, int y) {
 
 void GlutUtils::SetFPSMode(bool mode) {
     g_fps_mode = mode;
+}
+
+void GlutUtils::Cleanup(){
+    delete m_maze;
 }

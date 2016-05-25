@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < m->getHeight(); ++i) {
         for (int j = 0; j < m->getWidth(); ++j) {
-            out << (m->operator()(i,j) ? " " : "X");
+            out << (m->get(i,j) ? " " : "X");
         }
         out << "\n";
     }
@@ -59,7 +59,6 @@ int main(int argc, char **argv) {
     glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 
     glutMainLoop();
-
     return 0;
 }
 
