@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include "MazeCamera.h"
+#include "GlutUtils.h"
 #include <GL/glut.h>
 #include <string>
 
@@ -12,34 +13,29 @@ void MazeCamera::Move(float incr) {
     float ly = sin(m_pitch);
     float lz = sin(m_yaw) * cos(m_pitch);
 
-    std::pair<unsigned, unsigned> mazeCoord = glCoordToMaze();
-
     float old_x = m_x;
     float old_z = m_z;
 
     m_x = m_x + incr * lx;
     m_z = m_z + incr * lz;
 
+    auto mazeCoord = glCoordToMaze();
+
     if ((!m_maze->operator()(mazeCoord) && m_y < 0.3 && m_y > -0.3) || !checkBounds()) {
-        m_x = old_x;
-        m_z = old_z;
+        m_x = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.05f * lx;
+        m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.05f * lz;
     }
 
-    std::string pos("x:");
-    pos.append(std::to_string(m_x));
-    pos.append(" [");
+    std::string pos("x:[");
     pos.append(std::to_string(mazeCoord.first));
-    pos.append("] z:");
-    pos.append(std::to_string(m_z));
-    pos.append(" [");
+    pos.append("] z:[");
     pos.append(std::to_string(mazeCoord.second));
     pos.append("]");
-    pos.append(" yaw:");
-    pos.append(std::to_string(m_yaw));
 
     glutSetWindowTitle(pos.c_str());
 
     Refresh();
+    checkWinCondition();
 }
 
 void MazeCamera::Strafe(float incr) {
@@ -49,28 +45,23 @@ void MazeCamera::Strafe(float incr) {
     m_x = m_x + incr * m_strafe_lx;
     m_z = m_z + incr * m_strafe_lz;
 
-    std::pair<unsigned, unsigned> mazeCoord = glCoordToMaze();
+    auto mazeCoord = glCoordToMaze();
 
     if ((!m_maze->operator()(mazeCoord) && m_y < 0.3 && m_y > -0.3) || !checkBounds()) {
-        m_x = old_x;
-        m_z = old_z;
+        m_x = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.05f * m_strafe_lx;
+        m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.05f * m_strafe_lz;
     }
 
-    std::string pos("x:");
-    pos.append(std::to_string(m_x));
-    pos.append(" [");
+    std::string pos("x:[");
     pos.append(std::to_string(mazeCoord.first));
-    pos.append("] z:");
-    pos.append(std::to_string(m_z));
-    pos.append(" [");
+    pos.append("] z:[");
     pos.append(std::to_string(mazeCoord.second));
     pos.append("]");
-    pos.append(" yaw:");
-    pos.append(std::to_string(m_yaw));
 
     glutSetWindowTitle(pos.c_str());
 
     Refresh();
+    checkWinCondition();
 }
 
 void MazeCamera::Fly(float incr) {
@@ -92,3 +83,12 @@ bool MazeCamera::checkBounds() {
            m_x <= (m_maze->getHeight() * 0.4 - 0.6) && m_z >= (-m_maze->getWidth() * 0.4 + 0.6);
 }
 
+bool MazeCamera::checkWinCondition() {
+    auto mazeCoord = glCoordToMaze();
+    std::pair<unsigned, unsigned> winCell(m_maze->getHeight() - 2, m_maze->getWidth() - 2);
+
+    if (mazeCoord == winCell){
+        glutSetWindowTitle("HAI VINTO!!!");
+        GlutUtils::SetFPSMode(false);
+    }
+}
