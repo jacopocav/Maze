@@ -21,9 +21,9 @@ void MazeCamera::Move(float incr) {
 
     auto mazeCoord = glCoordToMaze();
 
-    if ((!m_maze->get(mazeCoord) && m_y < 0.3 && m_y > -0.3) || !checkBounds()) {
-        m_x = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.05f * lx;
-        m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.05f * lz;
+    if ((!m_maze->get(mazeCoord) && m_y < 0.2 && m_y > -0.2) || !checkBounds()) {
+        m_x = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.01f * lx;
+        m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.01f * lz;
     }
 
     std::string pos("x:[");
@@ -47,9 +47,9 @@ void MazeCamera::Strafe(float incr) {
 
     auto mazeCoord = glCoordToMaze();
 
-    if ((!m_maze->get(mazeCoord) && m_y < 0.3 && m_y > -0.3) || !checkBounds()) {
-        m_x = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.05f * m_strafe_lx;
-        m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.05f * m_strafe_lz;
+    if ((!m_maze->get(mazeCoord) && m_y < 0.2 && m_y > -0.2) || !checkBounds()) {
+        m_x = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.01f * m_strafe_lx;
+        m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.01f * m_strafe_lz;
     }
 
     std::string pos("x:[");

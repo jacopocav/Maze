@@ -5,14 +5,13 @@
 #pragma once
 
 
+#include <GL/gl.h>
 #include "MazeGenerator.h"
 #include "MazeCamera.h"
 
 class GlutUtils {
 public:
-    static void DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor = false);
-
-    static void DrawCube(float x1, float x2, float y1, float y2, float z1, float z2);
+    static void Init();
 
     static void Display();
 
@@ -37,6 +36,14 @@ public:
     static void SetFPSMode(bool mode);
 
 private:
+
+    static void DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor = false);
+    static void DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor = false);
+
+    static void DrawCube(float x1, float x2, float y1, float y2, float z1, float z2);
+
+    static void DrawMaze();
+
     static void Cleanup();
 
     static Maze *m_maze;
@@ -48,8 +55,14 @@ private:
     static int g_viewport_height;
     static bool g_mouse_left_down;
     static bool g_mouse_right_down;
-
     static bool just_warped;
+
+    static float light_pos[4];
+    static float ambient_light[4];
+    static float diffuse_light[4];
+    static float specular_light[4];
+
+    static float specular_material[4];
 
     // Costanti che definiscono la velocità di movimento/rotazione
     static const float g_translation_speed;

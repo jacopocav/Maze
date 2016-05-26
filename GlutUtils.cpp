@@ -19,99 +19,69 @@ bool GlutUtils::g_mouse_right_down = false;
 // This avoids it being called recursively and hanging up the event loop
 bool GlutUtils::just_warped = false;
 
+float GlutUtils::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+float GlutUtils::ambient_light[4] = {0.5f, 0.5f, 0.5f, 1.0f};
+float GlutUtils::diffuse_light[4] = {1.5f, 1.5f, 1.5f, 1.0f};
+float GlutUtils::specular_light[4] = {2.0f, 2.0f, 2.0f, 1.0f};
+
+float GlutUtils::specular_material[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+
 const float GlutUtils::g_translation_speed = 0.015;
 const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.2f;
 const float GlutUtils::g_keyboard_rotation_multiplier = 10.0;
 
-void GlutUtils::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
-    glBegin(GL_QUADS);
+void GlutUtils::Init() {
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("SPAZIO per attivare/disattivare controlli FPS");
 
-    if (winFloor) glColor3f(0.0, 1.0, 0.0);
-    else glColor3f(0.05, 0.0, 0.0);
-    glVertex3f(x2, y1, z1);
-    glVertex3f(x1, y1, z1);
-    glVertex3f(x1, y1, z2);
-    glVertex3f(x2, y1, z2);
+    glutIgnoreKeyRepeat(1);
 
-    glEnd();
+    // Assegnazione callback
+    glutDisplayFunc(GlutUtils::Display);
+    glutIdleFunc(GlutUtils::Idle);
+    glutReshapeFunc(GlutUtils::Reshape);
+    glutMouseFunc(GlutUtils::Mouse);
+    glutMotionFunc(GlutUtils::MouseMotion);
+    glutPassiveMotionFunc(GlutUtils::MouseMotion);
+    glutKeyboardFunc(GlutUtils::Keyboard);
+    glutKeyboardUpFunc(GlutUtils::KeyboardUp);
+    glutSpecialFunc(GlutUtils::KeyboardSpecial);
+    glutSpecialUpFunc(GlutUtils::KeyboardSpecialUp);
+    glutTimerFunc(16, GlutUtils::Timer, 0);
+
+
+    // Configurazione camera
+    glMatrixMode(GL_PROJECTION);
+    glEnable(GL_DEPTH_TEST);
+    glLoadIdentity();
+    glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_LIGHT0);
+    GLfloat black[4] = {0, 0, 0, 1};
+
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_material);
+    glMateriali(GL_FRONT, GL_SHININESS, 56);
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 60.0);
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 2.0);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.8f);
+
+    glutMainLoop();
 }
 
-void GlutUtils::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glPolygonOffset(-1.5f, -1.5f);
-    glEnable(GL_POLYGON_OFFSET_LINE);
-    glBegin(GL_QUADS);
 
-    glColor3f(0.05, 0, 0);
-    glVertex3f(x1, y1, z1);
-    glVertex3f(x2, y1, z1);
-    glVertex3f(x2, y2, z1);
-    glVertex3f(x1, y2, z1);
-
-    glVertex3f(x1, y1, z2);
-    glVertex3f(x2, y1, z2);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x1, y2, z2);
-
-    glVertex3f(x1, y2, z1);
-    glVertex3f(x2, y2, z1);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x1, y2, z2);
-
-    glVertex3f(x1, y1, z1);
-    glVertex3f(x1, y2, z1);
-    glVertex3f(x1, y2, z2);
-    glVertex3f(x1, y1, z2);
-
-    glVertex3f(x2, y1, z1);
-    glVertex3f(x2, y2, z1);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x2, y1, z2);
-
-    glEnd();
-    glDisable(GL_POLYGON_OFFSET_LINE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    glBegin(GL_QUADS);
-
-    glColor3f(0.1, 0.0, 0.0);
-    glVertex3f(x1, y1, z1);
-    glVertex3f(x2, y1, z1);
-    glColor3f(1.5, 0.0, 0.0);
-    glVertex3f(x2, y2, z1);
-    glVertex3f(x1, y2, z1);
-
-    glColor3f(0.1, 0.0, 0.0);
-    glVertex3f(x1, y1, z2);
-    glVertex3f(x2, y1, z2);
-    glColor3f(1.5, 0.0, 0.0);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x1, y2, z2);
-
-    glColor3f(1.5, 0.0, 0.0);
-    glVertex3f(x1, y2, z1);
-    glVertex3f(x2, y2, z1);
-    glVertex3f(x2, y2, z2);
-    glVertex3f(x1, y2, z2);
-
-    glColor3f(0.1, 0.0, 0.0);
-    glVertex3f(x1, y1, z1);
-    glColor3f(1.5, 0.0, 0.0);
-    glVertex3f(x1, y2, z1);
-    glVertex3f(x1, y2, z2);
-    glColor3f(0.1, 0.0, 0.0);
-    glVertex3f(x1, y1, z2);
-
-    glColor3f(0.1, 0.0, 0.0);
-    glVertex3f(x2, y1, z1);
-    glColor3f(1.5, 0.0, 0.0);
-    glVertex3f(x2, y2, z1);
-    glVertex3f(x2, y2, z2);
-    glColor3f(0.1, 0.0, 0.0);
-    glVertex3f(x2, y1, z2);
-
-    glEnd();
-}
 
 void GlutUtils::Display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
@@ -120,12 +90,23 @@ void GlutUtils::Display(void) {
 
     g_camera.Refresh();
 
-    glRotatef(0.0, 0.0, 1.0, 0.0);
-    glRotatef(0.0, 1.0, 0.0, 0.0);
+    float light_dir[3] = {0.0};
+    g_camera.GetDirectionVector(light_dir[0], light_dir[1], light_dir[2]);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_dir);
 
     glTranslatef(-0.6f, 0, 0.6);
 
+    glPushMatrix();
+    glLoadIdentity();
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glPopMatrix();
 
+    DrawMaze();
+
+    glutSwapBuffers();
+}
+
+void GlutUtils::DrawMaze() {
     for (int i = 0; i < m_maze->getHeight(); i++) {
         for (int j = 0; j < m_maze->getWidth(); j++) {
             if (m_maze->get(i, j) == 0)
@@ -134,13 +115,13 @@ void GlutUtils::Display(void) {
                 bool winFloor = false;
                 if (i == m_maze->getHeight() - 2 && j == m_maze->getWidth() - 2) winFloor = true;
                 GlutUtils::DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
-                GlutUtils::DrawFloor(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
+                GlutUtils::DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
 
             }
         }
     }
-    glutSwapBuffers();
 }
+
 
 void GlutUtils::Reshape(int w, int h) {
     g_viewport_width = w;
@@ -308,6 +289,84 @@ void GlutUtils::SetFPSMode(bool mode) {
     g_fps_mode = mode;
 }
 
-void GlutUtils::Cleanup(){
+void GlutUtils::Cleanup() {
     delete m_maze;
+}
+
+void GlutUtils::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
+    glBegin(GL_QUADS);
+
+    if (winFloor) glColor3f(0.0, 1.0, 0.0);
+    else glColor3f(0.0, 0.0, 0.1);
+    glNormal3f(0, 1, 0);
+    glVertex3f(x2, y1, z1);
+    glVertex3f(x2, y1, z2);
+    glVertex3f(x1, y1, z2);
+    glVertex3f(x1, y1, z1);
+
+    glEnd();
+}
+
+void GlutUtils::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
+    glBegin(GL_QUADS);
+
+    if (winFloor) glColor3f(0.0, 1.0, 0.0);
+    else glColor3f(0.0, 0.0, 0.1);
+    glNormal3f(0, -1, 0);
+    glVertex3f(x2, y1, z1);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y1, z2);
+    glVertex3f(x2, y1, z2);
+
+    glEnd();
+}
+
+void GlutUtils::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
+    glBegin(GL_QUADS);
+
+    glColor3f(1.5, 0.0, 0.0);
+    glNormal3f(0, 0, -1);
+    //glColor3f(0.8, 0.0, 0.0);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x2, y1, z1);
+    //glColor3f(1.5, 0.0, 0.0);
+    glVertex3f(x2, y2, z1);
+    glVertex3f(x1, y2, z1);
+
+    glNormal3f(0, 0, 1);
+    //glColor3f(0.8, 0.0, 0.0);
+    glVertex3f(x1, y1, z2);
+    //glColor3f(1.5, 0.0, 0.0);
+    glVertex3f(x1, y2, z2);
+    glVertex3f(x2, y2, z2);
+    //glColor3f(0.8, 0.0, 0.0);
+    glVertex3f(x2, y1, z2);
+
+    glNormal3f(0, 1, 0);
+    //glColor3f(1.5, 0.0, 0.0);
+    glVertex3f(x1, y2, z1);
+    glVertex3f(x2, y2, z1);
+    glVertex3f(x2, y2, z2);
+    glVertex3f(x1, y2, z2);
+
+    glNormal3f(1, 0, 0);
+    //glColor3f(0.8, 0.0, 0.0);
+    glVertex3f(x1, y1, z1);
+    //glColor3f(1.5, 0.0, 0.0);
+    glVertex3f(x1, y2, z1);
+    glVertex3f(x1, y2, z2);
+    //glColor3f(0.8, 0.0, 0.0);
+    glVertex3f(x1, y1, z2);
+
+    glNormal3f(-1, 0, 0);
+    //glColor3f(0.8, 0.0, 0.0);
+    glVertex3f(x2, y1, z1);
+    glVertex3f(x2, y1, z2);
+    //glColor3f(1.5, 0.0, 0.0);
+    glVertex3f(x2, y2, z2);
+    glVertex3f(x2, y2, z1);
+    //glColor3f(0.8, 0.0, 0.0);
+
+
+    glEnd();
 }
