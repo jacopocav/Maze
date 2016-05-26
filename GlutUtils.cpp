@@ -3,9 +3,10 @@
 //
 
 #include "GlutUtils.h"
+#include "TextureUtils.h"
 #include <GL/glut.h>
 
-Maze *GlutUtils::m_maze = MazeGenerator::generateMaze(65, 65);
+Maze *GlutUtils::m_maze = MazeGenerator::generateMaze(13, 13);
 MazeCamera GlutUtils::g_camera(m_maze);
 bool GlutUtils::g_key[256] = {};
 bool GlutUtils::g_special_key[4] = {};
@@ -24,11 +25,18 @@ float GlutUtils::ambient_light[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 float GlutUtils::diffuse_light[4] = {1.5f, 1.5f, 1.5f, 1.0f};
 float GlutUtils::specular_light[4] = {2.0f, 2.0f, 2.0f, 1.0f};
 
+float light_pos2[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+float ambient_light2[4] = {0.5f, 0.5f, 0.5f, 1.0f};
+float diffuse_light2[4] = {0.0f, 1.5f, 0.0f, 1.0f};
+float specular_light2[4] = {2.0f, 2.0f, 2.0f, 1.0f};
+
 float GlutUtils::specular_material[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
 const float GlutUtils::g_translation_speed = 0.015;
 const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.2f;
 const float GlutUtils::g_keyboard_rotation_multiplier = 10.0;
+
+//GLubyte *legno = TextureUtils::ReadFromFile("res/brick.bmp");
 
 void GlutUtils::Init() {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -59,6 +67,7 @@ void GlutUtils::Init() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
+    glColorMaterial(GL_FRONT, GL_AMBIENT);
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glShadeModel(GL_SMOOTH);
@@ -72,15 +81,23 @@ void GlutUtils::Init() {
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_material);
-    glMateriali(GL_FRONT, GL_SHININESS, 56);
     glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 60.0);
     glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 2.0);
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.8f);
 
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_material);
+    glMateriali(GL_FRONT, GL_SHININESS, 56);
+
+
+    /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 512, 512, GL_RGB, GL_UNSIGNED_BYTE, legno);
+    glEnable(GL_TEXTURE_2D);*/
+
     glutMainLoop();
 }
-
 
 
 void GlutUtils::Display(void) {
@@ -127,14 +144,14 @@ void GlutUtils::Reshape(int w, int h) {
     g_viewport_width = w;
     g_viewport_height = h;
 
-    glViewport(0, 0, (GLsizei) w, (GLsizei) h); //set the viewport to the current window specifications
-    glMatrixMode(GL_PROJECTION); //set the matrix to projection
+    glViewport(0, 0, w, h); //set the viewport to the current window specifications
+    glMatrixMode(GL_PROJECTION);
 
     glLoadIdentity();
 
     //set the perspective (angle of sight, width, height, ,depth)
     gluPerspective(45, (GLfloat) w / (GLfloat) h, 0.001, 50.0);
-    glMatrixMode(GL_MODELVIEW); //set the matrix back to model
+    glMatrixMode(GL_MODELVIEW);
 }
 
 void GlutUtils::Keyboard(unsigned char key, int x, int y) {
@@ -324,46 +341,67 @@ void GlutUtils::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool 
 void GlutUtils::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
     glBegin(GL_QUADS);
 
+    //glColor3f(1.0, 1.0, 1.0); // Colore con texture
     glColor3f(1.5, 0.0, 0.0);
     glNormal3f(0, 0, -1);
+    //glTexCoord2f(1, 1);
     //glColor3f(0.8, 0.0, 0.0);
     glVertex3f(x1, y1, z1);
+    //glTexCoord2f(0, 1);
     glVertex3f(x2, y1, z1);
     //glColor3f(1.5, 0.0, 0.0);
+    //glTexCoord2f(0, 0);
     glVertex3f(x2, y2, z1);
+    //glTexCoord2f(1, 0);
     glVertex3f(x1, y2, z1);
 
     glNormal3f(0, 0, 1);
     //glColor3f(0.8, 0.0, 0.0);
+    //glTexCoord2f(1, 1);
     glVertex3f(x1, y1, z2);
     //glColor3f(1.5, 0.0, 0.0);
+    //glTexCoord2f(0, 1);
     glVertex3f(x1, y2, z2);
+    //glTexCoord2f(0, 0);
     glVertex3f(x2, y2, z2);
     //glColor3f(0.8, 0.0, 0.0);
+    //glTexCoord2f(1, 0);
     glVertex3f(x2, y1, z2);
 
     glNormal3f(0, 1, 0);
     //glColor3f(1.5, 0.0, 0.0);
+    //glTexCoord2f(1, 1);
     glVertex3f(x1, y2, z1);
+    //glTexCoord2f(0, 1);
     glVertex3f(x2, y2, z1);
+    //glTexCoord2f(0, 0);
     glVertex3f(x2, y2, z2);
+    //glTexCoord2f(1, 0);
     glVertex3f(x1, y2, z2);
 
     glNormal3f(1, 0, 0);
     //glColor3f(0.8, 0.0, 0.0);
+    //glTexCoord2f(1, 1);
     glVertex3f(x1, y1, z1);
     //glColor3f(1.5, 0.0, 0.0);
+    //glTexCoord2f(0, 1);
     glVertex3f(x1, y2, z1);
+    //glTexCoord2f(0, 0);
     glVertex3f(x1, y2, z2);
     //glColor3f(0.8, 0.0, 0.0);
+    //glTexCoord2f(1, 0);
     glVertex3f(x1, y1, z2);
 
     glNormal3f(-1, 0, 0);
     //glColor3f(0.8, 0.0, 0.0);
+    //glTexCoord2f(1, 1);
     glVertex3f(x2, y1, z1);
+    //glTexCoord2f(0, 1);
     glVertex3f(x2, y1, z2);
+    //glTexCoord2f(0, 0);
     //glColor3f(1.5, 0.0, 0.0);
     glVertex3f(x2, y2, z2);
+    //glTexCoord2f(1, 0);
     glVertex3f(x2, y2, z1);
     //glColor3f(0.8, 0.0, 0.0);
 
