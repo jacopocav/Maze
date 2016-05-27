@@ -27,15 +27,15 @@ float GlutUtils::specular_light[4] = {2.0f, 2.0f, 2.0f, 1.0f};
 
 float GlutUtils::specular_material[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-const float GlutUtils::g_translation_speed = 0.015;
-const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.2f;
+const float GlutUtils::g_translation_speed = 0.01;
+const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 const float GlutUtils::g_keyboard_rotation_multiplier = 10.0;
 
 GLuint *GlutUtils::textureIDs = new GLuint[3];
 
-GLubyte *GlutUtils::floorTexture = TextureUtils::ReadFromBMP("res/portal_floor.bmp");
-GLubyte *GlutUtils::wallTexture = TextureUtils::ReadFromBMP("res/portal_wall.bmp");
-GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/portal_ceil.bmp");
+GLubyte *GlutUtils::floorTexture = TextureUtils::ReadFromBMP("res/lux_floor.bmp");
+GLubyte *GlutUtils::wallTexture = TextureUtils::ReadFromBMP("res/lux_wall2.bmp");
+GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/lux_ceil.bmp");
 
 void GlutUtils::Init() {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -56,7 +56,7 @@ void GlutUtils::Init() {
     glutKeyboardUpFunc(GlutUtils::KeyboardUp);
     glutSpecialFunc(GlutUtils::KeyboardSpecial);
     glutSpecialUpFunc(GlutUtils::KeyboardSpecialUp);
-    glutTimerFunc(16, GlutUtils::Timer, 0);
+    glutTimerFunc(1, GlutUtils::Timer, 0);
 
 
     // Configurazione camera
@@ -95,7 +95,7 @@ void GlutUtils::Init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 512, 512, GL_RGB, GL_UNSIGNED_BYTE, wallTexture);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 1024, 1024, GL_RGB, GL_UNSIGNED_BYTE, wallTexture);
 
 
     glBindTexture(GL_TEXTURE_2D, textureIDs[1]);
@@ -103,7 +103,7 @@ void GlutUtils::Init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 512, 512, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 1024, 1024, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
 
     glBindTexture(GL_TEXTURE_2D, textureIDs[2]);
 
@@ -267,7 +267,7 @@ void GlutUtils::Timer(int value) {
         }
     }
 
-    glutTimerFunc(16, Timer, 0);
+    glutTimerFunc(1, Timer, 0);
 }
 
 void GlutUtils::Idle() {
@@ -400,13 +400,13 @@ void GlutUtils::DrawCube(float x1, float x2, float y1, float y2, float z1, float
 
     //glColor3f(0,0,1);
     glNormal3f(0, 1, 0);
-    glTexCoord2f(0, 0);
+    //glTexCoord2f(0, 0);
     glVertex3f(x1, y2, z1);
-    glTexCoord2f(1, 0);
+    //glTexCoord2f(1, 0);
     glVertex3f(x2, y2, z1);
-    glTexCoord2f(1, 1);
+    //glTexCoord2f(1, 1);
     glVertex3f(x2, y2, z2);
-    glTexCoord2f(0, 1);
+    //glTexCoord2f(0, 1);
     glVertex3f(x1, y2, z2);
 
     //glColor3f(1,1,0);
