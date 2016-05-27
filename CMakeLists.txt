@@ -9,7 +9,7 @@ add_executable(Maze ${SOURCE_FILES})
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 
-include_directories(${OPENGL_INCLUDE_DIRS} "C:/freeglut/include")
+include_directories(${OPENGL_INCLUDE_DIRS} "C:/freeglut/include" )
 target_link_libraries(Maze ${OPENGL_LIBRARIES} "C:/freeglut/lib/libfreeglut.a" )
 
 file(COPY res/ DESTINATION res)

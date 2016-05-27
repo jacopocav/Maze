@@ -64,6 +64,12 @@ private:
 
     static float specular_material[4];
 
+    static GLubyte *wallTexture;
+    static GLubyte *floorTexture;
+    static GLubyte *ceilTexture;
+
+    static GLuint *textureIDs;
+
     // Costanti che definiscono la velocità di movimento/rotazione
     static const float g_translation_speed;
     static const float g_rotation_speed;

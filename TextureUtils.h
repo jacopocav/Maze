@@ -10,6 +10,6 @@
 
 class TextureUtils {
 public:
-    static GLubyte* ReadFromFile(std::string path);
+    static GLubyte* ReadFromBMP(std::string path);
 };
 
