@@ -34,7 +34,7 @@ const float GlutUtils::g_keyboard_rotation_multiplier = 10.0;
 GLuint *GlutUtils::textureIDs = new GLuint[3];
 
 GLubyte *GlutUtils::floorTexture = TextureUtils::ReadFromBMP("res/lux_floor.bmp");
-GLubyte *GlutUtils::wallTexture = TextureUtils::ReadFromBMP("res/lux_wall2.bmp");
+GLubyte *GlutUtils::wallTexture = TextureUtils::ReadFromBMP("res/lux_wall.bmp");
 GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/lux_ceil.bmp");
 
 void GlutUtils::Init() {
@@ -56,7 +56,7 @@ void GlutUtils::Init() {
     glutKeyboardUpFunc(GlutUtils::KeyboardUp);
     glutSpecialFunc(GlutUtils::KeyboardSpecial);
     glutSpecialUpFunc(GlutUtils::KeyboardSpecialUp);
-    glutTimerFunc(1, GlutUtils::Timer, 0);
+    glutTimerFunc(16, GlutUtils::Timer, 0);
 
 
     // Configurazione camera
@@ -67,7 +67,7 @@ void GlutUtils::Init() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
-    glEnable(GL_COLOR_MATERIAL);
+    //glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
@@ -84,8 +84,10 @@ void GlutUtils::Init() {
     //glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 5.0);
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0f);
 
-    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_material);
-    glMateriali(GL_FRONT, GL_SHININESS, 56);
+    //glMaterialfv(GL_FRONT, GL_SPECULAR, light_pos);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, specular_material);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, specular_material);
+    //glMateriali(GL_FRONT, GL_SHININESS, 56);
 
     glEnable(GL_TEXTURE_2D);
 
@@ -232,38 +234,43 @@ void GlutUtils::KeyboardSpecialUp(int key, int x, int y) {
     }
 }
 
+int time = glutGet(GLUT_ELAPSED_TIME);
+
 void GlutUtils::Timer(int value) {
+    int newTime = glutGet(GLUT_ELAPSED_TIME);
+    int timeDiff = newTime - time;
+    time = newTime;
     if (g_fps_mode) {
         if (g_key['w'] || g_key['W']) {
-            g_camera.Move(g_translation_speed);
+            g_camera.Move(g_translation_speed * timeDiff / 10);
         }
         else if (g_key['s'] || g_key['S']) {
-            g_camera.Move(-g_translation_speed);
+            g_camera.Move(-g_translation_speed * timeDiff / 10);
         }
         if (g_key['a'] || g_key['A']) {
-            g_camera.Strafe(g_translation_speed);
+            g_camera.Strafe(g_translation_speed * timeDiff / 10);
         }
         else if (g_key['d'] || g_key['D']) {
-            g_camera.Strafe(-g_translation_speed);
+            g_camera.Strafe(-g_translation_speed * timeDiff / 10);
         }
         if (g_mouse_left_down) {
-            g_camera.Fly(-2 * g_translation_speed);
+            g_camera.Fly(-2 * g_translation_speed * timeDiff / 10);
         }
         else if (g_mouse_right_down) {
-            g_camera.Fly(2 * g_translation_speed);
+            g_camera.Fly(2 * g_translation_speed * timeDiff / 10);
         }
 
         if (g_special_key[0]) {
-            g_camera.RotatePitch(-g_rotation_speed * g_keyboard_rotation_multiplier);
+            g_camera.RotatePitch(-g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
         }
         else if (g_special_key[1]) {
-            g_camera.RotatePitch(g_rotation_speed * g_keyboard_rotation_multiplier);
+            g_camera.RotatePitch(g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
         }
         if (g_special_key[2]) {
-            g_camera.RotateYaw(-g_rotation_speed * g_keyboard_rotation_multiplier);
+            g_camera.RotateYaw(-g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
         }
         else if (g_special_key[3]) {
-            g_camera.RotateYaw(g_rotation_speed * g_keyboard_rotation_multiplier);
+            g_camera.RotateYaw(g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
         }
     }
 
