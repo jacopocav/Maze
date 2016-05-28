@@ -20,9 +20,6 @@ bool GlutUtils::g_mouse_right_down = false;
 bool GlutUtils::just_warped = false;
 
 float GlutUtils::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-float GlutUtils::ambient_light[4] = {0.8f, 0.8f, 0.8f, 1.0f};
-float GlutUtils::diffuse_light[4] = {1.5f, 1.5f, 1.5f, 1.0f};
-float GlutUtils::specular_light[4] = {2.0f, 2.0f, 2.0f, 1.0f};
 
 const float GlutUtils::g_translation_speed = 0.001;
 const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
@@ -31,9 +28,9 @@ int GlutUtils::max_draw_distance = 15;
 
 GLuint *GlutUtils::textureIDs = new GLuint[3];
 
-GLubyte *GlutUtils::floorTexture = TextureUtils::ReadFromBMP("res/lux_floor.bmp");
+GLubyte *GlutUtils::floorTexture = TextureUtils::ReadFromBMP("res/alt_floor.bmp");
 GLubyte *GlutUtils::wallTexture = TextureUtils::ReadFromBMP("res/lux_wall.bmp");
-GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/lux_ceil.bmp");
+GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/alt_ceil2.bmp");
 
 void GlutUtils::Init() {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -56,7 +53,6 @@ void GlutUtils::Init() {
     glutSpecialUpFunc(GlutUtils::KeyboardSpecialUp);
     glutTimerFunc(16, GlutUtils::Timer, 0);
 
-
     // Configurazione camera
     glMatrixMode(GL_PROJECTION);
     glEnable(GL_DEPTH_TEST);
@@ -74,6 +70,10 @@ void GlutUtils::Init() {
 
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
+
+    float ambient_light[4] = {0.8f, 0.8f, 0.8f, 1.0f};
+    float diffuse_light[4] = {1.5f, 1.5f, 1.5f, 1.0f};
+    float specular_light[4] = {2.0f, 2.0f, 2.0f, 1.0f};
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
@@ -104,7 +104,7 @@ void GlutUtils::Init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 1024, 1024, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 512, 512, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
 
     glBindTexture(GL_TEXTURE_2D, textureIDs[2]);
 

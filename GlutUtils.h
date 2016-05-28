@@ -58,9 +58,6 @@ private:
     static bool just_warped;
 
     static float light_pos[4];
-    static float ambient_light[4];
-    static float diffuse_light[4];
-    static float specular_light[4];
 
     static int max_draw_distance;
 
