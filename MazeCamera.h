@@ -18,11 +18,10 @@ public:
 
     virtual void Fly(float incr);
 
+    coordinates glCoordToMaze();
 
 private:
     Maze *m_maze;
-
-    coordinates glCoordToMaze();
 
     bool checkBounds();
 

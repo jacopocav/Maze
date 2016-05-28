@@ -25,11 +25,10 @@ float GlutUtils::ambient_light[4] = {0.8f, 0.8f, 0.8f, 1.0f};
 float GlutUtils::diffuse_light[4] = {1.5f, 1.5f, 1.5f, 1.0f};
 float GlutUtils::specular_light[4] = {2.0f, 2.0f, 2.0f, 1.0f};
 
-float GlutUtils::specular_material[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-
-const float GlutUtils::g_translation_speed = 0.01;
+const float GlutUtils::g_translation_speed = 0.001;
 const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
-const float GlutUtils::g_keyboard_rotation_multiplier = 10.0;
+
+int GlutUtils::max_draw_distance = 15;
 
 GLuint *GlutUtils::textureIDs = new GLuint[3];
 
@@ -39,7 +38,7 @@ GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/lux_ceil.bmp");
 
 void GlutUtils::Init() {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(1024, 768);
     glutCreateWindow("SPAZIO per attivare/disattivare controlli FPS");
 
     glutIgnoreKeyRepeat(1);
@@ -67,7 +66,7 @@ void GlutUtils::Init() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
-    //glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
@@ -85,8 +84,8 @@ void GlutUtils::Init() {
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0f);
 
     //glMaterialfv(GL_FRONT, GL_SPECULAR, light_pos);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, specular_material);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, specular_material);
+    //glMaterialfv(GL_FRONT, GL_AMBIENT, specular_material);
+    //glMaterialfv(GL_FRONT, GL_DIFFUSE, specular_material);
     //glMateriali(GL_FRONT, GL_SHININESS, 56);
 
     glEnable(GL_TEXTURE_2D);
@@ -136,7 +135,7 @@ void GlutUtils::Display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
     glPopMatrix();
 
-    DrawMaze();
+    DrawMaze2();
 
     glutSwapBuffers();
 }
@@ -145,6 +144,38 @@ void GlutUtils::DrawMaze() {
     for (int i = 0; i < m_maze->getHeight(); i++) {
         for (int j = 0; j < m_maze->getWidth(); j++) {
             if (m_maze->get(i, j) == 0)
+                GlutUtils::DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
+            else {
+                bool winFloor = false;
+                if (i == m_maze->getHeight() - 2 && j == m_maze->getWidth() - 2) winFloor = true;
+                GlutUtils::DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
+                GlutUtils::DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
+
+            }
+        }
+    }
+}
+
+void GlutUtils::DrawMaze2() {
+    coordinates pos = g_camera.glCoordToMaze();
+    int x = pos.first, y = pos.second;
+
+    int min_x = 0, max_x = m_maze->getHeight(), min_y = 0, max_y = m_maze->getWidth();
+    
+    if((x - max_draw_distance) > min_x)
+        min_x = x - max_draw_distance;
+    if((x + max_draw_distance) < max_x)
+        max_x = x + max_draw_distance;
+    if((y - max_draw_distance) > min_y)
+        min_y = y - max_draw_distance;
+    if((y + max_draw_distance) < max_y)
+        max_y = y + max_draw_distance;
+    
+    
+    
+    for (int i = min_x; i < max_x; i++) {
+        for (int j = min_y; j < max_y; j++) {
+            if (!m_maze->get(i, j))
                 GlutUtils::DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
             else {
                 bool winFloor = false;
@@ -168,7 +199,7 @@ void GlutUtils::Reshape(int w, int h) {
     glLoadIdentity();
 
     //set the perspective (angle of sight, width, height, ,depth)
-    gluPerspective(45, (GLfloat) w / (GLfloat) h, 0.001, 50.0);
+    gluPerspective(45, (GLfloat) w / (GLfloat) h, 0.001, 10.0);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -190,8 +221,6 @@ void GlutUtils::Keyboard(unsigned char key, int x, int y) {
         }
     }
 
-    if (glutGetModifiers() == GLUT_ACTIVE_SHIFT) {
-    }
 
     g_key[key] = true;
 }
@@ -242,39 +271,39 @@ void GlutUtils::Timer(int value) {
     time = newTime;
     if (g_fps_mode) {
         if (g_key['w'] || g_key['W']) {
-            g_camera.Move(g_translation_speed * timeDiff / 10);
+            g_camera.Move(g_translation_speed * timeDiff);
         }
         else if (g_key['s'] || g_key['S']) {
-            g_camera.Move(-g_translation_speed * timeDiff / 10);
+            g_camera.Move(-g_translation_speed * timeDiff);
         }
         if (g_key['a'] || g_key['A']) {
-            g_camera.Strafe(g_translation_speed * timeDiff / 10);
+            g_camera.Strafe(g_translation_speed * timeDiff);
         }
         else if (g_key['d'] || g_key['D']) {
-            g_camera.Strafe(-g_translation_speed * timeDiff / 10);
+            g_camera.Strafe(-g_translation_speed * timeDiff);
         }
         if (g_mouse_left_down) {
-            g_camera.Fly(-2 * g_translation_speed * timeDiff / 10);
+            g_camera.Fly(-2 * g_translation_speed * timeDiff);
         }
         else if (g_mouse_right_down) {
-            g_camera.Fly(2 * g_translation_speed * timeDiff / 10);
+            g_camera.Fly(2 * g_translation_speed * timeDiff);
         }
 
         if (g_special_key[0]) {
-            g_camera.RotatePitch(-g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
+            g_camera.RotatePitch(-g_rotation_speed * timeDiff);
         }
         else if (g_special_key[1]) {
-            g_camera.RotatePitch(g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
+            g_camera.RotatePitch(g_rotation_speed * timeDiff);
         }
         if (g_special_key[2]) {
-            g_camera.RotateYaw(-g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
+            g_camera.RotateYaw(-g_rotation_speed * timeDiff);
         }
         else if (g_special_key[3]) {
-            g_camera.RotateYaw(g_rotation_speed * g_keyboard_rotation_multiplier * timeDiff / 10);
+            g_camera.RotateYaw(g_rotation_speed * timeDiff);
         }
     }
 
-    glutTimerFunc(1, Timer, 0);
+    glutTimerFunc(16, Timer, 0);
 }
 
 void GlutUtils::Idle() {
@@ -301,7 +330,6 @@ void GlutUtils::Mouse(int button, int state, int x, int y) {
 }
 
 void GlutUtils::MouseMotion(int x, int y) {
-
     if (just_warped) {
         just_warped = false;
         return;

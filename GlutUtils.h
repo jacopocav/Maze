@@ -43,6 +43,7 @@ private:
     static void DrawCube(float x1, float x2, float y1, float y2, float z1, float z2);
 
     static void DrawMaze();
+    static void DrawMaze2();
 
     static void Cleanup();
 
@@ -55,6 +56,7 @@ private:
     static int g_viewport_height;
     static bool g_mouse_left_down;
     static bool g_mouse_right_down;
+    static bool g_shift_down;
     static bool just_warped;
 
     static float light_pos[4];
@@ -63,6 +65,8 @@ private:
     static float specular_light[4];
 
     static float specular_material[4];
+
+    static int max_draw_distance;
 
     static GLubyte *wallTexture;
     static GLubyte *floorTexture;
