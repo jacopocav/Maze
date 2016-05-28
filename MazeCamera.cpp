@@ -10,7 +10,6 @@
 
 void MazeCamera::Move(float incr) {
     float lx = cosf(m_yaw) * cosf(m_pitch);
-    //float ly = sinf(m_pitch);
     float lz = sinf(m_yaw) * cosf(m_pitch);
 
     float old_x = m_x;
@@ -84,7 +83,7 @@ void MazeCamera::checkWinCondition() {
     auto mazeCoord = glCoordToMaze();
     coordinates winCell(m_maze->getHeight() - 2, m_maze->getWidth() - 2);
 
-    if (mazeCoord == winCell){
+    if (mazeCoord == winCell) {
         glutSetWindowTitle("HAI VINTO!!!");
         GlutUtils::SetFPSMode(false);
     }

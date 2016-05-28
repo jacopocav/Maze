@@ -4,9 +4,8 @@
 
 #include "GlutUtils.h"
 #include "TextureUtils.h"
-#include <GL/glut.h>
 
-Maze *GlutUtils::m_maze = MazeGenerator::generateMaze(65,65);
+Maze *GlutUtils::m_maze = MazeGenerator::generateMaze(65, 65);
 MazeCamera GlutUtils::g_camera(m_maze);
 bool GlutUtils::g_key[256] = {};
 bool GlutUtils::g_special_key[4] = {};
@@ -145,18 +144,17 @@ void GlutUtils::DrawMaze() {
     int x = pos.first, y = pos.second;
 
     int min_x = 0, max_x = m_maze->getHeight(), min_y = 0, max_y = m_maze->getWidth();
-    
-    if((x - max_draw_distance) > min_x)
+
+    if ((x - max_draw_distance) > min_x)
         min_x = x - max_draw_distance;
-    if((x + max_draw_distance) < max_x)
+    if ((x + max_draw_distance) < max_x)
         max_x = x + max_draw_distance;
-    if((y - max_draw_distance) > min_y)
+    if ((y - max_draw_distance) > min_y)
         min_y = y - max_draw_distance;
-    if((y + max_draw_distance) < max_y)
+    if ((y + max_draw_distance) < max_y)
         max_y = y + max_draw_distance;
-    
-    
-    
+
+
     for (int i = min_x; i < max_x; i++) {
         for (int j = min_y; j < max_y; j++) {
             if (!m_maze->get(i, j))
@@ -187,7 +185,7 @@ void GlutUtils::Reshape(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void GlutUtils::Keyboard(unsigned char key, int x, int y) {
+void GlutUtils::Keyboard(unsigned char key, int, int) {
     if (key == 27) {
         Cleanup();
         exit(0);
@@ -209,11 +207,11 @@ void GlutUtils::Keyboard(unsigned char key, int x, int y) {
     g_key[key] = true;
 }
 
-void GlutUtils::KeyboardUp(unsigned char key, int x, int y) {
+void GlutUtils::KeyboardUp(unsigned char key, int, int) {
     g_key[key] = false;
 }
 
-void GlutUtils::KeyboardSpecial(int key, int x, int y) {
+void GlutUtils::KeyboardSpecial(int key, int, int) {
     switch (key) {
         case GLUT_KEY_UP:
             g_special_key[0] = true;
@@ -227,10 +225,12 @@ void GlutUtils::KeyboardSpecial(int key, int x, int y) {
         case GLUT_KEY_RIGHT:
             g_special_key[3] = true;
             break;
+        default:
+            return;
     }
 }
 
-void GlutUtils::KeyboardSpecialUp(int key, int x, int y) {
+void GlutUtils::KeyboardSpecialUp(int key, int, int) {
     switch (key) {
         case GLUT_KEY_UP:
             g_special_key[0] = false;
@@ -244,12 +244,14 @@ void GlutUtils::KeyboardSpecialUp(int key, int x, int y) {
         case GLUT_KEY_RIGHT:
             g_special_key[3] = false;
             break;
+        default:
+            return;
     }
 }
 
 int time = glutGet(GLUT_ELAPSED_TIME);
 
-void GlutUtils::Timer(int value) {
+void GlutUtils::Timer(int) {
     int newTime = glutGet(GLUT_ELAPSED_TIME);
     int timeDiff = newTime - time;
     time = newTime;
@@ -294,7 +296,7 @@ void GlutUtils::Idle() {
     Display();
 }
 
-void GlutUtils::Mouse(int button, int state, int x, int y) {
+void GlutUtils::Mouse(int button, int state, int, int) {
     if (state == GLUT_DOWN) {
         if (button == GLUT_LEFT_BUTTON) {
             g_mouse_left_down = true;

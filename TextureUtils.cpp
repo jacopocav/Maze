@@ -28,10 +28,10 @@ GLubyte *TextureUtils::ReadFromBMP(std::string path) {
         return nullptr;
     }
 
-    dataPos    = *(int*)&(header[0x0A]);
-    imageSize  = *(int*)&(header[0x22]);
-    width      = *(int*)&(header[0x12]);
-    height     = *(int*)&(header[0x16]);
+    dataPos    = *(unsigned*)&(header[0x0A]);
+    imageSize  = *(unsigned*)&(header[0x22]);
+    width      = *(unsigned*)&(header[0x12]);
+    height     = *(unsigned*)&(header[0x16]);
 
     // Some BMP files are misformatted, guess missing information
     if (imageSize==0)    imageSize=width*height*3; // 3 : one byte for each Red, Green and Blue component

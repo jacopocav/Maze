@@ -55,15 +55,12 @@ private:
     static int g_viewport_height;
     static bool g_mouse_left_down;
     static bool g_mouse_right_down;
-    static bool g_shift_down;
     static bool just_warped;
 
     static float light_pos[4];
     static float ambient_light[4];
     static float diffuse_light[4];
     static float specular_light[4];
-
-    static float specular_material[4];
 
     static int max_draw_distance;
 
@@ -76,5 +73,4 @@ private:
     // Costanti che definiscono la velocità di movimento/rotazione
     static const float g_translation_speed;
     static const float g_rotation_speed;
-    static const float g_keyboard_rotation_multiplier;
 };

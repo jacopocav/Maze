@@ -5,113 +5,101 @@
 const float Camera::M_PI = 3.14159265358979323846f;
 const float Camera::M_PI_2 = 1.57079632679f;
 
-void Camera::Init()
-{
-	m_yaw = 0.0;
-	m_pitch = 0.0;
+void Camera::Init() {
+    m_yaw = 0.0;
+    m_pitch = 0.0;
 
-	SetPos(0, 0, 0);
+    SetPos(0, 0, 0);
 }
 
-void Camera::Refresh()
-{
-	// Camera parameter according to Riegl's co-ordinate system
-	// x/y for flat, z for height
-	m_lx = cos(m_yaw) * cos(m_pitch);
-	m_ly = sin(m_pitch);
-	m_lz = sin(m_yaw) * cos(m_pitch);
+void Camera::Refresh() {
+    // Camera parameter according to Riegl's co-ordinate system
+    // x/y for flat, z for height
+    m_lx = cosf(m_yaw) * cosf(m_pitch);
+    m_ly = sinf(m_pitch);
+    m_lz = sinf(m_yaw) * cosf(m_pitch);
 
-	m_strafe_lx = cos(m_yaw - M_PI_2);
-	m_strafe_lz = sin(m_yaw - M_PI_2);
+    m_strafe_lx = cosf(m_yaw - M_PI_2);
+    m_strafe_lz = sinf(m_yaw - M_PI_2);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(m_x, m_y, m_z, m_x + m_lx, m_y + m_ly, m_z + m_lz, 0.0,1.0,0.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(m_x, m_y, m_z, m_x + m_lx, m_y + m_ly, m_z + m_lz, 0.0, 1.0, 0.0);
 
 }
 
-void Camera::SetPos(float x, float y, float z)
-{
-	m_x = x;
-	m_y = y;
-	m_z =z;
+void Camera::SetPos(float x, float y, float z) {
+    m_x = x;
+    m_y = y;
+    m_z = z;
 
-	Refresh();
+    Refresh();
 }
 
-void Camera::GetPos(float &x, float &y, float &z)
-{
+void Camera::GetPos(float &x, float &y, float &z) {
     x = m_x;
     y = m_y;
     z = m_z;
 }
 
-void Camera::GetDirectionVector(float &x, float &y, float &z)
-{
+void Camera::GetDirectionVector(float &x, float &y, float &z) {
     x = m_lx;
     y = m_ly;
     z = m_lz;
 }
 
-void Camera::Move(float incr)
-{
-    float lx = cos(m_yaw)*cos(m_pitch);
-    float ly = sin(m_pitch);
-    float lz = sin(m_yaw)*cos(m_pitch);
+void Camera::Move(float incr) {
+    float lx = cosf(m_yaw) * cosf(m_pitch);
+    float ly = sinf(m_pitch);
+    float lz = sinf(m_yaw) * cosf(m_pitch);
 
-	m_x = m_x + incr*lx;
-	//m_y = m_y + incr*ly;
-	m_z = m_z + incr*lz;
+    m_x = m_x + incr * lx;
+    m_y = m_y + incr*ly;
+    m_z = m_z + incr * lz;
 
-	Refresh();
+    Refresh();
 }
 
-void Camera::Strafe(float incr)
-{
-	m_x = m_x + incr*m_strafe_lx;
-	m_z = m_z + incr*m_strafe_lz;
+void Camera::Strafe(float incr) {
+    m_x = m_x + incr * m_strafe_lx;
+    m_z = m_z + incr * m_strafe_lz;
 
-	Refresh();
+    Refresh();
 }
 
-void Camera::Fly(float incr)
-{
-	m_y = m_y + incr;
+void Camera::Fly(float incr) {
+    m_y = m_y + incr;
 
-	Refresh();
+    Refresh();
 }
 
-void Camera::RotateYaw(float angle)
-{
-	m_yaw += angle;
+void Camera::RotateYaw(float angle) {
+    m_yaw += angle;
 
-	Refresh();
+    Refresh();
 }
 
-void Camera::RotatePitch(float angle)
-{
-    const float limit = 89.0 * M_PI / 180.0;
+void Camera::RotatePitch(float angle) {
+    const float limit = 60.0f * M_PI / 180.0f;
 
-	m_pitch -= angle;
+    m_pitch -= angle;
 
-    if(m_pitch < -limit)
+    if (m_pitch < -limit)
         m_pitch = -limit;
 
-    if(m_pitch > limit)
+    if (m_pitch > limit)
         m_pitch = limit;
 
-	Refresh();
+    Refresh();
 }
 
-void Camera::SetYaw(float angle)
-{
-	m_yaw = angle;
+void Camera::SetYaw(float angle) {
+    m_yaw = angle;
 
-	Refresh();
+    Refresh();
 }
 
-void Camera::SetPitch(float angle)
-{
+void Camera::SetPitch(float angle) {
     m_pitch = angle;
 
     Refresh();

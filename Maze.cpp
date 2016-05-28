@@ -27,7 +27,7 @@ Maze::Maze(unsigned height, unsigned width) {
 }
 
 bool Maze::get(coordinates coord) const {
-    get(coord.first, coord.second);
+    return get(coord.first, coord.second);
 }
 
 void Maze::set(coordinates coord, bool val) {
