@@ -135,28 +135,12 @@ void GlutUtils::Display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
     glPopMatrix();
 
-    DrawMaze2();
+    DrawMaze();
 
     glutSwapBuffers();
 }
 
 void GlutUtils::DrawMaze() {
-    for (int i = 0; i < m_maze->getHeight(); i++) {
-        for (int j = 0; j < m_maze->getWidth(); j++) {
-            if (m_maze->get(i, j) == 0)
-                GlutUtils::DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
-            else {
-                bool winFloor = false;
-                if (i == m_maze->getHeight() - 2 && j == m_maze->getWidth() - 2) winFloor = true;
-                GlutUtils::DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
-                GlutUtils::DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
-
-            }
-        }
-    }
-}
-
-void GlutUtils::DrawMaze2() {
     coordinates pos = g_camera.glCoordToMaze();
     int x = pos.first, y = pos.second;
 
