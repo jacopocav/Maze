@@ -9,7 +9,7 @@
 #include "MazeGenerator.h"
 #include "MazeCamera.h"
 
-class GlutUtils {
+class GlutFunctions {
 public:
     static void Init();
 
@@ -33,8 +33,6 @@ public:
 
     static void Idle();
 
-    static void SetFPSMode(bool mode);
-
 private:
     static void InitGame();
     static void UpdateWindowTitle(int timeDiff);
@@ -56,8 +54,6 @@ private:
     static bool just_warped;
 
     static const float light_pos[4];
-
-    static const int max_draw_distance;
 
     static GLubyte *wallTexture;
     static GLubyte *floorTexture;

@@ -18,7 +18,7 @@ public:
 
     virtual void Fly(float incr);
 
-    coordinates glCoordToMaze();
+    coordinates getMazeCoordinates();
 
     void SetMaze(Maze* maze);
 
@@ -26,7 +26,5 @@ private:
     Maze *m_maze;
 
     bool checkBounds();
-
-    void checkWinCondition();
 
 };

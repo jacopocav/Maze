@@ -3,41 +3,32 @@
 //
 #include <sstream>
 #include <iomanip>
-#include "GlutUtils.h"
+#include "GlutFunctions.h"
 #include "TextureUtils.h"
 #include "DrawingFunctions.h"
 
 
-Maze *GlutUtils::m_maze;
-MazeCamera GlutUtils::g_camera(nullptr);
-int GlutUtils::currTime;
-int GlutUtils::timeLimit;
-bool GlutUtils::g_key[256] = {};
-bool GlutUtils::g_special_key[4] = {};
-bool GlutUtils::g_fps_mode = false;
-int GlutUtils::g_viewport_width = 0;
-int GlutUtils::g_viewport_height = 0;
-bool GlutUtils::g_mouse_left_down = false;
-bool GlutUtils::g_mouse_right_down = false;
+Maze *GlutFunctions::m_maze;
+MazeCamera GlutFunctions::g_camera(nullptr);
+int GlutFunctions::currTime;
+int GlutFunctions::timeLimit;
+bool GlutFunctions::g_key[256] = {};
+bool GlutFunctions::g_special_key[4] = {};
+bool GlutFunctions::g_fps_mode = false;
+int GlutFunctions::g_viewport_width = 0;
+int GlutFunctions::g_viewport_height = 0;
+bool GlutFunctions::g_mouse_left_down = false;
+bool GlutFunctions::g_mouse_right_down = false;
 
-// This variable is hack to stop glutWarpPointer from triggering an event callback to Mouse(...)
-// This avoids it being called recursively and hanging up the event loop
-bool GlutUtils::just_warped = false;
+bool GlutFunctions::just_warped = false;
 
-const float GlutUtils::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-const float GlutUtils::g_translation_speed = 0.001;
-const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
+const float GlutFunctions::g_translation_speed = 0.001;
+const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
-const int GlutUtils::max_draw_distance = 15;
 
-GLuint *GlutUtils::textureIDs = new GLuint[3];
-
-GLubyte *GlutUtils::floorTexture = TextureUtils::ReadFromBMP("res/alt_floor.bmp");
-GLubyte *GlutUtils::wallTexture = TextureUtils::ReadFromBMP("res/lux_wall.bmp");
-GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/alt_ceil2.bmp");
-
-void GlutUtils::InitGame(){
+void GlutFunctions::InitGame(){
     if(m_maze != nullptr) delete m_maze;
     m_maze = MazeGenerator::generateMaze(65, 65);
 
@@ -50,7 +41,7 @@ void GlutUtils::InitGame(){
     currTime = glutGet(GLUT_ELAPSED_TIME);
 }
 
-void GlutUtils::Init() {
+void GlutFunctions::Init() {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1024, 768);
     glutCreateWindow("SPAZIO per attivare/disattivare controlli FPS");
@@ -59,17 +50,17 @@ void GlutUtils::Init() {
     glClearColor(0, 0, 0, 1.0f);
 
     // Assegnazione callback
-    glutDisplayFunc(GlutUtils::Display);
-    glutIdleFunc(GlutUtils::Idle);
-    glutReshapeFunc(GlutUtils::Reshape);
-    glutMouseFunc(GlutUtils::Mouse);
-    glutMotionFunc(GlutUtils::MouseMotion);
-    glutPassiveMotionFunc(GlutUtils::MouseMotion);
-    glutKeyboardFunc(GlutUtils::Keyboard);
-    glutKeyboardUpFunc(GlutUtils::KeyboardUp);
-    glutSpecialFunc(GlutUtils::KeyboardSpecial);
-    glutSpecialUpFunc(GlutUtils::KeyboardSpecialUp);
-    glutTimerFunc(16, GlutUtils::Timer, 0);
+    glutDisplayFunc(GlutFunctions::Display);
+    glutIdleFunc(GlutFunctions::Idle);
+    glutReshapeFunc(GlutFunctions::Reshape);
+    glutMouseFunc(GlutFunctions::Mouse);
+    glutMotionFunc(GlutFunctions::MouseMotion);
+    glutPassiveMotionFunc(GlutFunctions::MouseMotion);
+    glutKeyboardFunc(GlutFunctions::Keyboard);
+    glutKeyboardUpFunc(GlutFunctions::KeyboardUp);
+    glutSpecialFunc(GlutFunctions::KeyboardSpecial);
+    glutSpecialUpFunc(GlutFunctions::KeyboardSpecialUp);
+    glutTimerFunc(16, GlutFunctions::Timer, 0);
 
     // Configurazione camera
     glMatrixMode(GL_PROJECTION);
@@ -95,7 +86,7 @@ void GlutUtils::Init() {
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 2.0f);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.8f);
 
     float material[4] = {1,1,1,1};
     glMaterialfv(GL_FRONT, GL_SPECULAR, material);
@@ -105,28 +96,10 @@ void GlutUtils::Init() {
 
     glEnable(GL_TEXTURE_2D);
 
-    glGenTextures(3, textureIDs);
-    glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 1024, 1024, GL_RGB, GL_UNSIGNED_BYTE, wallTexture);
-
-
-    glBindTexture(GL_TEXTURE_2D, textureIDs[1]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 512, 512, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
-
-    glBindTexture(GL_TEXTURE_2D, textureIDs[2]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 512, 512, GL_RGB, GL_UNSIGNED_BYTE, ceilTexture);
+    TextureUtils::InitializeTextures(3);
+    TextureUtils::ReadFromBMP("res/alt_floor.bmp", 1, "floor");
+    TextureUtils::ReadFromBMP("res/lux_wall.bmp", 0, "wall");
+    TextureUtils::ReadFromBMP("res/alt_ceil2.bmp", 2, "ceil");
 
     InitGame();
 
@@ -134,7 +107,7 @@ void GlutUtils::Init() {
 }
 
 
-void GlutUtils::Display(void) {
+void GlutFunctions::Display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -152,15 +125,15 @@ void GlutUtils::Display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
     glPopMatrix();
 
-    coordinates pos = g_camera.glCoordToMaze();
+    coordinates pos = g_camera.getMazeCoordinates();
 
-    DrawingFunctions::DrawMaze(m_maze, pos.first, pos.second, textureIDs);
+    DrawingFunctions::DrawMaze(m_maze, pos.first, pos.second);
 
     glutSwapBuffers();
 }
 
 
-void GlutUtils::Reshape(int w, int h) {
+void GlutFunctions::Reshape(int w, int h) {
     g_viewport_width = w;
     g_viewport_height = h;
 
@@ -174,7 +147,7 @@ void GlutUtils::Reshape(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void GlutUtils::Keyboard(unsigned char key, int, int) {
+void GlutFunctions::Keyboard(unsigned char key, int, int) {
     if (key == 27) {
         Cleanup();
         exit(0);
@@ -196,11 +169,11 @@ void GlutUtils::Keyboard(unsigned char key, int, int) {
     g_key[key] = true;
 }
 
-void GlutUtils::KeyboardUp(unsigned char key, int, int) {
+void GlutFunctions::KeyboardUp(unsigned char key, int, int) {
     g_key[key] = false;
 }
 
-void GlutUtils::KeyboardSpecial(int key, int, int) {
+void GlutFunctions::KeyboardSpecial(int key, int, int) {
     switch (key) {
         case GLUT_KEY_UP:
             g_special_key[0] = true;
@@ -219,7 +192,7 @@ void GlutUtils::KeyboardSpecial(int key, int, int) {
     }
 }
 
-void GlutUtils::KeyboardSpecialUp(int key, int, int) {
+void GlutFunctions::KeyboardSpecialUp(int key, int, int) {
     switch (key) {
         case GLUT_KEY_UP:
             g_special_key[0] = false;
@@ -239,7 +212,7 @@ void GlutUtils::KeyboardSpecialUp(int key, int, int) {
 }
 
 
-void GlutUtils::Timer(int) {
+void GlutFunctions::Timer(int) {
     int newTime = glutGet(GLUT_ELAPSED_TIME);
     int timeDiff = newTime - currTime;
     currTime = newTime;
@@ -283,8 +256,8 @@ void GlutUtils::Timer(int) {
     glutTimerFunc(16, Timer, 0);
 }
 
-void GlutUtils::UpdateWindowTitle(int timeDiff){
-    coordinates pos = g_camera.glCoordToMaze();
+void GlutFunctions::UpdateWindowTitle(int timeDiff){
+    coordinates pos = g_camera.getMazeCoordinates();
 
     timeLimit -= timeDiff;
 
@@ -313,11 +286,11 @@ void GlutUtils::UpdateWindowTitle(int timeDiff){
     }
 }
 
-void GlutUtils::Idle() {
+void GlutFunctions::Idle() {
     Display();
 }
 
-void GlutUtils::Mouse(int button, int state, int, int) {
+void GlutFunctions::Mouse(int button, int state, int, int) {
     if (state == GLUT_DOWN) {
         if (button == GLUT_LEFT_BUTTON) {
             g_mouse_left_down = true;
@@ -336,7 +309,7 @@ void GlutUtils::Mouse(int button, int state, int, int) {
     }
 }
 
-void GlutUtils::MouseMotion(int x, int y) {
+void GlutFunctions::MouseMotion(int x, int y) {
     if (just_warped) {
         just_warped = false;
         return;
@@ -360,15 +333,8 @@ void GlutUtils::MouseMotion(int x, int y) {
     }
 }
 
-void GlutUtils::SetFPSMode(bool mode) {
-    g_fps_mode = mode;
-}
-
-void GlutUtils::Cleanup() {
+void GlutFunctions::Cleanup() {
     delete m_maze;
-    delete wallTexture;
-    delete floorTexture;
-    delete ceilTexture;
-    delete textureIDs;
+    TextureUtils::ResetTextures();
 
 }

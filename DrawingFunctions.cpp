@@ -4,11 +4,12 @@
 
 #include <GL/gl.h>
 #include "DrawingFunctions.h"
+#include "TextureUtils.h"
 
 int DrawingFunctions::draw_distance = 15;
 
-void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor, GLuint texture) {
-    glBindTexture(GL_TEXTURE_2D, texture);
+void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
+    TextureUtils::BindTexture("floor");
     glBegin(GL_QUADS);
 
     float winColor[] = {0,1,0,1};
@@ -35,8 +36,8 @@ void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z
     glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
 }
 
-void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor, GLuint texture) {
-    glBindTexture(GL_TEXTURE_2D, texture);
+void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
+    TextureUtils::BindTexture("ceil");
 
     glBegin(GL_QUADS);
     float winColor[] = {0,1,0,1};
@@ -64,11 +65,11 @@ void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2
     glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
 }
 
-void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2, GLuint texture) {
+void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    TextureUtils::BindTexture("wall");
     glBegin(GL_QUADS);
-    glColor3f(1.0, 1.0, 1.0); // Colore con texture
+    glColor3f(1.0, 1.0, 1.0);
     //glColor3f(1,0,0);
     glNormal3f(0, 0, -1);
     glTexCoord2f(0, 0);
@@ -126,11 +127,11 @@ void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1
 
 
     glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
+    TextureUtils::BindTexture("0");
 
 }
 
-void DrawingFunctions::DrawMaze(Maze* maze, int pos_x, int pos_y, GLuint *textures) {
+void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
     int min_x = 0, max_x = maze->getHeight(), min_y = 0, max_y = maze->getWidth();
 
     if ((pos_x - draw_distance) > min_x)
@@ -146,12 +147,12 @@ void DrawingFunctions::DrawMaze(Maze* maze, int pos_x, int pos_y, GLuint *textur
     for (int i = min_x; i < max_x; i++) {
         for (int j = min_y; j < max_y; j++) {
             if (!maze->get(i, j))
-                DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1), textures[0]);
+                DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
             else {
                 bool winFloor = false;
                 if (i == maze->getHeight() - 2 && j == maze->getWidth() - 2) winFloor = true;
-                DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor, textures[1]);
-                DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor, textures[2]);
+                DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
+                DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
 
             }
         }
