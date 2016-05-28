@@ -36,6 +36,8 @@ public:
     static void SetFPSMode(bool mode);
 
 private:
+    static void InitGame();
+    static void UpdateWindowTitle(int timeDiff);
 
     static void DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor = false);
     static void DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor = false);
@@ -45,6 +47,9 @@ private:
     static void DrawMaze();
 
     static void Cleanup();
+
+    static int currTime;
+    static int timeLimit;
 
     static Maze *m_maze;
     static MazeCamera g_camera;

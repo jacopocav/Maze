@@ -25,6 +25,7 @@
           <root url="file://C:/MinGW/lib/gcc/mingw32/4.9.3/include-fixed" />
           <root url="file://C:/MinGW/mingw32/include" />
           <root url="file://C:/MinGW/include" />
+          <root url="file://C:/Program Files (x86)/OpenAL 1.1 SDK/include" />
           <root url="file://C:/freeglut/include" />
         </CLASSES>
         <SOURCES>
@@ -32,6 +33,7 @@
           <root url="file://C:/MinGW/lib/gcc/mingw32/4.9.3/include-fixed" />
           <root url="file://C:/MinGW/mingw32/include" />
           <root url="file://C:/MinGW/include" />
+          <root url="file://C:/Program Files (x86)/OpenAL 1.1 SDK/include" />
           <root url="file://C:/freeglut/include" />
         </SOURCES>
       </library>

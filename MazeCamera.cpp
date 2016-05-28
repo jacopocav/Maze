@@ -25,14 +25,6 @@ void MazeCamera::Move(float incr) {
         m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.01f * lz;
     }
 
-    std::string pos("x:[");
-    pos.append(std::to_string(mazeCoord.first));
-    pos.append("] z:[");
-    pos.append(std::to_string(mazeCoord.second));
-    pos.append("]");
-
-    glutSetWindowTitle(pos.c_str());
-
     Refresh();
     checkWinCondition();
 }
@@ -51,20 +43,16 @@ void MazeCamera::Strafe(float incr) {
         m_z = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.01f * m_strafe_lz;
     }
 
-    std::string pos("x:[");
-    pos.append(std::to_string(mazeCoord.first));
-    pos.append("] z:[");
-    pos.append(std::to_string(mazeCoord.second));
-    pos.append("]");
-
-    glutSetWindowTitle(pos.c_str());
-
     Refresh();
     checkWinCondition();
 }
 
 void MazeCamera::Fly(float incr) {
     Camera::Fly(incr);
+}
+
+void MazeCamera::SetMaze(Maze *maze) {
+    m_maze = maze;
 }
 
 coordinates MazeCamera::glCoordToMaze() {

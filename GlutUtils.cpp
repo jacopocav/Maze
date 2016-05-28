@@ -1,12 +1,16 @@
 //
 // Created by Admin on 24/05/2016.
 //
-
+#include <sstream>
+#include <iomanip>
 #include "GlutUtils.h"
 #include "TextureUtils.h"
 
-Maze *GlutUtils::m_maze = MazeGenerator::generateMaze(65, 65);
-MazeCamera GlutUtils::g_camera(m_maze);
+
+Maze *GlutUtils::m_maze;
+MazeCamera GlutUtils::g_camera(nullptr);
+int GlutUtils::currTime;
+int GlutUtils::timeLimit;
 bool GlutUtils::g_key[256] = {};
 bool GlutUtils::g_special_key[4] = {};
 bool GlutUtils::g_fps_mode = false;
@@ -31,6 +35,19 @@ GLuint *GlutUtils::textureIDs = new GLuint[3];
 GLubyte *GlutUtils::floorTexture = TextureUtils::ReadFromBMP("res/alt_floor.bmp");
 GLubyte *GlutUtils::wallTexture = TextureUtils::ReadFromBMP("res/lux_wall.bmp");
 GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/alt_ceil2.bmp");
+
+void GlutUtils::InitGame(){
+    if(m_maze != nullptr) delete m_maze;
+    m_maze = MazeGenerator::generateMaze(13, 13);
+
+    g_camera.SetMaze(m_maze);
+    g_camera.SetPos(0,0,0);
+    g_camera.SetPitch(0);
+    g_camera.SetYaw(0);
+
+    timeLimit = 3 * 60 * 1000;
+    currTime = glutGet(GLUT_ELAPSED_TIME);
+}
 
 void GlutUtils::Init() {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -61,7 +78,6 @@ void GlutUtils::Init() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
-    //glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
@@ -78,8 +94,6 @@ void GlutUtils::Init() {
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
-    //glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 60.0);
-    //glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 10.0);
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 2.0f);
 
     float material[4] = {1,1,1,1};
@@ -112,6 +126,8 @@ void GlutUtils::Init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 512, 512, GL_RGB, GL_UNSIGNED_BYTE, ceilTexture);
+
+    InitGame();
 
     glutMainLoop();
 }
@@ -250,12 +266,11 @@ void GlutUtils::KeyboardSpecialUp(int key, int, int) {
     }
 }
 
-int time = glutGet(GLUT_ELAPSED_TIME);
 
 void GlutUtils::Timer(int) {
     int newTime = glutGet(GLUT_ELAPSED_TIME);
-    int timeDiff = newTime - time;
-    time = newTime;
+    int timeDiff = newTime - currTime;
+    currTime = newTime;
     if (g_fps_mode) {
         if (g_key['w'] || g_key['W']) {
             g_camera.Move(g_translation_speed * timeDiff);
@@ -288,9 +303,42 @@ void GlutUtils::Timer(int) {
         else if (g_special_key[3]) {
             g_camera.RotateYaw(g_rotation_speed * timeDiff);
         }
+
+        UpdateWindowTitle(timeDiff);
     }
 
+
     glutTimerFunc(16, Timer, 0);
+}
+
+void GlutUtils::UpdateWindowTitle(int timeDiff){
+    coordinates pos = g_camera.glCoordToMaze();
+
+    timeLimit -= timeDiff;
+
+    std::stringstream windowTitle;
+
+    if(timeLimit <= 0 || (pos.first == m_maze->getHeight() - 2 && pos.second == m_maze->getWidth() - 2)){
+        if(timeLimit <= 0) windowTitle << "Tempo Scaduto! Hai perso!";
+        else windowTitle << "Hai vinto!!!";
+        windowTitle << " Premi SPAZIO per cominciare una nuova partita.";
+
+        g_fps_mode = false;
+        glutSetWindowTitle(windowTitle.str().c_str());
+        InitGame();
+    } else {
+        windowTitle << "Tempo: ";
+        windowTitle << std::setfill('0') << std::setw(2) << timeLimit / 60000;
+        windowTitle << ":";
+        windowTitle << std::setfill('0') << std::setw(2) << (timeLimit / 1000) % 60;
+        windowTitle << ":";
+        windowTitle << std::setfill('0') << std::setw(3) << timeLimit % 1000;
+
+        windowTitle << "  Posizione: (";
+        windowTitle << pos.first << ", ";
+        windowTitle << pos.second << ")";
+        glutSetWindowTitle(windowTitle.str().c_str());
+    }
 }
 
 void GlutUtils::Idle() {
@@ -357,8 +405,14 @@ void GlutUtils::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool
     glBindTexture(GL_TEXTURE_2D, textureIDs[1]);
     glBegin(GL_QUADS);
 
-    if (winFloor) glColor3f(0.0, 1.0, 0.0);
-    else glColor3f(0.5, 0.5, 0.5);
+    float winColor[] = {0,1,0,1};
+    float color[] = {1,1,1,1};
+
+    if (winFloor) {
+        glMaterialfv(GL_FRONT, GL_AMBIENT, winColor);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, winColor);
+
+    }
     glNormal3f(0, 1, 0);
     glTexCoord2f(1, 0);
     glVertex3f(x2, y1, z1);
@@ -371,14 +425,22 @@ void GlutUtils::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool
 
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, color);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
 }
 
 void GlutUtils::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
     glBindTexture(GL_TEXTURE_2D, textureIDs[2]);
 
     glBegin(GL_QUADS);
-    if (winFloor) glColor3f(0.0, 1.0, 0.0);
-    else glColor3f(0.5, 0.5, 0.5);
+    float winColor[] = {0,1,0,1};
+    float color[] = {1,1,1,1};
+
+    if (winFloor) {
+        glMaterialfv(GL_FRONT, GL_AMBIENT, winColor);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, winColor);
+
+    }
     glNormal3f(0, -1, 0);
     glTexCoord2f(1, 0);
     glVertex3f(x1, y1, z1);
@@ -391,6 +453,9 @@ void GlutUtils::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool 
 
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT, color);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
 }
 
 void GlutUtils::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {

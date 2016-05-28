@@ -20,6 +20,8 @@ public:
 
     coordinates glCoordToMaze();
 
+    void SetMaze(Maze* maze);
+
 private:
     Maze *m_maze;
 
