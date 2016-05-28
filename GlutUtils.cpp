@@ -5,6 +5,7 @@
 #include <iomanip>
 #include "GlutUtils.h"
 #include "TextureUtils.h"
+#include "DrawingFunctions.h"
 
 
 Maze *GlutUtils::m_maze;
@@ -23,12 +24,12 @@ bool GlutUtils::g_mouse_right_down = false;
 // This avoids it being called recursively and hanging up the event loop
 bool GlutUtils::just_warped = false;
 
-float GlutUtils::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+const float GlutUtils::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 const float GlutUtils::g_translation_speed = 0.001;
 const float GlutUtils::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
-int GlutUtils::max_draw_distance = 15;
+const int GlutUtils::max_draw_distance = 15;
 
 GLuint *GlutUtils::textureIDs = new GLuint[3];
 
@@ -38,7 +39,7 @@ GLubyte *GlutUtils::ceilTexture = TextureUtils::ReadFromBMP("res/alt_ceil2.bmp")
 
 void GlutUtils::InitGame(){
     if(m_maze != nullptr) delete m_maze;
-    m_maze = MazeGenerator::generateMaze(13, 13);
+    m_maze = MazeGenerator::generateMaze(65, 65);
 
     g_camera.SetMaze(m_maze);
     g_camera.SetPos(0,0,0);
@@ -151,40 +152,11 @@ void GlutUtils::Display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
     glPopMatrix();
 
-    DrawMaze();
+    coordinates pos = g_camera.glCoordToMaze();
+
+    DrawingFunctions::DrawMaze(m_maze, pos.first, pos.second, textureIDs);
 
     glutSwapBuffers();
-}
-
-void GlutUtils::DrawMaze() {
-    coordinates pos = g_camera.glCoordToMaze();
-    int x = pos.first, y = pos.second;
-
-    int min_x = 0, max_x = m_maze->getHeight(), min_y = 0, max_y = m_maze->getWidth();
-
-    if ((x - max_draw_distance) > min_x)
-        min_x = x - max_draw_distance;
-    if ((x + max_draw_distance) < max_x)
-        max_x = x + max_draw_distance;
-    if ((y - max_draw_distance) > min_y)
-        min_y = y - max_draw_distance;
-    if ((y + max_draw_distance) < max_y)
-        max_y = y + max_draw_distance;
-
-
-    for (int i = min_x; i < max_x; i++) {
-        for (int j = min_y; j < max_y; j++) {
-            if (!m_maze->get(i, j))
-                GlutUtils::DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
-            else {
-                bool winFloor = false;
-                if (i == m_maze->getHeight() - 2 && j == m_maze->getWidth() - 2) winFloor = true;
-                GlutUtils::DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
-                GlutUtils::DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
-
-            }
-        }
-    }
 }
 
 
@@ -398,128 +370,5 @@ void GlutUtils::Cleanup() {
     delete floorTexture;
     delete ceilTexture;
     delete textureIDs;
-
-}
-
-void GlutUtils::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
-    glBindTexture(GL_TEXTURE_2D, textureIDs[1]);
-    glBegin(GL_QUADS);
-
-    float winColor[] = {0,1,0,1};
-    float color[] = {1,1,1,1};
-
-    if (winFloor) {
-        glMaterialfv(GL_FRONT, GL_AMBIENT, winColor);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, winColor);
-
-    }
-    glNormal3f(0, 1, 0);
-    glTexCoord2f(1, 0);
-    glVertex3f(x2, y1, z1);
-    glTexCoord2f(1, 1);
-    glVertex3f(x2, y1, z2);
-    glTexCoord2f(0, 1);
-    glVertex3f(x1, y1, z2);
-    glTexCoord2f(0, 0);
-    glVertex3f(x1, y1, z1);
-
-    glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, color);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
-}
-
-void GlutUtils::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
-    glBindTexture(GL_TEXTURE_2D, textureIDs[2]);
-
-    glBegin(GL_QUADS);
-    float winColor[] = {0,1,0,1};
-    float color[] = {1,1,1,1};
-
-    if (winFloor) {
-        glMaterialfv(GL_FRONT, GL_AMBIENT, winColor);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, winColor);
-
-    }
-    glNormal3f(0, -1, 0);
-    glTexCoord2f(1, 0);
-    glVertex3f(x1, y1, z1);
-    glTexCoord2f(1, 1);
-    glVertex3f(x1, y1, z2);
-    glTexCoord2f(0, 1);
-    glVertex3f(x2, y1, z2);
-    glTexCoord2f(0, 0);
-    glVertex3f(x2, y1, z1);
-
-    glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    glMaterialfv(GL_FRONT, GL_AMBIENT, color);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
-}
-
-void GlutUtils::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
-
-    glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
-    glBegin(GL_QUADS);
-    glColor3f(1.0, 1.0, 1.0); // Colore con texture
-    //glColor3f(1,0,0);
-    glNormal3f(0, 0, -1);
-    glTexCoord2f(0, 0);
-    glVertex3f(x1, y1, z1);
-    glTexCoord2f(1, 0);
-    glVertex3f(x2, y1, z1);
-    glTexCoord2f(1, 1);
-    glVertex3f(x2, y2, z1);
-    glTexCoord2f(0, 1);
-    glVertex3f(x1, y2, z1);
-
-    //glColor3f(0,1,0);
-    glNormal3f(0, 0, 1);
-    glTexCoord2f(1, 0);
-    glVertex3f(x1, y1, z2);
-    glTexCoord2f(1, 1);
-    glVertex3f(x1, y2, z2);
-    glTexCoord2f(0, 1);
-    glVertex3f(x2, y2, z2);
-    glTexCoord2f(0, 0);
-    glVertex3f(x2, y1, z2);
-
-    //glColor3f(0,0,1);
-    glNormal3f(0, 1, 0);
-    //glTexCoord2f(0, 0);
-    glVertex3f(x1, y2, z1);
-    //glTexCoord2f(1, 0);
-    glVertex3f(x2, y2, z1);
-    //glTexCoord2f(1, 1);
-    glVertex3f(x2, y2, z2);
-    //glTexCoord2f(0, 1);
-    glVertex3f(x1, y2, z2);
-
-    //glColor3f(1,1,0);
-    glNormal3f(1, 0, 0);
-    glTexCoord2f(1, 0);
-    glVertex3f(x1, y1, z1);
-    glTexCoord2f(1, 1);
-    glVertex3f(x1, y2, z1);
-    glTexCoord2f(0, 1);
-    glVertex3f(x1, y2, z2);
-    glTexCoord2f(0, 0);
-    glVertex3f(x1, y1, z2);
-
-    //glColor3f(1,0,1);
-    glNormal3f(-1, 0, 0);
-    glTexCoord2f(0, 0);
-    glVertex3f(x2, y1, z1);
-    glTexCoord2f(1, 0);
-    glVertex3f(x2, y1, z2);
-    glTexCoord2f(1, 1);
-    glVertex3f(x2, y2, z2);
-    glTexCoord2f(0, 1);
-    glVertex3f(x2, y2, z1);
-
-
-    glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
 
 }

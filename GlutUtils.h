@@ -39,13 +39,6 @@ private:
     static void InitGame();
     static void UpdateWindowTitle(int timeDiff);
 
-    static void DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor = false);
-    static void DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor = false);
-
-    static void DrawCube(float x1, float x2, float y1, float y2, float z1, float z2);
-
-    static void DrawMaze();
-
     static void Cleanup();
 
     static int currTime;
@@ -62,9 +55,9 @@ private:
     static bool g_mouse_right_down;
     static bool just_warped;
 
-    static float light_pos[4];
+    static const float light_pos[4];
 
-    static int max_draw_distance;
+    static const int max_draw_distance;
 
     static GLubyte *wallTexture;
     static GLubyte *floorTexture;

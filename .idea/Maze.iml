@@ -8,10 +8,12 @@
       <sourceFolder url="file://$MODULE_DIR$/Maze.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/MazeCamera.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Maze.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/DrawingFunctions.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/DrawingFunctions.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TextureUtils.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Camera.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/GlutUtils.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Camera.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Maze.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/MazeGenerator.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Camera.cpp" isTestSource="false" />
