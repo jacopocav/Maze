@@ -65,7 +65,7 @@ void GlutUtils::Init() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
-    glEnable(GL_COLOR_MATERIAL);
+    //glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
@@ -79,13 +79,14 @@ void GlutUtils::Init() {
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
     //glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 60.0);
-    //glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 5.0);
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0f);
+    //glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 10.0);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 2.0f);
 
-    //glMaterialfv(GL_FRONT, GL_SPECULAR, light_pos);
-    //glMaterialfv(GL_FRONT, GL_AMBIENT, specular_material);
-    //glMaterialfv(GL_FRONT, GL_DIFFUSE, specular_material);
-    //glMateriali(GL_FRONT, GL_SHININESS, 56);
+    float material[4] = {1,1,1,1};
+    glMaterialfv(GL_FRONT, GL_SPECULAR, material);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, material);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, material);
+    glMateriali(GL_FRONT, GL_SHININESS, 56);
 
     glEnable(GL_TEXTURE_2D);
 
