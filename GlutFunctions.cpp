@@ -37,7 +37,7 @@ void GlutFunctions::InitGame(){
     g_camera.SetPitch(0);
     g_camera.SetYaw(0);
 
-    timeLimit = 3 * 60 * 1000;
+    timeLimit = 4 * 60 * 1000;
     currTime = glutGet(GLUT_ELAPSED_TIME);
 }
 
@@ -269,6 +269,7 @@ void GlutFunctions::UpdateWindowTitle(int timeDiff){
         windowTitle << " Premi SPAZIO per cominciare una nuova partita.";
 
         g_fps_mode = false;
+        glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
         glutSetWindowTitle(windowTitle.str().c_str());
         InitGame();
     } else {
