@@ -46,7 +46,7 @@ void MazeCamera::Strafe(float incr) {
 }
 
 void MazeCamera::Fly(float incr) {
-    if(m_y >= 0) m_y += incr;
+    m_y += incr;
     if(m_y < 0) m_y = 0;
 
     Refresh();
@@ -65,5 +65,5 @@ Coordinates MazeCamera::getMazeCoordinates() {
 
 bool MazeCamera::checkBounds() {
     return m_x >= -0.6 && m_z <= 0.6 &&
-           m_x <= (m_maze->getHeight() * 0.4 - 0.6) && m_z >= (-m_maze->getWidth() * 0.4 + 0.6);
+           m_x <= (m_maze->getHeight() * 0.4 + 0.6) && m_z >= (-m_maze->getWidth() * 0.4 - 0.6);
 }

@@ -7,6 +7,7 @@
 #include "GlutFunctions.h"
 #include "TextureUtils.h"
 #include "DrawingFunctions.h"
+#include "AudioFunctions.h"
 
 
 Maze *GlutFunctions::m_maze;
@@ -40,6 +41,8 @@ void GlutFunctions::InitGame() {
     g_camera.SetPos(0, 0, 0);
     g_camera.SetPitch(0);
     g_camera.SetYaw(0);
+
+    AudioFunctions::SetSourcePosition((mazeX - 2) * 0.4f - 0.4f, 0.0f, (mazeY - 2) * -0.4f + 0.4f);
 
     timeLimit = std::max(static_cast<int>(mazeX * mazeY * 60 + 10000), pathLength * 600);
     currTime = glutGet(GLUT_ELAPSED_TIME);
@@ -101,13 +104,23 @@ void GlutFunctions::Init() {
     glEnable(GL_TEXTURE_2D);
 
     TextureUtils::InitializeTextures(3);
-    TextureUtils::ReadFromBMP("res/alt_floor.bmp", 1, "floor");
-    TextureUtils::ReadFromBMP("res/lux_wall.bmp", 0, "wall");
-    TextureUtils::ReadFromBMP("res/alt_ceil2.bmp", 2, "ceil");
+    TextureUtils::ReadFromBMP("res/texture/alt_floor.bmp", 1, "floor");
+    TextureUtils::ReadFromBMP("res/texture/lux_wall.bmp", 0, "wall");
+    TextureUtils::ReadFromBMP("res/texture/alt_ceil2.bmp", 2, "ceil");
 
+
+    AudioFunctions::Init();
     InitGame();
 
     glutMainLoop();
+}
+
+vector<float> crossVector(const vector<float> &a, const vector<float> &b) {
+    vector<float> result(a.size());
+    result[0] = a[1] * b[2] - a[2] * b[1];
+    result[1] = a[2] * b[0] - a[0] * b[2];
+    result[2] = a[0] * b[1] - a[1] * b[0];
+    return result;
 }
 
 
@@ -118,9 +131,15 @@ void GlutFunctions::Display(void) {
 
     g_camera.Refresh();
 
-    float light_dir[3] = {0.0};
-    g_camera.GetDirectionVector(light_dir[0], light_dir[1], light_dir[2]);
-    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_dir);
+    float cpos[3] = {0, 0, 0};
+    g_camera.GetPos(cpos[0], cpos[1], cpos[2]);
+    AudioFunctions::SetListenerPosition(cpos[0], cpos[1], cpos[2]);
+
+    vector<float> at = {0, 0, 0};
+    g_camera.GetDirectionVector(at[0], at[1], at[2]);
+    auto right = crossVector(at, {0, 1, 0});
+    auto up = crossVector(right, at);
+    AudioFunctions::SetListenerOrientation(at[0], at[1], at[2], up[0], up[1], up[2]);
 
     glTranslatef(-0.6f, 0, 0.6);
 
@@ -283,7 +302,13 @@ void GlutFunctions::UpdateTime(int timeDiff) {
 
         windowTitle << "  Posizione: (";
         windowTitle << pos.first << ", ";
-        windowTitle << pos.second << ")";
+        windowTitle << pos.second << ") [";
+
+        float camPos[3] = {0, 0, 0};
+        g_camera.GetPos(camPos[0], camPos[1], camPos[2]);
+
+        windowTitle << camPos[0] << ", " << camPos[1] << ", " << camPos[2] << "]";
+
         glutSetWindowTitle(windowTitle.str().c_str());
     }
 }
