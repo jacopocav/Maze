@@ -16,8 +16,11 @@ class Maze {
 private:
     vector<vector<bool>> maze;
     vector<vector<bool>> wasHere;
-    Coordinates start, end;
-    bool recursiveSolve(int x, int y);
+    vector<Coordinates> alarms;
+    const Coordinates start, end;
+
+    bool recursiveSolve(int x, int y, int endX, int endY);
+
 
 public:
     Maze(unsigned height, unsigned width);
@@ -28,11 +31,25 @@ public:
 
     // Ritornano il valore di una cella
     bool get(int row, int col) const;
+
     bool get(Coordinates coord) const;
 
     // Impostano il valore di una cella
     void set(int row, int col, bool val);
+
     void set(Coordinates coord, bool val);
 
-    int solve();
+    void setAlarm(Coordinates pos);
+
+    void removeAlarm(Coordinates pos);
+
+    int getAlarmCount() const;
+
+    Coordinates getAlarm(int index);
+
+    bool isAlarm(unsigned row, unsigned col) const;
+
+    bool isAlarm(Coordinates pos) const;
+
+    int solve(int startX, int startY, int endX, int endY);
 };

@@ -14,4 +14,6 @@ private:
     };
 public:
     static Maze* generateMaze(unsigned height, unsigned width);
+
+    static void addAlarmsToMaze(Maze *maze, int alarmCount);
 };

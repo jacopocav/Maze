@@ -29,7 +29,14 @@ void AudioFunctions::Init() {
     alDistanceModel(AL_INVERSE_DISTANCE);
     alSourcef(source, AL_REFERENCE_DISTANCE, 0.8f);
     alSourcef(source, AL_ROLLOFF_FACTOR, 2.0f);
+}
+
+void AudioFunctions::PlaySource() {
     alSourcePlay(source);
+}
+
+void AudioFunctions::PauseSource(){
+    alSourcePause(source);
 }
 
 void AudioFunctions::SetSourcePosition(float x, float y, float z) {

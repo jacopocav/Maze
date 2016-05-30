@@ -29,13 +29,14 @@ const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 const float GlutFunctions::g_translation_speed = 0.0008;
 const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
-unsigned mazeX = 65, mazeY = 65;
+unsigned mazeX = 25, mazeY = 25;
 
 void GlutFunctions::InitGame() {
     if (m_maze != nullptr) delete m_maze;
     m_maze = MazeGenerator::generateMaze(mazeX, mazeY);
+    MazeGenerator::addAlarmsToMaze(m_maze, 3);
 
-    int pathLength = m_maze->solve();
+    int pathLength = m_maze->solve(1, 1, m_maze->getHeight() - 2, m_maze->getWidth() - 2);
 
     g_camera.SetMaze(m_maze);
     g_camera.SetPos(0, 0, 0);
@@ -45,6 +46,8 @@ void GlutFunctions::InitGame() {
     AudioFunctions::SetSourcePosition((mazeX - 2) * 0.4f - 0.4f, 0.0f, (mazeY - 2) * -0.4f + 0.4f);
 
     timeLimit = std::max(static_cast<int>(mazeX * mazeY * 60 + 10000), pathLength * 600);
+    // Arrotonda il tempo in modo che sia esattamente multiplo di 1 secondo
+    timeLimit = timeLimit - (timeLimit % 1000);
     currTime = glutGet(GLUT_ELAPSED_TIME);
 }
 
@@ -180,10 +183,12 @@ void GlutFunctions::Keyboard(unsigned char key, int, int) {
         g_fps_mode = !g_fps_mode;
 
         if (g_fps_mode) {
+            AudioFunctions::PlaySource();
             glutSetCursor(GLUT_CURSOR_NONE);
             glutWarpPointer(g_viewport_width / 2, g_viewport_height / 2);
         }
         else {
+            AudioFunctions::PauseSource();
             glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
         }
     }
@@ -302,12 +307,11 @@ void GlutFunctions::UpdateTime(int timeDiff) {
 
         windowTitle << "  Posizione: (";
         windowTitle << pos.first << ", ";
-        windowTitle << pos.second << ") [";
+        windowTitle << pos.second << ")";
 
-        float camPos[3] = {0, 0, 0};
+        /*float camPos[3] = {0, 0, 0};
         g_camera.GetPos(camPos[0], camPos[1], camPos[2]);
-
-        windowTitle << camPos[0] << ", " << camPos[1] << ", " << camPos[2] << "]";
+        windowTitle << " [" << camPos[0] << ", " << camPos[1] << ", " << camPos[2] << "]";*/
 
         glutSetWindowTitle(windowTitle.str().c_str());
     }

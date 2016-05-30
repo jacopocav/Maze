@@ -150,7 +150,7 @@ void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
                 DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
             else {
                 bool winFloor = false;
-                if (i == maze->getHeight() - 2 && j == maze->getWidth() - 2) winFloor = true;
+                if (maze->isAlarm(static_cast<unsigned>(i), static_cast<unsigned>(j))) winFloor = true;
                 DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
                 DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
 

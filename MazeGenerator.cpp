@@ -8,8 +8,10 @@
 #include <algorithm>
 #include <chrono>
 
+int seed = static_cast<int>(std::chrono::system_clock::now().time_since_epoch().count());
+std::default_random_engine rnd(seed);
 
-Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
+Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
     auto C = std::vector<Coordinates>();
 
     vector<Direction> directions = {N, S, E, W};
@@ -17,9 +19,6 @@ Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
     Maze *maze = new Maze(height, width);
 
     C.push_back(Coordinates(1, 1));
-
-    int seed = static_cast<int>(std::chrono::system_clock::now().time_since_epoch().count());
-    std::default_random_engine rnd(seed);
 
 
     while (!C.empty()) {
@@ -52,7 +51,7 @@ Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
             if (newCell != cell && !maze->get(newCell)) {
                 C.push_back(newCell);
                 Coordinates middleCell((cell.first + newCell.first) / 2,
-                                                         (cell.second + newCell.second) / 2);
+                                       (cell.second + newCell.second) / 2);
                 maze->set(middleCell, true);
                 maze->set(newCell, true);
 
@@ -65,6 +64,18 @@ Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
         }
     }
     return maze;
+}
+
+void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
+    for (int i = 0; i < alarmCount; ++i) {
+        int x = 0, y = 0;
+        while (!maze->get(x, y) && !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))) {
+            x = 1 + rnd() % (maze->getHeight() - 2);
+            y = 1 + rnd() % (maze->getHeight() - 2);
+        }
+
+        maze->setAlarm(std::make_pair(x, y));
+    }
 }
 
 
