@@ -3,6 +3,7 @@
 //
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 #include "GlutFunctions.h"
 #include "TextureUtils.h"
 #include "DrawingFunctions.h"
@@ -24,20 +25,23 @@ bool GlutFunctions::just_warped = false;
 
 const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-const float GlutFunctions::g_translation_speed = 0.001;
+const float GlutFunctions::g_translation_speed = 0.0008;
 const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
+unsigned mazeX = 65, mazeY = 65;
 
-void GlutFunctions::InitGame(){
-    if(m_maze != nullptr) delete m_maze;
-    m_maze = MazeGenerator::generateMaze(65, 65);
+void GlutFunctions::InitGame() {
+    if (m_maze != nullptr) delete m_maze;
+    m_maze = MazeGenerator::generateMaze(mazeX, mazeY);
+
+    int pathLength = m_maze->solve();
 
     g_camera.SetMaze(m_maze);
-    g_camera.SetPos(0,0,0);
+    g_camera.SetPos(0, 0, 0);
     g_camera.SetPitch(0);
     g_camera.SetYaw(0);
 
-    timeLimit = 4 * 60 * 1000;
+    timeLimit = std::max(static_cast<int>(mazeX * mazeY * 60 + 10000), pathLength * 600);
     currTime = glutGet(GLUT_ELAPSED_TIME);
 }
 
@@ -88,7 +92,7 @@ void GlutFunctions::Init() {
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.8f);
 
-    float material[4] = {1,1,1,1};
+    float material[4] = {1, 1, 1, 1};
     glMaterialfv(GL_FRONT, GL_SPECULAR, material);
     glMaterialfv(GL_FRONT, GL_AMBIENT, material);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, material);
@@ -125,7 +129,7 @@ void GlutFunctions::Display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
     glPopMatrix();
 
-    coordinates pos = g_camera.getMazeCoordinates();
+    Coordinates pos = g_camera.getMazeCoordinates();
 
     DrawingFunctions::DrawMaze(m_maze, pos.first, pos.second);
 
@@ -249,22 +253,21 @@ void GlutFunctions::Timer(int) {
             g_camera.RotateYaw(g_rotation_speed * timeDiff);
         }
 
-        UpdateWindowTitle(timeDiff);
+        UpdateTime(timeDiff);
     }
-
 
     glutTimerFunc(16, Timer, 0);
 }
 
-void GlutFunctions::UpdateWindowTitle(int timeDiff){
-    coordinates pos = g_camera.getMazeCoordinates();
+void GlutFunctions::UpdateTime(int timeDiff) {
+    Coordinates pos = g_camera.getMazeCoordinates();
 
     timeLimit -= timeDiff;
 
     std::stringstream windowTitle;
 
-    if(timeLimit <= 0 || (pos.first == m_maze->getHeight() - 2 && pos.second == m_maze->getWidth() - 2)){
-        if(timeLimit <= 0) windowTitle << "Tempo Scaduto! Hai perso!";
+    if (timeLimit <= 0 || (pos.first == m_maze->getHeight() - 2 && pos.second == m_maze->getWidth() - 2)) {
+        if (timeLimit <= 0) windowTitle << "Tempo Scaduto! Hai perso!";
         else windowTitle << "Hai vinto!!!";
         windowTitle << " Premi SPAZIO per cominciare una nuova partita.";
 
@@ -277,8 +280,6 @@ void GlutFunctions::UpdateWindowTitle(int timeDiff){
         windowTitle << std::setfill('0') << std::setw(2) << timeLimit / 60000;
         windowTitle << ":";
         windowTitle << std::setfill('0') << std::setw(2) << (timeLimit / 1000) % 60;
-        windowTitle << ":";
-        windowTitle << std::setfill('0') << std::setw(3) << timeLimit % 1000;
 
         windowTitle << "  Posizione: (";
         windowTitle << pos.first << ", ";

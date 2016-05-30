@@ -35,7 +35,7 @@ public:
 
 private:
     static void InitGame();
-    static void UpdateWindowTitle(int timeDiff);
+    static void UpdateTime(int timeDiff);
 
     static void Cleanup();
 

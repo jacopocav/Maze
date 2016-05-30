@@ -10,13 +10,13 @@
 
 
 Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
-    auto C = std::vector<coordinates>();
+    auto C = std::vector<Coordinates>();
 
     vector<Direction> directions = {N, S, E, W};
 
     Maze *maze = new Maze(height, width);
 
-    C.push_back(coordinates(1, 1));
+    C.push_back(Coordinates(1, 1));
 
     int seed = static_cast<int>(std::chrono::system_clock::now().time_since_epoch().count());
     std::default_random_engine rnd(seed);
@@ -25,9 +25,9 @@ Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
     while (!C.empty()) {
         std::shuffle(directions.begin(), directions.end(), rnd);
         int index = C.size() - 1;
-        auto cell = C.at(static_cast<unsigned>(index));
+        Coordinates cell = C.at(static_cast<unsigned>(index));
         maze->set(cell, true);
-        coordinates newCell;
+        Coordinates newCell;
 
         for (int i = 0; i < directions.size(); ++i) {
             newCell = cell;
@@ -51,7 +51,7 @@ Maze* MazeGenerator::generateMaze(unsigned height, unsigned width) {
             }
             if (newCell != cell && !maze->get(newCell)) {
                 C.push_back(newCell);
-                coordinates middleCell((cell.first + newCell.first) / 2,
+                Coordinates middleCell((cell.first + newCell.first) / 2,
                                                          (cell.second + newCell.second) / 2);
                 maze->set(middleCell, true);
                 maze->set(newCell, true);

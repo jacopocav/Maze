@@ -18,7 +18,7 @@ public:
 
     virtual void Fly(float incr);
 
-    coordinates getMazeCoordinates();
+    Coordinates getMazeCoordinates();
 
     void SetMaze(Maze* maze);
 

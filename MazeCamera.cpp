@@ -46,18 +46,21 @@ void MazeCamera::Strafe(float incr) {
 }
 
 void MazeCamera::Fly(float incr) {
-    Camera::Fly(incr);
+    if(m_y >= 0) m_y += incr;
+    if(m_y < 0) m_y = 0;
+
+    Refresh();
 }
 
 void MazeCamera::SetMaze(Maze *maze) {
     m_maze = maze;
 }
 
-coordinates MazeCamera::getMazeCoordinates() {
+Coordinates MazeCamera::getMazeCoordinates() {
     int x = static_cast<int>(std::round(m_x / 0.4)) + 1;
     int y = -1 * static_cast<int>(std::round(m_z / 0.4)) + 1;
 
-    return coordinates(x, y);
+    return Coordinates(x, y);
 }
 
 bool MazeCamera::checkBounds() {
