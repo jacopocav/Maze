@@ -29,26 +29,45 @@ const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 const float GlutFunctions::g_translation_speed = 0.0008;
 const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
-unsigned mazeX = 25, mazeY = 25;
+unsigned mazeX = 33, mazeY = 33;
+int alarmCount = 5;
 
 void GlutFunctions::InitGame() {
     if (m_maze != nullptr) delete m_maze;
     m_maze = MazeGenerator::generateMaze(mazeX, mazeY);
-    MazeGenerator::addAlarmsToMaze(m_maze, 3);
+    MazeGenerator::addAlarmsToMaze(m_maze, alarmCount);
+    AudioFunctions::InitSources(alarmCount);
 
-    int pathLength = m_maze->solve(1, 1, m_maze->getHeight() - 2, m_maze->getWidth() - 2);
+    for (int i = 0; i < alarmCount; ++i) {
+        std::stringstream path, name;
+        path << "res/audio/alarm" << i % 3 << ".wav";
+        Coordinates alm = m_maze->getAlarm(i);
+        name << "alarm" << alm.first << "_" << alm.second;
+        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true, 1.0f + ((i - (i % 3)) / 3 * 0.3f));
+        AudioFunctions::SetSourcePosition(name.str(), alm.first * 0.4f - 0.4f, 0.0f, alm.second * -0.4f + 0.4f);
+    }
 
     g_camera.SetMaze(m_maze);
     g_camera.SetPos(0, 0, 0);
     g_camera.SetPitch(0);
     g_camera.SetYaw(0);
 
-    AudioFunctions::SetSourcePosition((mazeX - 2) * 0.4f - 0.4f, 0.0f, (mazeY - 2) * -0.4f + 0.4f);
-
-    timeLimit = std::max(static_cast<int>(mazeX * mazeY * 60 + 10000), pathLength * 600);
-    // Arrotonda il tempo in modo che sia esattamente multiplo di 1 secondo
-    timeLimit = timeLimit - (timeLimit % 1000);
+    timeLimit = GetTimeLimit(1, 1);//std::max(static_cast<int>(mazeX * mazeY * 60 + 10000), pathLength * 600);
     currTime = glutGet(GLUT_ELAPSED_TIME);
+}
+
+int GlutFunctions::GetTimeLimit(int startX, int startY) {
+    if (m_maze->getAlarmCount() == 0) return 0;
+
+    int totalSteps = 0;
+    for (int i = 0; i < m_maze->getAlarmCount(); ++i) {
+        Coordinates alm = m_maze->getAlarm(i);
+        int tst = m_maze->solve(startX, startY, alm.first, alm.second);
+        totalSteps += tst;
+    }
+    int time = (totalSteps / m_maze->getAlarmCount()) * 600;
+    time = time - (time % 1000);
+    return time;
 }
 
 void GlutFunctions::Init() {
@@ -89,9 +108,9 @@ void GlutFunctions::Init() {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
 
-    float ambient_light[4] = {0.8f, 0.8f, 0.8f, 1.0f};
-    float diffuse_light[4] = {1.5f, 1.5f, 1.5f, 1.0f};
-    float specular_light[4] = {2.0f, 2.0f, 2.0f, 1.0f};
+    float ambient_light[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+    float diffuse_light[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float specular_light[4] = {1, 1, 1, 1};
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
@@ -102,17 +121,17 @@ void GlutFunctions::Init() {
     glMaterialfv(GL_FRONT, GL_SPECULAR, material);
     glMaterialfv(GL_FRONT, GL_AMBIENT, material);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, material);
-    glMateriali(GL_FRONT, GL_SHININESS, 56);
+    glMateriali(GL_FRONT, GL_SHININESS, 32);
 
     glEnable(GL_TEXTURE_2D);
 
-    TextureUtils::InitializeTextures(3);
+    TextureUtils::InitTextures(3);
     TextureUtils::ReadFromBMP("res/texture/alt_floor.bmp", 1, "floor");
     TextureUtils::ReadFromBMP("res/texture/lux_wall.bmp", 0, "wall");
     TextureUtils::ReadFromBMP("res/texture/alt_ceil2.bmp", 2, "ceil");
 
 
-    AudioFunctions::Init();
+    AudioFunctions::InitSources(0);
     InitGame();
 
     glutMainLoop();
@@ -183,12 +202,12 @@ void GlutFunctions::Keyboard(unsigned char key, int, int) {
         g_fps_mode = !g_fps_mode;
 
         if (g_fps_mode) {
-            AudioFunctions::PlaySource();
+            AudioFunctions::PlayAll();
             glutSetCursor(GLUT_CURSOR_NONE);
             glutWarpPointer(g_viewport_width / 2, g_viewport_height / 2);
         }
         else {
-            AudioFunctions::PauseSource();
+            AudioFunctions::PauseAll();
             glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
         }
     }
@@ -290,15 +309,17 @@ void GlutFunctions::UpdateTime(int timeDiff) {
 
     std::stringstream windowTitle;
 
-    if (timeLimit <= 0 || (pos.first == m_maze->getHeight() - 2 && pos.second == m_maze->getWidth() - 2)) {
-        if (timeLimit <= 0) windowTitle << "Tempo Scaduto! Hai perso!";
-        else windowTitle << "Hai vinto!!!";
-        windowTitle << " Premi SPAZIO per cominciare una nuova partita.";
-
-        g_fps_mode = false;
-        glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
-        glutSetWindowTitle(windowTitle.str().c_str());
-        InitGame();
+    if (m_maze->isAlarm(pos)) {
+        m_maze->removeAlarm(pos);
+        std::stringstream name;
+        name << "alarm" << pos.first << "_" << pos.second;
+        AudioFunctions::RemoveSource(name.str());
+        if (m_maze->getAlarmCount() > 0) {
+            timeLimit = std::max(timeLimit, GetTimeLimit(pos.first, pos.second));
+        }
+        else GameOver(true);
+    } else if (timeLimit <= 0) {
+        GameOver(false);
     } else {
         windowTitle << "Tempo: ";
         windowTitle << std::setfill('0') << std::setw(2) << timeLimit / 60000;
@@ -309,12 +330,22 @@ void GlutFunctions::UpdateTime(int timeDiff) {
         windowTitle << pos.first << ", ";
         windowTitle << pos.second << ")";
 
-        /*float camPos[3] = {0, 0, 0};
-        g_camera.GetPos(camPos[0], camPos[1], camPos[2]);
-        windowTitle << " [" << camPos[0] << ", " << camPos[1] << ", " << camPos[2] << "]";*/
+        windowTitle << "  Allarmi rimanenti: " << m_maze->getAlarmCount();
 
         glutSetWindowTitle(windowTitle.str().c_str());
     }
+}
+
+void GlutFunctions::GameOver(bool win) {
+    std::stringstream windowTitle;
+    if (!win) windowTitle << "Tempo Scaduto! Hai perso!";
+    else windowTitle << "Hai vinto!!!";
+    windowTitle << " Premi SPAZIO per cominciare una nuova partita.";
+
+    g_fps_mode = false;
+    glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+    glutSetWindowTitle(windowTitle.str().c_str());
+    InitGame();
 }
 
 void GlutFunctions::Idle() {

@@ -8,61 +8,47 @@
 
 int DrawingFunctions::draw_distance = 15;
 
-void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
+void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2) {
     TextureUtils::BindTexture("floor");
     glBegin(GL_QUADS);
 
-    float winColor[] = {0,1,0,1};
-    float color[] = {1,1,1,1};
-
-    if (winFloor) {
-        glMaterialfv(GL_FRONT, GL_AMBIENT, winColor);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, winColor);
-
-    }
     glNormal3f(0, 1, 0);
     glTexCoord2f(1, 0);
     glVertex3f(x2, y1, z1);
+    glNormal3f(0, 1, 0);
     glTexCoord2f(1, 1);
     glVertex3f(x2, y1, z2);
+    glNormal3f(0, 1, 0);
     glTexCoord2f(0, 1);
     glVertex3f(x1, y1, z2);
+    glNormal3f(0, 1, 0);
     glTexCoord2f(0, 0);
     glVertex3f(x1, y1, z1);
 
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, color);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
 }
 
-void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2, bool winFloor) {
+void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2) {
     TextureUtils::BindTexture("ceil");
 
     glBegin(GL_QUADS);
-    float winColor[] = {0,1,0,1};
-    float color[] = {1,1,1,1};
 
-    if (winFloor) {
-        glMaterialfv(GL_FRONT, GL_AMBIENT, winColor);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, winColor);
-
-    }
     glNormal3f(0, -1, 0);
     glTexCoord2f(1, 0);
     glVertex3f(x1, y1, z1);
+    glNormal3f(0, -1, 0);
     glTexCoord2f(1, 1);
     glVertex3f(x1, y1, z2);
+    glNormal3f(0, -1, 0);
     glTexCoord2f(0, 1);
     glVertex3f(x2, y1, z2);
+    glNormal3f(0, -1, 0);
     glTexCoord2f(0, 0);
     glVertex3f(x2, y1, z1);
 
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
-
-    glMaterialfv(GL_FRONT, GL_AMBIENT, color);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
 }
 
 void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
@@ -71,58 +57,70 @@ void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1
     glBegin(GL_QUADS);
     glColor3f(1.0, 1.0, 1.0);
     //glColor3f(1,0,0);
-    glNormal3f(0, 0, -1);
+    glNormal3f(0, 0, 1);
     glTexCoord2f(0, 0);
     glVertex3f(x1, y1, z1);
     glTexCoord2f(1, 0);
+    glNormal3f(0, 0, 1);
     glVertex3f(x2, y1, z1);
     glTexCoord2f(1, 1);
+    glNormal3f(0, 0, 1);
     glVertex3f(x2, y2, z1);
     glTexCoord2f(0, 1);
+    glNormal3f(0, 0, 1);
     glVertex3f(x1, y2, z1);
 
     //glColor3f(0,1,0);
-    glNormal3f(0, 0, 1);
+    glNormal3f(0, 0, -1);
     glTexCoord2f(1, 0);
     glVertex3f(x1, y1, z2);
     glTexCoord2f(1, 1);
+    glNormal3f(0, 0, -1);
     glVertex3f(x1, y2, z2);
     glTexCoord2f(0, 1);
+    glNormal3f(0, 0, -1);
     glVertex3f(x2, y2, z2);
     glTexCoord2f(0, 0);
+    glNormal3f(0, 0, -1);
     glVertex3f(x2, y1, z2);
 
     //glColor3f(0,0,1);
     glNormal3f(0, 1, 0);
-    //glTexCoord2f(0, 0);
     glVertex3f(x1, y2, z1);
-    //glTexCoord2f(1, 0);
+    glNormal3f(0, 1, 0);
     glVertex3f(x2, y2, z1);
-    //glTexCoord2f(1, 1);
+    glNormal3f(0, 1, 0);
     glVertex3f(x2, y2, z2);
-    //glTexCoord2f(0, 1);
+    glNormal3f(0, 1, 0);
     glVertex3f(x1, y2, z2);
 
     //glColor3f(1,1,0);
-    glNormal3f(1, 0, 0);
+    glNormal3f(-1, 0, 0);
     glTexCoord2f(1, 0);
+    glNormal3f(-1, 0, 0);
     glVertex3f(x1, y1, z1);
     glTexCoord2f(1, 1);
+    glNormal3f(-1, 0, 0);
     glVertex3f(x1, y2, z1);
     glTexCoord2f(0, 1);
+    glNormal3f(-1, 0, 0);
     glVertex3f(x1, y2, z2);
     glTexCoord2f(0, 0);
+    glNormal3f(-1, 0, 0);
     glVertex3f(x1, y1, z2);
 
     //glColor3f(1,0,1);
-    glNormal3f(-1, 0, 0);
+    glNormal3f(1, 0, 0);
     glTexCoord2f(0, 0);
     glVertex3f(x2, y1, z1);
     glTexCoord2f(1, 0);
+    glNormal3f(1, 0, 0);
     glVertex3f(x2, y1, z2);
     glTexCoord2f(1, 1);
+    glNormal3f(1, 0, 0);
     glVertex3f(x2, y2, z2);
     glTexCoord2f(0, 1);
+    glNormal3f(1, 0, 0);
     glVertex3f(x2, y2, z1);
 
 
@@ -130,6 +128,7 @@ void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1
     TextureUtils::BindTexture("0");
 
 }
+
 
 void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
     int min_x = 0, max_x = maze->getHeight(), min_y = 0, max_y = maze->getWidth();
@@ -149,10 +148,22 @@ void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
             if (!maze->get(i, j))
                 DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
             else {
-                bool winFloor = false;
-                if (maze->isAlarm(static_cast<unsigned>(i), static_cast<unsigned>(j))) winFloor = true;
-                DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
-                DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1), winFloor);
+                if (maze->isAlarm(static_cast<unsigned>(i), static_cast<unsigned>(j))) {
+                    TextureUtils::BindTexture("0");
+                    float mat[4] = {1, 0, 0, 1};
+                    float material[4] = {1, 1, 1, 1};
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat);
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, mat);
+                    glPushMatrix();
+                    glTranslatef(0.4f * i + 0.2f, 0, -0.4f * j - 0.2f);
+                    glutSolidSphere(0.025f, 32, 32);
+                    glPopMatrix();
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, material);
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, material);
+
+                }
+                DrawFloor(0.4f * i, 0.4f * (i + 1), -0.2f, -0.4f * j, -0.4f * (j + 1));
+                DrawCeil(0.4f * i, 0.4f * (i + 1), 0.2f, -0.4f * j, -0.4f * (j + 1));
 
             }
         }

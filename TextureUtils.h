@@ -12,12 +12,11 @@
 class TextureUtils {
 private:
     static std::map<std::string, int> textureTable;
+    static GLuint *textures;
     static int textureCount;
 public:
-    static GLuint *textures;
-    static void InitializeTextures(int texCount);
 
-    static void LoadBMPTexture(std::string path);
+    static void InitTextures(int texCount);
 
     static void ReadFromBMP(std::string path, int textureIndex, std::string name);
 

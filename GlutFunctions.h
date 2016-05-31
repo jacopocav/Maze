@@ -37,6 +37,10 @@ private:
     static void InitGame();
     static void UpdateTime(int timeDiff);
 
+    static int GetTimeLimit(int startX, int startY);
+
+    static void GameOver(bool win);
+
     static void Cleanup();
 
     static int currTime;

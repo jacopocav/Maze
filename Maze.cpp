@@ -49,6 +49,9 @@ int correctPathLength = 0;
 
 int Maze::solve(int startX, int startY, int endX, int endY) {
     correctPathLength = 0;
+    for(int i = 0; i < wasHere.size(); ++i){
+        wasHere[i].assign(wasHere[i].size(), false);
+    }
     recursiveSolve(startX, startY, endX, endY);
     // Will leave you with a boolean array (correctPath)
     // with the path indicated by true values.
@@ -110,7 +113,7 @@ int Maze::getAlarmCount() const {
 }
 
 Coordinates Maze::getAlarm(int index) {
-    if(index > 0 && index < getAlarmCount()){
+    if(index >= 0 && index < getAlarmCount()){
         return alarms[index];
     }
     return std::make_pair(-1, -1);

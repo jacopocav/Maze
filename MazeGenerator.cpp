@@ -69,9 +69,24 @@ Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
 void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
     for (int i = 0; i < alarmCount; ++i) {
         int x = 0, y = 0;
-        while (!maze->get(x, y) && !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))) {
+        bool ok = false;
+        while (!ok) {
             x = 1 + rnd() % (maze->getHeight() - 2);
             y = 1 + rnd() % (maze->getHeight() - 2);
+            if(maze->get(x, y) && !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))){
+                if(maze->getAlarmCount() == 0) ok = true;
+                else {
+                    for(int k = 0; k < maze->getAlarmCount(); ++k){
+                        Coordinates alm = maze->getAlarm(k);
+                        if(abs(x - alm.first) > 0.1 * maze->getHeight() && abs(y - alm.second) > 0.1 * maze->getWidth())
+                            ok = true;
+                        // Il percorso tra ogni allarme dev'essere lungo almeno il 5% del numero di celle totali
+                        /*if(maze->solve(x, y, alm.first, alm.second) > (0.05 * maze->getHeight() * maze->getWidth())){
+                            ok = true;
+                        }*/
+                    }
+                }
+            }
         }
 
         maze->setAlarm(std::make_pair(x, y));

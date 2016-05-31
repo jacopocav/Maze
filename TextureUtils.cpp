@@ -10,20 +10,10 @@ GLuint *TextureUtils::textures;
 int TextureUtils::textureCount;
 std::map<std::string, int> TextureUtils::textureTable;
 
-void TextureUtils::InitializeTextures(int texCount) {
+void TextureUtils::InitTextures(int texCount) {
     textures = new GLuint[texCount];
     glGenTextures(texCount, textures);
     textureCount = texCount;
-}
-
-void TextureUtils::LoadBMPTexture(std::string path) {
-//    GLubyte *data = ReadFromBMP(path);
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    //gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 1024, 1024, GL_RGB, GL_UNSIGNED_BYTE, data);
 }
 
 void TextureUtils::ReadFromBMP(std::string path, int textureIndex, std::string name = "") {
@@ -91,11 +81,14 @@ void TextureUtils::ReadFromBMP(std::string path, int textureIndex, std::string n
 }
 
 void TextureUtils::BindTexture(int textureIndex) {
-    if (textureIndex < textureCount) glBindTexture(GL_TEXTURE_2D, textures[textureIndex]);
+    if (textureIndex < textureCount && textureIndex >= 0)
+        glBindTexture(GL_TEXTURE_2D, textures[textureIndex]);
+    else
+        glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void TextureUtils::BindTexture(std::string name) {
-    if(name == "0"){
+    if (name == "0") {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
