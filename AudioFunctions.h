@@ -17,14 +17,16 @@ private:
 
 public:
     static void InitSources(int srcCount);
-    static void LoadSourceFromFile(std::string path, int sourceIndex, std::string name, bool looping,
-                                      float pitch);
+    static void LoadSourceFromFile(std::string path, int sourceIndex, std::string name, bool looping, float pitch);
+    static void ResetSources();
+
     static void RemoveSource(std::string name);
     static void PlaySource(std::string name);
     static void PauseSource(std::string name);
 
     static void PlayAll();
     static void PauseAll();
+    static void StopAll();
 
     static void SetSourcePosition(std::string name, float x, float y, float z);
     static void SetListenerPosition(float x, float y, float z);

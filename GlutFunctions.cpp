@@ -29,7 +29,7 @@ const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 const float GlutFunctions::g_translation_speed = 0.0008;
 const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
-unsigned mazeX = 33, mazeY = 33;
+unsigned mazeX = 65, mazeY = 65;
 int alarmCount = 5;
 
 void GlutFunctions::InitGame() {
@@ -40,10 +40,10 @@ void GlutFunctions::InitGame() {
 
     for (int i = 0; i < alarmCount; ++i) {
         std::stringstream path, name;
-        path << "res/audio/alarm" << i % 3 << ".wav";
+        path << "res/audio/alarm" << i % 5 << ".wav";
         Coordinates alm = m_maze->getAlarm(i);
         name << "alarm" << alm.first << "_" << alm.second;
-        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true, 1.0f + ((i - (i % 3)) / 3 * 0.3f));
+        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true, 1.0f + ((i - (i % 5)) / 5 * 0.3f));
         AudioFunctions::SetSourcePosition(name.str(), alm.first * 0.4f - 0.4f, 0.0f, alm.second * -0.4f + 0.4f);
     }
 
@@ -296,13 +296,13 @@ void GlutFunctions::Timer(int) {
             g_camera.RotateYaw(g_rotation_speed * timeDiff);
         }
 
-        UpdateTime(timeDiff);
+        UpdateGameStatus(timeDiff);
     }
 
     glutTimerFunc(16, Timer, 0);
 }
 
-void GlutFunctions::UpdateTime(int timeDiff) {
+void GlutFunctions::UpdateGameStatus(int timeDiff) {
     Coordinates pos = g_camera.getMazeCoordinates();
 
     timeLimit -= timeDiff;
@@ -341,6 +341,8 @@ void GlutFunctions::GameOver(bool win) {
     if (!win) windowTitle << "Tempo Scaduto! Hai perso!";
     else windowTitle << "Hai vinto!!!";
     windowTitle << " Premi SPAZIO per cominciare una nuova partita.";
+    AudioFunctions::StopAll();
+    AudioFunctions::ResetSources();
 
     g_fps_mode = false;
     glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
@@ -398,5 +400,6 @@ void GlutFunctions::MouseMotion(int x, int y) {
 void GlutFunctions::Cleanup() {
     delete m_maze;
     TextureUtils::ResetTextures();
-
+    AudioFunctions::StopAll();
+    AudioFunctions::ResetSources();
 }

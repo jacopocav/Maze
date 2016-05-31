@@ -3,6 +3,7 @@
 //
 
 #include <GL/gl.h>
+#include <cmath>
 #include "DrawingFunctions.h"
 #include "TextureUtils.h"
 
@@ -142,6 +143,7 @@ void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
     if ((pos_y + draw_distance) < max_y)
         max_y = pos_y + draw_distance;
 
+    const float M_PI = 3.14159265358979323846f;
 
     for (int i = min_x; i < max_x; i++) {
         for (int j = min_y; j < max_y; j++) {
@@ -150,13 +152,16 @@ void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
             else {
                 if (maze->isAlarm(static_cast<unsigned>(i), static_cast<unsigned>(j))) {
                     TextureUtils::BindTexture("0");
-                    float mat[4] = {1, 0, 0, 1};
+                    float time = static_cast<float>(glutGet(GLUT_ELAPSED_TIME)) / 1000;
+                    int intime = static_cast<int>(time);
+                    time = time - intime;
+                    float mat[4] = {1.0f, 0.5f * (1+cosf(2*time*M_PI)), 0.0f, 1};
                     float material[4] = {1, 1, 1, 1};
                     glMaterialfv(GL_FRONT, GL_DIFFUSE, mat);
                     glMaterialfv(GL_FRONT, GL_AMBIENT, mat);
                     glPushMatrix();
                     glTranslatef(0.4f * i + 0.2f, 0, -0.4f * j - 0.2f);
-                    glutSolidSphere(0.025f, 32, 32);
+                    glutSolidSphere(0.025f + (0.025f * 0.5f * (1+cosf(2*time*M_PI))), 32, 32);
                     glPopMatrix();
                     glMaterialfv(GL_FRONT, GL_DIFFUSE, material);
                     glMaterialfv(GL_FRONT, GL_AMBIENT, material);

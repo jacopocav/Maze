@@ -35,7 +35,7 @@ public:
 
 private:
     static void InitGame();
-    static void UpdateTime(int timeDiff);
+    static void UpdateGameStatus(int timeDiff);
 
     static int GetTimeLimit(int startX, int startY);
 

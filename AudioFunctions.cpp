@@ -18,7 +18,7 @@ void AudioFunctions::InitSources(int srcCount) {
     alGenSources(srcCount, sources);
     alGenBuffers(srcCount, buffers);
     sourceCount = srcCount;
-    alDistanceModel(AL_EXPONENT_DISTANCE_CLAMPED);
+    alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
     //alListenerf(AL_MAX_DISTANCE, 2.0f);
 }
 
@@ -62,15 +62,15 @@ void AudioFunctions::LoadSourceFromFile(std::string path, int sourceIndex, std::
 }
 
 void AudioFunctions::PlayAll() {
-    for(auto it = sourceTable.begin(); it != sourceTable.end(); ++it){
-        alSourcePlay(sources[it->second]);
-    }
+    alSourcePlayv(sourceCount, sources);
 }
 
 void AudioFunctions::PauseAll() {
-    for(auto it = sourceTable.begin(); it != sourceTable.end(); ++it){
-        alSourcePause(sources[it->second]);
-    }
+    alSourcePausev(sourceCount, sources);
+}
+
+void AudioFunctions::StopAll() {
+    alSourceStopv(sourceCount, sources);
 }
 
 void AudioFunctions::RemoveSource(std::string name){
@@ -81,4 +81,10 @@ void AudioFunctions::RemoveSource(std::string name){
         alDeleteSources(1, &sources[sourceTable[name]]);
     }
 
+}
+
+void AudioFunctions::ResetSources() {
+    alDeleteSources(sourceCount, sources);
+    alDeleteBuffers(sourceCount, buffers);
+    sourceTable.clear();
 }

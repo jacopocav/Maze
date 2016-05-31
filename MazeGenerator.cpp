@@ -73,7 +73,7 @@ void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
         while (!ok) {
             x = 1 + rnd() % (maze->getHeight() - 2);
             y = 1 + rnd() % (maze->getHeight() - 2);
-            if(maze->get(x, y) && !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))){
+            if((x != 1 || y != 1) && maze->get(x, y) && !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))){
                 if(maze->getAlarmCount() == 0) ok = true;
                 else {
                     for(int k = 0; k < maze->getAlarmCount(); ++k){
