@@ -18,7 +18,7 @@ void AudioFunctions::InitSources(int srcCount) {
     alGenSources(srcCount, sources);
     alGenBuffers(srcCount, buffers);
     sourceCount = srcCount;
-    alDistanceModel(AL_INVERSE_DISTANCE);
+    alDistanceModel(AL_EXPONENT_DISTANCE_CLAMPED);
     //alListenerf(AL_MAX_DISTANCE, 2.0f);
 }
 
