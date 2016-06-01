@@ -8,6 +8,7 @@
 #include "TextureUtils.h"
 
 int DrawingFunctions::draw_distance = 15;
+const float DrawingFunctions::PI = 3.14159265358979323846f;
 
 void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2) {
     TextureUtils::BindTexture("floor");
@@ -142,8 +143,6 @@ void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
         min_y = pos_y - draw_distance;
     if ((pos_y + draw_distance) < max_y)
         max_y = pos_y + draw_distance;
-
-    const float PI = 3.14159265358979323846f;
 
     for (int i = min_x; i < max_x; i++) {
         for (int j = min_y; j < max_y; j++) {

@@ -10,6 +10,7 @@
 class DrawingFunctions {
 private:
     static int draw_distance;
+    static const float PI;
 public:
     static void DrawFloor(float x1, float x2, float y1, float z1, float z2);
     static void DrawCeil(float x1, float x2, float y1, float z1, float z2);

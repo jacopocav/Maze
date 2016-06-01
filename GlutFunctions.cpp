@@ -29,7 +29,7 @@ const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 const float GlutFunctions::g_translation_speed = 0.0008;
 const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
-unsigned mazeX = 13, mazeY = 13;
+unsigned mazeX = 65, mazeY = 65;
 int alarmCount = 5;
 
 void GlutFunctions::InitGame() {
