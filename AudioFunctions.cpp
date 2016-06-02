@@ -41,6 +41,11 @@ void AudioFunctions::PauseSource(std::string name) {
         alSourcePause(sources[sourceTable[name]]);
 }
 
+void AudioFunctions::StopSource(std::string name) {
+    if(sourceTable.find(name) != sourceTable.end())
+        alSourceStop(sources[sourceTable[name]]);
+}
+
 void AudioFunctions::SetSourcePosition(std::string name, float x, float y, float z) {
     if(sourceTable.find(name) != sourceTable.end())
         alSource3f(sources[sourceTable[name]], AL_POSITION, x, y, z);
@@ -62,15 +67,21 @@ void AudioFunctions::LoadSourceFromFile(std::string path, int sourceIndex, std::
 }
 
 void AudioFunctions::PlayAll() {
-    alSourcePlayv(sourceCount, sources);
+    for(auto it = sourceTable.begin(); it != sourceTable.end(); ++it) {
+        alSourcePlay(sources[it->second]);
+    }
 }
 
 void AudioFunctions::PauseAll() {
-    alSourcePausev(sourceCount, sources);
+    for(auto it = sourceTable.begin(); it != sourceTable.end(); ++it) {
+        alSourcePause(sources[it->second]);
+    }
 }
 
 void AudioFunctions::StopAll() {
-    alSourceStopv(sourceCount, sources);
+    for(auto it = sourceTable.begin(); it != sourceTable.end(); ++it) {
+        alSourceStop(sources[it->second]);
+    }
 }
 
 void AudioFunctions::RemoveSource(std::string name){

@@ -5,13 +5,14 @@
 #include <GL/gl.h>
 #include <cmath>
 #include "DrawingFunctions.h"
-#include "TextureUtils.h"
+#include "TextureFunctions.h"
 
 int DrawingFunctions::draw_distance = 15;
 const float DrawingFunctions::PI = 3.14159265358979323846f;
 
 void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2) {
-    TextureUtils::BindTexture("floor");
+    TextureFunctions::BindTexture("floor");
+    glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_QUADS);
 
     glNormal3f(0, 1, 0);
@@ -32,8 +33,8 @@ void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z
 }
 
 void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2) {
-    TextureUtils::BindTexture("ceil");
-
+    TextureFunctions::BindTexture("ceil");
+    glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_QUADS);
 
     glNormal3f(0, -1, 0);
@@ -55,7 +56,7 @@ void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2
 
 void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
 
-    TextureUtils::BindTexture("wall");
+    TextureFunctions::BindTexture("wall");
     glBegin(GL_QUADS);
     glColor3f(1.0, 1.0, 1.0);
     //glColor3f(1,0,0);
@@ -127,7 +128,7 @@ void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1
 
 
     glEnd();
-    TextureUtils::BindTexture("0");
+    TextureFunctions::BindTexture("0");
 
 }
 
@@ -150,7 +151,7 @@ void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
                 DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
             else {
                 if (maze->isAlarm(static_cast<unsigned>(i), static_cast<unsigned>(j))) {
-                    TextureUtils::BindTexture("0");
+                    TextureFunctions::BindTexture("0");
                     float time = static_cast<float>(glutGet(GLUT_ELAPSED_TIME)) / 1000;
                     int intime = static_cast<int>(time);
                     time = time - intime;

@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <cmath>
 #include "GlutFunctions.h"
-#include "TextureUtils.h"
+#include "TextureFunctions.h"
 #include "DrawingFunctions.h"
 #include "AudioFunctions.h"
 
@@ -43,7 +43,7 @@ void GlutFunctions::InitGame() {
         path << "res/audio/alarm" << i % 5 << ".wav";
         Coordinates alm = m_maze->getAlarm(i);
         name << "alarm" << alm.first << "_" << alm.second;
-        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true, 1.0f + ((i - (i % 5)) / 5 * 0.3f));
+        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true, 1.0f + ((i - (i % alarmCount)) / alarmCount * 0.3f));
         AudioFunctions::SetSourcePosition(name.str(), alm.first * 0.4f - 0.4f, 0.0f, alm.second * -0.4f + 0.4f);
     }
 
@@ -65,8 +65,8 @@ int GlutFunctions::GetTimeLimit(int startX, int startY) {
         int tst = m_maze->solve(startX, startY, alm.first, alm.second);
         totalSteps += tst;
     }
-    int time = (totalSteps / m_maze->getAlarmCount()) * 600;
-    time = time - (time % 1000);
+    int time = (totalSteps / m_maze->getAlarmCount()) * 1000;
+    //time = time - (time % 1000);
     return time;
 }
 
@@ -115,7 +115,7 @@ void GlutFunctions::Init() {
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.8f);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.5f);
 
     float material[4] = {1, 1, 1, 1};
     glMaterialfv(GL_FRONT, GL_SPECULAR, material);
@@ -125,10 +125,10 @@ void GlutFunctions::Init() {
 
     glEnable(GL_TEXTURE_2D);
 
-    TextureUtils::InitTextures(3);
-    TextureUtils::ReadFromBMP("res/texture/alt_floor.bmp", 1, "floor");
-    TextureUtils::ReadFromBMP("res/texture/lux_wall.bmp", 0, "wall");
-    TextureUtils::ReadFromBMP("res/texture/alt_ceil2.bmp", 2, "ceil");
+    TextureFunctions::InitTextures(3);
+    TextureFunctions::ReadFromBMP("res/texture/alt_floor.bmp", 1, "floor");
+    TextureFunctions::ReadFromBMP("res/texture/lux_wall.bmp", 0, "wall");
+    TextureFunctions::ReadFromBMP("res/texture/lux_ceil.bmp", 2, "ceil");
 
 
     AudioFunctions::InitSources(0);
@@ -196,6 +196,10 @@ void GlutFunctions::Keyboard(unsigned char key, int, int) {
     if (key == 27) {
         Cleanup();
         exit(0);
+    }
+
+    if(key == 'r' || key == 'R'){
+        GameOver(false);
     }
 
     if (key == ' ') {
@@ -399,7 +403,7 @@ void GlutFunctions::MouseMotion(int x, int y) {
 
 void GlutFunctions::Cleanup() {
     delete m_maze;
-    TextureUtils::ResetTextures();
+    TextureFunctions::ResetTextures();
     AudioFunctions::StopAll();
     AudioFunctions::ResetSources();
 }

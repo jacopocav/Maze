@@ -23,6 +23,7 @@ public:
     static void RemoveSource(std::string name);
     static void PlaySource(std::string name);
     static void PauseSource(std::string name);
+    static void StopSource(std::string name);
 
     static void PlayAll();
     static void PauseAll();

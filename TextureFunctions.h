@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 
-class TextureUtils {
+class TextureFunctions {
 private:
     static std::map<std::string, int> textureTable;
     static GLuint *textures;

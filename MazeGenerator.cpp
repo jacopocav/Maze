@@ -10,21 +10,30 @@
 
 int seed = static_cast<int>(std::chrono::system_clock::now().time_since_epoch().count());
 std::default_random_engine rnd(seed);
+std::uniform_real_distribution<float> distribution(0.0, 1.0);
 
 Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
-    auto C = std::vector<Coordinates>();
+    auto activeCells = std::vector<Coordinates>();
 
     vector<Direction> directions = {N, S, E, W};
 
     Maze *maze = new Maze(height, width);
 
-    C.push_back(Coordinates(1, 1));
+    activeCells.push_back(Coordinates(1, 1));
 
-
-    while (!C.empty()) {
+    const float randChance = 0.2f; // Probabilità di scegliere una cella a caso da activeCells invece che la più nuova
+    while (!activeCells.empty()) {
         std::shuffle(directions.begin(), directions.end(), rnd);
-        int index = C.size() - 1;
-        Coordinates cell = C.at(static_cast<unsigned>(index));
+        float random = distribution(rnd);
+        int nextIndex;
+        if(random < randChance){
+            nextIndex = rnd() % (activeCells.size() - 1);
+        } else {
+            nextIndex = activeCells.size() - 1;
+        }
+
+
+        Coordinates cell = activeCells.at(static_cast<unsigned>(nextIndex));
         maze->set(cell, true);
         Coordinates newCell;
 
@@ -49,18 +58,18 @@ Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
                     break;
             }
             if (newCell != cell && !maze->get(newCell)) {
-                C.push_back(newCell);
+                activeCells.push_back(newCell);
                 Coordinates middleCell((cell.first + newCell.first) / 2,
                                        (cell.second + newCell.second) / 2);
                 maze->set(middleCell, true);
                 maze->set(newCell, true);
 
-                index = -1;
+                nextIndex = -1;
                 break;
             }
         }
-        if (index >= 0 && index < C.size()) {
-            C.erase(C.begin() + index);
+        if (nextIndex >= 0 && nextIndex < activeCells.size()) {
+            activeCells.erase(activeCells.begin() + nextIndex);
         }
     }
     return maze;
