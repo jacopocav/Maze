@@ -9,29 +9,32 @@
 const std::string Settings::settingsFilePath = "res/config.cfg";
 
 const std::map<std::string, int> Settings::defaults = {
-        {"MULTISAMPLING", 4},
-        {"DRAW_DISTANCE", 15},
-        {"MAZE_SIZE_X",   65},
-        {"MAZE_SIZE_Y",   65},
-        {"ALARM_COUNT",   5},
-        {"DEAD_ENDS",     1},
-        {"ENABLE_FLIGHT", 0}
+        {"MULTISAMPLING",   4},
+        {"DRAW_DISTANCE",   15},
+        {"MAZE_SIZE_X",     65},
+        {"MAZE_SIZE_Y",     65},
+        {"MAZE_RANDOMNESS", 25},
+        {"ALARM_COUNT",     5},
+        {"DEAD_ENDS",       1},
+        {"ENABLE_FLIGHT",   0}
 };
 
 const std::map<std::string, int> Settings::minimums = {
-        {"MULTISAMPLING", 0},
-        {"DRAW_DISTANCE", 1},
-        {"MAZE_SIZE_X",   5},
-        {"MAZE_SIZE_Y",   5},
-        {"ALARM_COUNT",   1},
-        {"DEAD_ENDS",     0},
-        {"ENABLE_FLIGHT", 0}
+        {"MULTISAMPLING",   0},
+        {"DRAW_DISTANCE",   1},
+        {"MAZE_SIZE_X",     5},
+        {"MAZE_SIZE_Y",     5},
+        {"MAZE_RANDOMNESS", 0},
+        {"ALARM_COUNT",     1},
+        {"DEAD_ENDS",       0},
+        {"ENABLE_FLIGHT",   0}
 };
 
 const std::map<std::string, int> Settings::maximums = {
-        {"MULTISAMPLING", 16},
-        {"DEAD_ENDS",     1},
-        {"ENABLE_FLIGHT", 1}
+        {"MULTISAMPLING",   16},
+        {"MAZE_RANDOMNESS", 100},
+        {"DEAD_ENDS",       1},
+        {"ENABLE_FLIGHT",   1}
 };
 
 Settings::Settings() {
@@ -82,7 +85,7 @@ Settings::Settings() {
     cfg.close();
 }
 
-Settings& Settings::getInstance() {
+Settings &Settings::getInstance() {
     // instance viene inizializzato solo alla prima invocazione, dopo viene riutilizzato
     // alla fine dell'esecuzione del programma viene distrutta
     static Settings instance;
@@ -90,17 +93,17 @@ Settings& Settings::getInstance() {
 }
 
 int Settings::getSettingValue(std::string name) const {
-    if(settingsMap.find(name) != settingsMap.end()) return settingsMap.at(name);
+    if (settingsMap.find(name) != settingsMap.end()) return settingsMap.at(name);
 
-    if(defaults.find(name) != defaults.end()) return defaults.at(name);
+    if (defaults.find(name) != defaults.end()) return defaults.at(name);
 
     return -1;
 }
 
 int Settings::operator[](std::string name) const {
-    if(settingsMap.find(name) != settingsMap.end()) return settingsMap.at(name);
+    if (settingsMap.find(name) != settingsMap.end()) return settingsMap.at(name);
 
-    if(defaults.find(name) != defaults.end()) return defaults.at(name);
+    if (defaults.find(name) != defaults.end()) return defaults.at(name);
 
     return -1;
 }

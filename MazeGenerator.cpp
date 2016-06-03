@@ -12,6 +12,7 @@ int seed = static_cast<int>(std::chrono::system_clock::now().time_since_epoch().
 std::default_random_engine rnd(seed);
 std::uniform_real_distribution<float> distribution(0.0, 1.0);
 bool braided = Settings::getInstance()["DEAD_ENDS"] == 0;
+const float randomness = static_cast<float>(Settings::getInstance()["MAZE_RANDOMNESS"]) / 100;
 
 Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
     auto activeCells = std::vector<Coordinates>();
@@ -22,14 +23,13 @@ Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
 
     activeCells.push_back(Coordinates(1, 1));
 
-    const float randChance = 0.25f; // Probabilità di scegliere una cella a caso da activeCells invece che la più nuova
     while (!activeCells.empty()) {
         std::shuffle(directions.begin(), directions.end(), rnd);
         float random = distribution(rnd);
         int index;
 
         // activeCells deve avere più di un elemento, altrimenti il modulo sarebbe con 0, il che non è permesso
-        if (random < randChance && activeCells.size() > 1) {
+        if (random < randomness && activeCells.size() > 1) {
             index = rnd() % (activeCells.size() - 1);
         } else {
             index = activeCells.size() - 1;
