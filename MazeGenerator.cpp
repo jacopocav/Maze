@@ -3,7 +3,7 @@
 //
 
 #include "MazeGenerator.h"
-#include <cstdlib>
+#include "Settings.h"
 #include <ctime>
 #include <algorithm>
 #include <chrono>
@@ -11,6 +11,7 @@
 int seed = static_cast<int>(std::chrono::system_clock::now().time_since_epoch().count());
 std::default_random_engine rnd(seed);
 std::uniform_real_distribution<float> distribution(0.0, 1.0);
+bool braided = Settings::getInstance()["DEAD_ENDS"] == 0;
 
 Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
     auto activeCells = std::vector<Coordinates>();
@@ -21,19 +22,21 @@ Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
 
     activeCells.push_back(Coordinates(1, 1));
 
-    const float randChance = 0.2f; // Probabilità di scegliere una cella a caso da activeCells invece che la più nuova
+    const float randChance = 0.25f; // Probabilità di scegliere una cella a caso da activeCells invece che la più nuova
     while (!activeCells.empty()) {
         std::shuffle(directions.begin(), directions.end(), rnd);
         float random = distribution(rnd);
-        int nextIndex;
-        if(random < randChance){
-            nextIndex = rnd() % (activeCells.size() - 1);
+        int index;
+
+        // activeCells deve avere più di un elemento, altrimenti il modulo sarebbe con 0, il che non è permesso
+        if (random < randChance && activeCells.size() > 1) {
+            index = rnd() % (activeCells.size() - 1);
         } else {
-            nextIndex = activeCells.size() - 1;
+            index = activeCells.size() - 1;
         }
 
 
-        Coordinates cell = activeCells.at(static_cast<unsigned>(nextIndex));
+        Coordinates cell = activeCells.at(static_cast<unsigned>(index));
         maze->set(cell, true);
         Coordinates newCell;
 
@@ -64,16 +67,26 @@ Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
                 maze->set(middleCell, true);
                 maze->set(newCell, true);
 
-                nextIndex = -1;
+                index = -1;
                 break;
             }
         }
-        if (nextIndex >= 0 && nextIndex < activeCells.size()) {
-            activeCells.erase(activeCells.begin() + nextIndex);
+        if (index >= 0 && index < activeCells.size()) {
+            activeCells.erase(activeCells.begin() + index);
         }
     }
+
+    if (braided) {
+        for (int x = 1; x < maze->getHeight(); x += 2) {
+            for (int y = 1; y < maze->getWidth(); y += 2) {
+                cullDeadEnd(maze, std::make_pair(x, y));
+            }
+        }
+    }
+
     return maze;
 }
+
 
 void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
     for (int i = 0; i < alarmCount; ++i) {
@@ -82,17 +95,15 @@ void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
         while (!ok) {
             x = 1 + rnd() % (maze->getHeight() - 2);
             y = 1 + rnd() % (maze->getHeight() - 2);
-            if((x != 1 || y != 1) && maze->get(x, y) && !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))){
-                if(maze->getAlarmCount() == 0) ok = true;
+            if ((x != 1 || y != 1) && maze->get(x, y) &&
+                !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))) {
+                if (maze->getAlarmCount() == 0) ok = true;
                 else {
-                    for(int k = 0; k < maze->getAlarmCount(); ++k){
+                    for (int k = 0; k < maze->getAlarmCount(); ++k) {
                         Coordinates alm = maze->getAlarm(k);
-                        if(abs(x - alm.first) > 0.1 * maze->getHeight() && abs(y - alm.second) > 0.1 * maze->getWidth())
+                        if (abs(x - alm.first) > 0.1 * maze->getHeight() &&
+                            abs(y - alm.second) > 0.1 * maze->getWidth())
                             ok = true;
-                        // Il percorso tra ogni allarme dev'essere lungo almeno il 5% del numero di celle totali
-                        /*if(maze->solve(x, y, alm.first, alm.second) > (0.05 * maze->getHeight() * maze->getWidth())){
-                            ok = true;
-                        }*/
                     }
                 }
             }
@@ -103,4 +114,50 @@ void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
 }
 
 
+void MazeGenerator::cullDeadEnd(Maze *maze, Coordinates cell) {
+    int links = 0;
+    Coordinates neighbor = cell;
+    vector<Coordinates> candidates;
+    if (!maze->get(cell)) return;
 
+    if (neighbor.first > 2) {// Controllo Nord
+        neighbor.first -= 1;
+        if (maze->get(neighbor)) {
+            links++;
+        } else {
+            candidates.push_back(neighbor);
+        }
+    }
+    neighbor = cell;
+    if (neighbor.first < maze->getHeight() - 2) {// Controllo Sud
+        neighbor.first += 1;
+        if (maze->get(neighbor)) {
+            links++;
+        } else {
+            candidates.push_back(neighbor);
+        }
+    }
+    neighbor = cell;
+    if (neighbor.second > 2) {// Controllo Est
+        neighbor.second -= 1;
+        if (maze->get(neighbor)) {
+            links++;
+        } else {
+            candidates.push_back(neighbor);
+        }
+    }
+    neighbor = cell;
+    if (neighbor.second < maze->getWidth() - 2) {// Controllo Ovest
+        neighbor.second += 1;
+        if (maze->get(neighbor)) {
+            links++;
+        } else {
+            candidates.push_back(neighbor);
+        }
+    }
+    if (links == 1) {
+        std::shuffle(candidates.begin(), candidates.end(), rnd);
+        maze->set(candidates[0], true);
+    }
+
+}

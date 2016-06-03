@@ -5,7 +5,7 @@
 #pragma once
 
 
-#include <GL/gl.h>
+#include <GL/glut.h>
 #include "MazeGenerator.h"
 #include "MazeCamera.h"
 
@@ -58,12 +58,6 @@ private:
     static bool just_warped;
 
     static const float light_pos[4];
-
-    static GLubyte *wallTexture;
-    static GLubyte *floorTexture;
-    static GLubyte *ceilTexture;
-
-    static GLuint *textureIDs;
 
     // Costanti che definiscono la velocità di movimento/rotazione
     static const float g_translation_speed;

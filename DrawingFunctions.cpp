@@ -6,8 +6,9 @@
 #include <cmath>
 #include "DrawingFunctions.h"
 #include "TextureFunctions.h"
+#include "Settings.h"
 
-int DrawingFunctions::draw_distance = 15;
+int DrawingFunctions::draw_distance = Settings::getInstance()["DRAW_DISTANCE"];
 const float DrawingFunctions::PI = 3.14159265358979323846f;
 
 void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2) {

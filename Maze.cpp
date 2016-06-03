@@ -47,7 +47,7 @@ void Maze::set(int row, int col, bool val) {
 
 int correctPathLength = 0;
 
-int Maze::solve(int startX, int startY, int endX, int endY) {
+int Maze::pathLength(int startX, int startY, int endX, int endY) {
     correctPathLength = 0;
     for(int i = 0; i < wasHere.size(); ++i){
         wasHere[i].assign(wasHere[i].size(), false);

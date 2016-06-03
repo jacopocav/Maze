@@ -4,11 +4,12 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <GL/freeglut.h>
 #include "GlutFunctions.h"
 #include "TextureFunctions.h"
 #include "DrawingFunctions.h"
 #include "AudioFunctions.h"
-
+#include "Settings.h"
 
 Maze *GlutFunctions::m_maze;
 MazeCamera GlutFunctions::g_camera(nullptr);
@@ -29,8 +30,9 @@ const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 const float GlutFunctions::g_translation_speed = 0.0008;
 const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
-unsigned mazeX = 65, mazeY = 65;
-int alarmCount = 5;
+unsigned mazeX = static_cast<unsigned>(Settings::getInstance()["MAZE_SIZE_X"]),
+        mazeY = static_cast<unsigned>(Settings::getInstance()["MAZE_SIZE_Y"]);
+int alarmCount = Settings::getInstance()["ALARM_COUNT"];
 
 void GlutFunctions::InitGame() {
     if (m_maze != nullptr) delete m_maze;
@@ -43,7 +45,8 @@ void GlutFunctions::InitGame() {
         path << "res/audio/alarm" << i % 5 << ".wav";
         Coordinates alm = m_maze->getAlarm(i);
         name << "alarm" << alm.first << "_" << alm.second;
-        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true, 1.0f + ((i - (i % alarmCount)) / alarmCount * 0.3f));
+        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true,
+                                           1.0f + ((i - (i % alarmCount)) / alarmCount * 0.3f));
         AudioFunctions::SetSourcePosition(name.str(), alm.first * 0.4f - 0.4f, 0.0f, alm.second * -0.4f + 0.4f);
     }
 
@@ -52,26 +55,45 @@ void GlutFunctions::InitGame() {
     g_camera.SetPitch(0);
     g_camera.SetYaw(0);
 
-    timeLimit = GetTimeLimit(1, 1);//std::max(static_cast<int>(mazeX * mazeY * 60 + 10000), pathLength * 600);
+    timeLimit = GetTimeLimit(1, 1);
     currTime = glutGet(GLUT_ELAPSED_TIME);
+}
+
+int manhattanDistance(const Coordinates &pos1, const Coordinates &pos2) {
+    return abs(pos1.first - pos2.first) + abs(pos1.second - pos2.second);
 }
 
 int GlutFunctions::GetTimeLimit(int startX, int startY) {
     if (m_maze->getAlarmCount() == 0) return 0;
+    bool deadEnds = Settings::getInstance()["DEAD_ENDS"] == 1;
 
     int totalSteps = 0;
     for (int i = 0; i < m_maze->getAlarmCount(); ++i) {
         Coordinates alm = m_maze->getAlarm(i);
-        int tst = m_maze->solve(startX, startY, alm.first, alm.second);
-        totalSteps += tst;
+
+        if(deadEnds){
+            totalSteps += m_maze->pathLength(startX, startY, alm.first, alm.second);
+        } else {
+            totalSteps += manhattanDistance(std::make_pair(startX, startY), alm);
+        }
     }
-    int time = (totalSteps / m_maze->getAlarmCount()) * 1000;
-    //time = time - (time % 1000);
+    int time = (totalSteps / m_maze->getAlarmCount()) * (deadEnds ? 1000 : 2000);
     return time;
 }
 
+
 void GlutFunctions::Init() {
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    int AAFactor = Settings::getInstance()["MULTISAMPLING"];
+    if(AAFactor % 2 != 0){
+        AAFactor -= AAFactor % 2;
+    }
+    if(AAFactor > 0){
+        glutSetOption(GLUT_MULTISAMPLE, 4);
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE);
+        glEnable(GLUT_MULTISAMPLE);
+    } else {
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    }
     glutInitWindowSize(1024, 768);
     glutCreateWindow("SPAZIO per attivare/disattivare controlli FPS");
 
@@ -198,7 +220,7 @@ void GlutFunctions::Keyboard(unsigned char key, int, int) {
         exit(0);
     }
 
-    if(key == 'r' || key == 'R'){
+    if (key == 'r' || key == 'R') {
         GameOver(false);
     }
 
@@ -280,13 +302,15 @@ void GlutFunctions::Timer(int) {
         else if (g_key['d'] || g_key['D']) {
             g_camera.Strafe(-g_translation_speed * timeDiff);
         }
-        if (g_mouse_left_down) {
-            g_camera.Fly(-2 * g_translation_speed * timeDiff);
-        }
-        else if (g_mouse_right_down) {
-            g_camera.Fly(2 * g_translation_speed * timeDiff);
-        }
 
+        if(Settings::getInstance()["ENABLE_FLIGHT"] != 0) {
+            if (g_mouse_left_down) {
+                g_camera.Fly(-2 * g_translation_speed * timeDiff);
+            }
+            else if (g_mouse_right_down) {
+                g_camera.Fly(2 * g_translation_speed * timeDiff);
+            }
+        }
         if (g_special_key[0]) {
             g_camera.RotatePitch(-g_rotation_speed * timeDiff);
         }
@@ -333,6 +357,10 @@ void GlutFunctions::UpdateGameStatus(int timeDiff) {
         windowTitle << "  Posizione: (";
         windowTitle << pos.first << ", ";
         windowTitle << pos.second << ")";
+
+        /*float camPos[3] = {0, 0, 0};
+        g_camera.GetPos(camPos[0], camPos[1], camPos[2]);
+        windowTitle << " [" << camPos[0] << ", " << camPos[1] << ", " << camPos[2] << "]";*/
 
         windowTitle << "  Allarmi rimanenti: " << m_maze->getAlarmCount();
 

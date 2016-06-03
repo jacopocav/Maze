@@ -51,5 +51,5 @@ public:
 
     bool isAlarm(Coordinates pos) const;
 
-    int solve(int startX, int startY, int endX, int endY);
+    int pathLength(int startX, int startY, int endX, int endY);
 };
