@@ -3,9 +3,9 @@ project(Maze)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -static-libgcc -static-libstdc++")
 
-set(SOURCE_FILES main.cpp Camera.h Camera.cpp MazeGenerator.cpp MazeGenerator.h Maze.cpp Maze.h GlutFunctions.cpp
-        GlutFunctions.h MazeCamera.cpp MazeCamera.h TextureFunctions.cpp TextureFunctions.h DrawingFunctions.cpp
-        DrawingFunctions.h AudioFunctions.cpp AudioFunctions.h Settings.cpp Settings.h)
+set(SOURCE_FILES main.cpp Camera.h Camera.cpp MazeGenerator.cpp MazeGenerator.h Maze.cpp Maze.h BigMess.cpp
+        BigMess.h MazeCamera.cpp MazeCamera.h Textures.cpp Textures.h Drawing.cpp
+        Drawing.h AudioFunctions.cpp AudioFunctions.h Settings.cpp Settings.h)
 add_executable(Maze WIN32 ${SOURCE_FILES})
 
 find_package(OpenGL REQUIRED)

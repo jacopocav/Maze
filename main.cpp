@@ -2,7 +2,7 @@
 #include <iostream>
 #include <AL/alut.h>
 
-#include "GlutFunctions.h"
+#include "BigMess.h"
 
 using namespace std;
 
@@ -10,6 +10,6 @@ using namespace std;
 int main(int argc, char **argv) {
     glutInit(&argc, argv);
     alutInit(&argc, argv);
-    GlutFunctions::Init();
+    BigMess::Init();
     return 0;
 }

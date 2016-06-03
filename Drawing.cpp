@@ -4,15 +4,15 @@
 
 #include <GL/gl.h>
 #include <cmath>
-#include "DrawingFunctions.h"
-#include "TextureFunctions.h"
+#include "Drawing.h"
+#include "Textures.h"
 #include "Settings.h"
 
-int DrawingFunctions::draw_distance = Settings::getInstance()["DRAW_DISTANCE"];
-const float DrawingFunctions::PI = 3.14159265358979323846f;
+int Drawing::draw_distance = Settings::getInstance()["DRAW_DISTANCE"];
+const float Drawing::PI = 3.14159265358979323846f;
 
-void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z2) {
-    TextureFunctions::BindTexture("floor");
+void Drawing::DrawFloor(float x1, float x2, float y1, float z1, float z2) {
+    Textures::BindTexture("floor");
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_QUADS);
 
@@ -33,8 +33,8 @@ void DrawingFunctions::DrawFloor(float x1, float x2, float y1, float z1, float z
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2) {
-    TextureFunctions::BindTexture("ceil");
+void Drawing::DrawCeil(float x1, float x2, float y1, float z1, float z2) {
+    Textures::BindTexture("ceil");
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_QUADS);
 
@@ -55,9 +55,9 @@ void DrawingFunctions::DrawCeil(float x1, float x2, float y1, float z1, float z2
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
+void Drawing::DrawCube(float x1, float x2, float y1, float y2, float z1, float z2) {
 
-    TextureFunctions::BindTexture("wall");
+    Textures::BindTexture("wall");
     glBegin(GL_QUADS);
     glColor3f(1.0, 1.0, 1.0);
     //glColor3f(1,0,0);
@@ -129,12 +129,12 @@ void DrawingFunctions::DrawCube(float x1, float x2, float y1, float y2, float z1
 
 
     glEnd();
-    TextureFunctions::BindTexture("0");
+    Textures::BindTexture("0");
 
 }
 
 
-void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
+void Drawing::DrawMaze(Maze *maze, int pos_x, int pos_y) {
     int min_x = 0, max_x = maze->getHeight(), min_y = 0, max_y = maze->getWidth();
 
     if ((pos_x - draw_distance) > min_x)
@@ -152,7 +152,7 @@ void DrawingFunctions::DrawMaze(Maze *maze, int pos_x, int pos_y) {
                 DrawCube(0.4f * i, 0.4f * (i + 1), -0.2f, 0.2, -0.4f * j, -0.4f * (j + 1));
             else {
                 if (maze->isAlarm(static_cast<unsigned>(i), static_cast<unsigned>(j))) {
-                    TextureFunctions::BindTexture("0");
+                    Textures::BindTexture("0");
                     float time = static_cast<float>(glutGet(GLUT_ELAPSED_TIME)) / 1000;
                     int intime = static_cast<int>(time);
                     time = time - intime;

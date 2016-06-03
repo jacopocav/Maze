@@ -42,7 +42,8 @@ Settings::Settings() {
     cfg.open(settingsFilePath);
 
     std::string line;
-    while (std::getline(cfg, line, '\n')) {
+    while (std::getline(cfg, line, '\n')) { // Legge il file linea per linea
+
         // Se è presente il carattere windows \r lo elimina
         if (line.length() > 0 && line[line.length() - 1] == '\r')
             line.erase(line.length() - 1);
@@ -55,23 +56,21 @@ Settings::Settings() {
 
         auto equal = line.find('='); // Posizione del segno uguale nella stringa (NOME = valore)
 
-        if (equal != std::string::npos) {
+        if (equal != std::string::npos) { // Se c'è il segno '=', l'impostazione è ben formata
             std::string name = line.substr(0, equal);
             int value;
 
-            try { // Prova a convertire il valore in intero
+            try { // Prova a convertire il valore in intero. Se non ci riesce, gli viene assegnato -1
                 value = stoi(line.substr(equal + 1));
             } catch (const std::exception &ex) {
                 value = -1;
             }
 
-            if (defaults.find(name) != defaults.end()) { // Il nome dell'impostazione è valido
+            if (defaults.find(name) != defaults.end()) { // Se il nome dell'impostazione è valido
 
-                if (minimums.find(name) != minimums.end() && value < minimums.at(name)) {
-                    // L'impostazione ha valore troppo basso: usa il valore di default
-                    value = defaults.at(name);
-                } else if (maximums.find(name) != maximums.end() && value > maximums.at(name)) {
-                    // L'impostazione ha valore troppo alto: usa il valore di default
+                if (minimums.find(name) != minimums.end() && value < minimums.at(name) ||
+                        maximums.find(name) != maximums.end() && value > maximums.at(name)) {
+                    // Il valore dell'impostazione è troppo alto o basso: viene usato quello predefinito
                     value = defaults.at(name);
                 }
 
@@ -85,25 +84,19 @@ Settings::Settings() {
     cfg.close();
 }
 
-Settings &Settings::getInstance() {
+Settings& Settings::getInstance() {
     // instance viene inizializzato solo alla prima invocazione, dopo viene riutilizzato
-    // alla fine dell'esecuzione del programma viene distrutta
+    // Alla fine dell'esecuzione del programma viene distrutta automaticamente
     static Settings instance;
     return instance;
 }
 
-int Settings::getSettingValue(std::string name) const {
-    if (settingsMap.find(name) != settingsMap.end()) return settingsMap.at(name);
-
-    if (defaults.find(name) != defaults.end()) return defaults.at(name);
-
-    return -1;
-}
-
 int Settings::operator[](std::string name) const {
+    // Se l'impostazione è stata letta correttamente, ne viene restituito il valore
     if (settingsMap.find(name) != settingsMap.end()) return settingsMap.at(name);
-
+    // Altrimenti usa quello di default
     if (defaults.find(name) != defaults.end()) return defaults.at(name);
 
+    // Se il nome dell'impostazione è errato, ritorna -1
     return -1;
 }

@@ -4,19 +4,19 @@
 
 #include <fstream>
 #include <iostream>
-#include "TextureFunctions.h"
+#include "Textures.h"
 
-GLuint *TextureFunctions::textures;
-int TextureFunctions::textureCount;
-std::map<std::string, int> TextureFunctions::textureTable;
+GLuint *Textures::textures;
+int Textures::textureCount;
+std::map<std::string, int> Textures::textureTable;
 
-void TextureFunctions::InitTextures(int texCount) {
+void Textures::InitTextures(int texCount) {
     textures = new GLuint[texCount];
     glGenTextures(texCount, textures);
     textureCount = texCount;
 }
 
-void TextureFunctions::ReadFromBMP(std::string path, int textureIndex, std::string name = "") {
+void Textures::ReadFromBMP(std::string path, int textureIndex, std::string name = "") {
     // Data read from the header of the BMP file
     unsigned char header[54]; // Each BMP file begins by a 54-bytes header
     unsigned dataPos;     // Position in the file where the actual data begins
@@ -80,14 +80,14 @@ void TextureFunctions::ReadFromBMP(std::string path, int textureIndex, std::stri
     delete data;
 }
 
-void TextureFunctions::BindTexture(int textureIndex) {
+void Textures::BindTexture(int textureIndex) {
     if (textureIndex < textureCount && textureIndex >= 0)
         glBindTexture(GL_TEXTURE_2D, textures[textureIndex]);
     else
         glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void TextureFunctions::BindTexture(std::string name) {
+void Textures::BindTexture(std::string name) {
     if (name == "0") {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
@@ -97,7 +97,7 @@ void TextureFunctions::BindTexture(std::string name) {
     }
 }
 
-void TextureFunctions::ResetTextures() {
+void Textures::ResetTextures() {
     glDeleteTextures(textureCount, textures);
     delete textures;
     textureTable.clear();

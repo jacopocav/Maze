@@ -5,36 +5,36 @@
 #include <iomanip>
 #include <cmath>
 #include <GL/freeglut.h>
-#include "GlutFunctions.h"
-#include "TextureFunctions.h"
-#include "DrawingFunctions.h"
+#include "BigMess.h"
+#include "Textures.h"
+#include "Drawing.h"
 #include "AudioFunctions.h"
 #include "Settings.h"
 
-Maze *GlutFunctions::m_maze;
-MazeCamera GlutFunctions::g_camera(nullptr);
-int GlutFunctions::currTime;
-int GlutFunctions::timeLimit;
-bool GlutFunctions::g_key[256] = {};
-bool GlutFunctions::g_special_key[4] = {};
-bool GlutFunctions::g_fps_mode = false;
-int GlutFunctions::g_viewport_width = 0;
-int GlutFunctions::g_viewport_height = 0;
-bool GlutFunctions::g_mouse_left_down = false;
-bool GlutFunctions::g_mouse_right_down = false;
+Maze *BigMess::m_maze;
+MazeCamera BigMess::g_camera(nullptr);
+int BigMess::currTime;
+int BigMess::timeLimit;
+bool BigMess::g_key[256] = {};
+bool BigMess::g_special_key[4] = {};
+bool BigMess::g_fps_mode = false;
+int BigMess::g_viewport_width = 0;
+int BigMess::g_viewport_height = 0;
+bool BigMess::g_mouse_left_down = false;
+bool BigMess::g_mouse_right_down = false;
 
-bool GlutFunctions::just_warped = false;
+bool BigMess::just_warped = false;
 
-const float GlutFunctions::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+const float BigMess::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-const float GlutFunctions::g_translation_speed = 0.0008;
-const float GlutFunctions::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
+const float BigMess::g_translation_speed = 0.0008;
+const float BigMess::g_rotation_speed = Camera::M_PI / 180 * 0.15f;
 
 unsigned mazeX = static_cast<unsigned>(Settings::getInstance()["MAZE_SIZE_X"]),
         mazeY = static_cast<unsigned>(Settings::getInstance()["MAZE_SIZE_Y"]);
 int alarmCount = Settings::getInstance()["ALARM_COUNT"];
 
-void GlutFunctions::InitGame() {
+void BigMess::InitGame() {
     if (m_maze != nullptr) delete m_maze;
     m_maze = MazeGenerator::generateMaze(mazeX, mazeY);
     MazeGenerator::addAlarmsToMaze(m_maze, alarmCount);
@@ -63,7 +63,7 @@ int manhattanDistance(const Coordinates &pos1, const Coordinates &pos2) {
     return abs(pos1.first - pos2.first) + abs(pos1.second - pos2.second);
 }
 
-int GlutFunctions::GetTimeLimit(int startX, int startY) {
+int BigMess::GetTimeLimit(int startX, int startY) {
     if (m_maze->getAlarmCount() == 0) return 0;
     bool deadEnds = Settings::getInstance()["DEAD_ENDS"] == 1;
 
@@ -82,7 +82,7 @@ int GlutFunctions::GetTimeLimit(int startX, int startY) {
 }
 
 
-void GlutFunctions::Init() {
+void BigMess::Init() {
     int AAFactor = Settings::getInstance()["MULTISAMPLING"];
     if(AAFactor % 2 != 0){
         AAFactor -= AAFactor % 2;
@@ -101,17 +101,17 @@ void GlutFunctions::Init() {
     glClearColor(0, 0, 0, 1.0f);
 
     // Assegnazione callback
-    glutDisplayFunc(GlutFunctions::Display);
-    glutIdleFunc(GlutFunctions::Idle);
-    glutReshapeFunc(GlutFunctions::Reshape);
-    glutMouseFunc(GlutFunctions::Mouse);
-    glutMotionFunc(GlutFunctions::MouseMotion);
-    glutPassiveMotionFunc(GlutFunctions::MouseMotion);
-    glutKeyboardFunc(GlutFunctions::Keyboard);
-    glutKeyboardUpFunc(GlutFunctions::KeyboardUp);
-    glutSpecialFunc(GlutFunctions::KeyboardSpecial);
-    glutSpecialUpFunc(GlutFunctions::KeyboardSpecialUp);
-    glutTimerFunc(16, GlutFunctions::Timer, 0);
+    glutDisplayFunc(BigMess::Display);
+    glutIdleFunc(BigMess::Idle);
+    glutReshapeFunc(BigMess::Reshape);
+    glutMouseFunc(BigMess::Mouse);
+    glutMotionFunc(BigMess::MouseMotion);
+    glutPassiveMotionFunc(BigMess::MouseMotion);
+    glutKeyboardFunc(BigMess::Keyboard);
+    glutKeyboardUpFunc(BigMess::KeyboardUp);
+    glutSpecialFunc(BigMess::KeyboardSpecial);
+    glutSpecialUpFunc(BigMess::KeyboardSpecialUp);
+    glutTimerFunc(16, BigMess::Timer, 0);
 
     // Configurazione camera
     glMatrixMode(GL_PROJECTION);
@@ -147,10 +147,10 @@ void GlutFunctions::Init() {
 
     glEnable(GL_TEXTURE_2D);
 
-    TextureFunctions::InitTextures(3);
-    TextureFunctions::ReadFromBMP("res/texture/alt_floor.bmp", 1, "floor");
-    TextureFunctions::ReadFromBMP("res/texture/lux_wall.bmp", 0, "wall");
-    TextureFunctions::ReadFromBMP("res/texture/lux_ceil.bmp", 2, "ceil");
+    Textures::InitTextures(3);
+    Textures::ReadFromBMP("res/texture/alt_floor.bmp", 1, "floor");
+    Textures::ReadFromBMP("res/texture/lux_wall.bmp", 0, "wall");
+    Textures::ReadFromBMP("res/texture/lux_ceil.bmp", 2, "ceil");
 
 
     AudioFunctions::InitSources(0);
@@ -168,7 +168,7 @@ vector<float> crossVector(const vector<float> &a, const vector<float> &b) {
 }
 
 
-void GlutFunctions::Display(void) {
+void BigMess::Display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -194,13 +194,13 @@ void GlutFunctions::Display(void) {
 
     Coordinates pos = g_camera.getMazeCoordinates();
 
-    DrawingFunctions::DrawMaze(m_maze, pos.first, pos.second);
+    Drawing::DrawMaze(m_maze, pos.first, pos.second);
 
     glutSwapBuffers();
 }
 
 
-void GlutFunctions::Reshape(int w, int h) {
+void BigMess::Reshape(int w, int h) {
     g_viewport_width = w;
     g_viewport_height = h;
 
@@ -214,7 +214,7 @@ void GlutFunctions::Reshape(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void GlutFunctions::Keyboard(unsigned char key, int, int) {
+void BigMess::Keyboard(unsigned char key, int, int) {
     if (key == 27) {
         Cleanup();
         exit(0);
@@ -242,11 +242,11 @@ void GlutFunctions::Keyboard(unsigned char key, int, int) {
     g_key[key] = true;
 }
 
-void GlutFunctions::KeyboardUp(unsigned char key, int, int) {
+void BigMess::KeyboardUp(unsigned char key, int, int) {
     g_key[key] = false;
 }
 
-void GlutFunctions::KeyboardSpecial(int key, int, int) {
+void BigMess::KeyboardSpecial(int key, int, int) {
     switch (key) {
         case GLUT_KEY_UP:
             g_special_key[0] = true;
@@ -265,7 +265,7 @@ void GlutFunctions::KeyboardSpecial(int key, int, int) {
     }
 }
 
-void GlutFunctions::KeyboardSpecialUp(int key, int, int) {
+void BigMess::KeyboardSpecialUp(int key, int, int) {
     switch (key) {
         case GLUT_KEY_UP:
             g_special_key[0] = false;
@@ -285,7 +285,7 @@ void GlutFunctions::KeyboardSpecialUp(int key, int, int) {
 }
 
 
-void GlutFunctions::Timer(int) {
+void BigMess::Timer(int) {
     int newTime = glutGet(GLUT_ELAPSED_TIME);
     int timeDiff = newTime - currTime;
     currTime = newTime;
@@ -330,7 +330,7 @@ void GlutFunctions::Timer(int) {
     glutTimerFunc(16, Timer, 0);
 }
 
-void GlutFunctions::UpdateGameStatus(int timeDiff) {
+void BigMess::UpdateGameStatus(int timeDiff) {
     Coordinates pos = g_camera.getMazeCoordinates();
 
     timeLimit -= timeDiff;
@@ -368,7 +368,7 @@ void GlutFunctions::UpdateGameStatus(int timeDiff) {
     }
 }
 
-void GlutFunctions::GameOver(bool win) {
+void BigMess::GameOver(bool win) {
     std::stringstream windowTitle;
     if (!win) windowTitle << "Tempo Scaduto! Hai perso!";
     else windowTitle << "Hai vinto!!!";
@@ -382,11 +382,11 @@ void GlutFunctions::GameOver(bool win) {
     InitGame();
 }
 
-void GlutFunctions::Idle() {
+void BigMess::Idle() {
     Display();
 }
 
-void GlutFunctions::Mouse(int button, int state, int, int) {
+void BigMess::Mouse(int button, int state, int, int) {
     if (state == GLUT_DOWN) {
         if (button == GLUT_LEFT_BUTTON) {
             g_mouse_left_down = true;
@@ -405,7 +405,7 @@ void GlutFunctions::Mouse(int button, int state, int, int) {
     }
 }
 
-void GlutFunctions::MouseMotion(int x, int y) {
+void BigMess::MouseMotion(int x, int y) {
     if (just_warped) {
         just_warped = false;
         return;
@@ -429,9 +429,9 @@ void GlutFunctions::MouseMotion(int x, int y) {
     }
 }
 
-void GlutFunctions::Cleanup() {
+void BigMess::Cleanup() {
     delete m_maze;
-    TextureFunctions::ResetTextures();
+    Textures::ResetTextures();
     AudioFunctions::StopAll();
     AudioFunctions::ResetSources();
 }

@@ -7,7 +7,7 @@
 
 #include "Maze.h"
 
-class DrawingFunctions {
+class Drawing {
 private:
     static int draw_distance;
     static const float PI;

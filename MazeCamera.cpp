@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "MazeCamera.h"
-#include "GlutFunctions.h"
+#include "BigMess.h"
 #include <GL/glut.h>
 #include <string>
 

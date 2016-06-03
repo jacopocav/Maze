@@ -9,7 +9,7 @@
 #include "MazeGenerator.h"
 #include "MazeCamera.h"
 
-class GlutFunctions {
+class BigMess {
 public:
     static void Init();
 
