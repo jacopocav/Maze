@@ -6,7 +6,7 @@
 
 
 #include "Camera.h"
-#include "Maze.h"
+#include "../logic/Maze.h"
 
 class MazeCamera : public Camera {
 public:

@@ -5,7 +5,7 @@
 #pragma once
 
 
-#include "Maze.h"
+#include "../logic/Maze.h"
 
 class Drawing {
 private:

@@ -6,7 +6,7 @@
 
 
 #include <GL/glut.h>
-#include "MazeGenerator.h"
+#include "../logic/MazeGenerator.h"
 #include "MazeCamera.h"
 
 class BigMess {

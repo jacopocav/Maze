@@ -6,7 +6,7 @@
 #include <cmath>
 #include "Drawing.h"
 #include "Textures.h"
-#include "Settings.h"
+#include "../logic/Settings.h"
 
 int Drawing::draw_distance = Settings::getInstance()["DRAW_DISTANCE"];
 const float Drawing::PI = 3.14159265358979323846f;

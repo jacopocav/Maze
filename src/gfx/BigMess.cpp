@@ -8,8 +8,10 @@
 #include "BigMess.h"
 #include "Textures.h"
 #include "Drawing.h"
-#include "AudioFunctions.h"
-#include "Settings.h"
+#include "../logic/Settings.h"
+#include "../audio/buffer.h"
+#include "../audio/manager.h"
+#include "../audio/listener.h"
 
 Maze *BigMess::m_maze;
 MazeCamera BigMess::g_camera(nullptr);
@@ -25,6 +27,9 @@ bool BigMess::g_mouse_right_down = false;
 
 bool BigMess::just_warped = false;
 
+std::vector<audio::buffer> bufs;
+std::map<Coordinates, audio::source> alms;
+
 const float BigMess::light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 const float BigMess::g_translation_speed = 0.0008;
@@ -38,17 +43,8 @@ void BigMess::InitGame() {
     if (m_maze != nullptr) delete m_maze;
     m_maze = MazeGenerator::generateMaze(mazeX, mazeY);
     MazeGenerator::addAlarmsToMaze(m_maze, alarmCount);
-    AudioFunctions::InitSources(alarmCount);
 
-    for (int i = 0; i < alarmCount; ++i) {
-        std::stringstream path, name;
-        path << "res/audio/alarm" << i % 5 << ".wav";
-        Coordinates alm = m_maze->getAlarm(i);
-        name << "alarm" << alm.first << "_" << alm.second;
-        AudioFunctions::LoadSourceFromFile(path.str(), i, name.str(), true,
-                                           1.0f + ((i - (i % alarmCount)) / alarmCount * 0.3f));
-        AudioFunctions::SetSourcePosition(name.str(), alm.first * 0.4f - 0.4f, 0.0f, alm.second * -0.4f + 0.4f);
-    }
+    alms = audio::manager::BindSourcesToAlarms(m_maze, bufs);
 
     g_camera.SetMaze(m_maze);
     g_camera.SetPos(0, 0, 0);
@@ -152,8 +148,7 @@ void BigMess::Init() {
     Textures::ReadFromBMP("res/texture/lux_wall.bmp", 0, "wall");
     Textures::ReadFromBMP("res/texture/lux_ceil.bmp", 2, "ceil");
 
-
-    AudioFunctions::InitSources(0);
+    bufs = audio::manager::Init();
     InitGame();
 
     glutMainLoop();
@@ -177,13 +172,13 @@ void BigMess::Display(void) {
 
     float cpos[3] = {0, 0, 0};
     g_camera.GetPos(cpos[0], cpos[1], cpos[2]);
-    AudioFunctions::SetListenerPosition(cpos[0], cpos[1], cpos[2]);
+    audio::listener::SetPosition(cpos[0], cpos[1], cpos[2]);
 
     vector<float> at = {0, 0, 0};
     g_camera.GetDirectionVector(at[0], at[1], at[2]);
     auto right = crossVector(at, {0, 1, 0});
     auto up = crossVector(right, at);
-    AudioFunctions::SetListenerOrientation(at[0], at[1], at[2], up[0], up[1], up[2]);
+    audio::listener::SetOrientation(at[0], at[1], at[2], up[0], up[1], up[2]);
 
     glTranslatef(-0.6f, 0, 0.6);
 
@@ -228,12 +223,16 @@ void BigMess::Keyboard(unsigned char key, int, int) {
         g_fps_mode = !g_fps_mode;
 
         if (g_fps_mode) {
-            AudioFunctions::PlayAll();
+            for(auto it = alms.begin(); it != alms.end(); ++it){
+                it->second.play();
+            }
             glutSetCursor(GLUT_CURSOR_NONE);
             glutWarpPointer(g_viewport_width / 2, g_viewport_height / 2);
         }
         else {
-            AudioFunctions::PauseAll();
+            for(auto it = alms.begin(); it != alms.end(); ++it){
+                it->second.pause();
+            }
             glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
         }
     }
@@ -339,9 +338,8 @@ void BigMess::UpdateGameStatus(int timeDiff) {
 
     if (m_maze->isAlarm(pos)) {
         m_maze->removeAlarm(pos);
-        std::stringstream name;
-        name << "alarm" << pos.first << "_" << pos.second;
-        AudioFunctions::RemoveSource(name.str());
+        alms.at(pos).release();
+        alms.erase(pos);
         if (m_maze->getAlarmCount() > 0) {
             timeLimit = std::max(timeLimit, GetTimeLimit(pos.first, pos.second));
         }
@@ -373,8 +371,10 @@ void BigMess::GameOver(bool win) {
     if (!win) windowTitle << "Tempo Scaduto! Hai perso!";
     else windowTitle << "Hai vinto!!!";
     windowTitle << " Premi SPAZIO per cominciare una nuova partita.";
-    AudioFunctions::StopAll();
-    AudioFunctions::ResetSources();
+
+    for(auto it = alms.begin(); it != alms.end(); ++it){
+        it->second.release();
+    }
 
     g_fps_mode = false;
     glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
@@ -432,6 +432,12 @@ void BigMess::MouseMotion(int x, int y) {
 void BigMess::Cleanup() {
     delete m_maze;
     Textures::ResetTextures();
-    AudioFunctions::StopAll();
-    AudioFunctions::ResetSources();
+
+    for(auto it = alms.begin(); it != alms.end(); ++it){
+        it->second.release();
+    }
+
+    for(auto it = bufs.begin(); it != bufs.end(); ++it){
+        it->release();
+    }
 }
