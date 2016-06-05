@@ -5,10 +5,10 @@
 #pragma once
 
 namespace audio {
-    class listener {
+    class Listener {
     public:
-        static void SetOrientation(float atx, float aty, float atz, float upx, float upy, float upz);
+        static void setOrientation(float atx, float aty, float atz, float upx, float upy, float upz);
 
-        static void SetPosition(float x, float y, float z);
+        static void setPosition(float x, float y, float z);
     };
 }

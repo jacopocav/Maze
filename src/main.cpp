@@ -2,7 +2,7 @@
 #include <iostream>
 #include <AL/alut.h>
 
-#include "gfx/BigMess.h"
+#include "BigMess.h"
 
 using namespace std;
 
@@ -19,11 +19,11 @@ int main(int argc, char **argv) {
 #include <AL/alut.h>
 #include <map>
 
-#include "audio/buffer.h"
-#include "audio/source.h"
-#include "audio/listener.h"
-#include "audio/manager.h"
-#include "logic/MazeGenerator.h"
+#include "audio/buffer_.h"
+#include "audio/Source.h"
+#include "audio/Listener.h"
+#include "audio/Manager.h"
+#include "game/MazeGenerator.h"
 
 using namespace std;
 
@@ -32,10 +32,10 @@ int main(int argc, char **argv) {
     alutInit(&argc, argv);
     alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 
-    auto bufs = audio::manager::Init();
+    auto bufs = audio::Manager::init();
     Maze* m = MazeGenerator::generateMaze(65, 65);
     MazeGenerator::addAlarmsToMaze(m, 5);
-    std::map<Coordinates, audio::source> almMaps = audio::manager::BindSourcesToAlarms(m, bufs);
+    std::map<Coordinates, audio::Source> almMaps = audio::Manager::bindSourcesToAlarms(m, bufs);
 
     for(auto it = almMaps.begin(); it != almMaps.end(); ++it){
         it->second.play();

@@ -8,36 +8,36 @@
 #include <chrono>
 
 // Il motore di numeri casuali viene inizializzato usando l'ora di sistema
-std::default_random_engine MazeGenerator::rnd(
+std::default_random_engine game::MazeGenerator::rndEngine_(
         static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
 
-std::uniform_real_distribution<float> MazeGenerator::distribution(0.0, 1.0);
-bool MazeGenerator::braided = Settings::getInstance()["DEAD_ENDS"] == 0;
-const float MazeGenerator::randomness = static_cast<float>(Settings::getInstance()["MAZE_RANDOMNESS"]) / 100;
+std::uniform_real_distribution<float> game::MazeGenerator::distribution_(0.0, 1.0);
+bool game::MazeGenerator::braidedMaze_ = Settings::getInstance()["DEAD_ENDS"] == 0;
+const float game::MazeGenerator::mazeRandomness_ = static_cast<float>(Settings::getInstance()["MAZE_RANDOMNESS"]) / 100;
 
-Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
+game::Maze *game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
     // activeCells contiene tutte le celle che sono in fase di analisi dall'algoritmo
     // L'algoritmo finirà quando activeCells sarà vuoto
     auto activeCells = std::vector<Coordinates>();
 
-    vector<Direction> directions = {N, S, E, W};
+    std::vector<Direction> directions = {N, S, E, W};
 
-    Maze *maze = new Maze(height, width);
+    game::Maze *maze = new Maze(height, width);
 
     // L'algoritmo comincia a "scavare" dalla cella di inizio
     activeCells.push_back(Coordinates(1, 1));
 
     while (!activeCells.empty()) {
         // Mischia le direzioni, in questo modo ne verrà scelta una casuale ogni volta
-        std::shuffle(directions.begin(), directions.end(), rnd);
-        float random = distribution(rnd); // Valore di scelta casuale
+        std::shuffle(directions.begin(), directions.end(), rndEngine_);
+        float random = distribution_(rndEngine_); // Valore di scelta casuale
         int index;
 
         // Per scegliere la cella da esaminare da activeCells, si sceglie:
-        // Una cella qualsiasi, con probabilità randomness
-        // L'ultima cella inserita in activeCells, con probabilità 1 - randomness
-        if (random < randomness && activeCells.size() > 1) {
-            index = rnd() % (activeCells.size() - 1);
+        // Una cella qualsiasi, con probabilità mazeRandomness_
+        // L'ultima cella inserita in activeCells, con probabilità 1 - mazeRandomness_
+        if (random < mazeRandomness_ && activeCells.size() > 1) {
+            index = rndEngine_() % (activeCells.size() - 1);
         } else {
             index = activeCells.size() - 1;
         }
@@ -88,7 +88,7 @@ Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
         }
     }
 
-    if (braided) { // Se l'utente ha disattivato i vicoli ciechi, ora vengono rimossi
+    if (braidedMaze_) { // Se l'utente ha disattivato i vicoli ciechi, ora vengono rimossi
         for (int x = 1; x < maze->getHeight(); x += 2) {
             for (int y = 1; y < maze->getWidth(); y += 2) {
                 cullDeadEnd(maze, std::make_pair(x, y));
@@ -100,14 +100,14 @@ Maze *MazeGenerator::generateMaze(unsigned height, unsigned width) {
 }
 
 
-void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
+void game::MazeGenerator::addAlarmsToMaze(game::Maze *maze, int alarmCount) {
     for (int i = 0; i < alarmCount; ++i) {
         int x = 0, y = 0;
         bool ok = false;
         while (!ok) {
             // Vengono scelte coordinate casuali
-            x = 1 + rnd() % (maze->getHeight() - 2);
-            y = 1 + rnd() % (maze->getHeight() - 2);
+            x = 1 + rndEngine_() % (maze->getHeight() - 2);
+            y = 1 + rndEngine_() % (maze->getHeight() - 2);
 
             /* Le nuove coordinate non devono coincidere con il punto di inizio del giocatore,
              * non devono essere in corrispondenza di un muro,
@@ -135,13 +135,13 @@ void MazeGenerator::addAlarmsToMaze(Maze *maze, int alarmCount) {
 }
 
 
-void MazeGenerator::cullDeadEnd(Maze *maze, Coordinates cell) {
+void game::MazeGenerator::cullDeadEnd(game::Maze *maze, Coordinates cell) {
     int links = 0; /* Numero di celle percorribili adiacenti a cell
                     * Se la cella ha solo 1 vicino percorribile, allora è un vicolo cieco
                     */
 
     Coordinates neighbor = cell;
-    vector<Coordinates> candidates; // Muri circostanti alla cella candidati all'abbattimento
+    std::vector<Coordinates> candidates; // Muri circostanti alla cella candidati all'abbattimento
 
     if (!maze->get(cell)) return; // La cella è un muro
 
@@ -181,7 +181,7 @@ void MazeGenerator::cullDeadEnd(Maze *maze, Coordinates cell) {
         }
     }
     if (links == 1) { // Se la cella è un vicolo cieco, viene abbattuto un muro a lei adiacente, in maniera casuale
-        std::shuffle(candidates.begin(), candidates.end(), rnd);
+        std::shuffle(candidates.begin(), candidates.end(), rndEngine_);
         maze->set(candidates[0], true);
     }
 

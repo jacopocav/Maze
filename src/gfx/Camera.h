@@ -3,44 +3,45 @@
 /*
 Generic camera class by Nghia Ho
 */
+namespace gfx {
+    class Camera {
+    public:
+        Camera() { init(); }
 
-class Camera {
-public:
-    Camera() { Init(); }
+        virtual ~Camera() { }
 
-    virtual ~Camera() { }
+        static const float PI;
+        static const float PI_2;
 
-    static const float M_PI;
-    static const float M_PI_2;
+        void init();
 
-    void Init();
+        void refresh();
 
-    void Refresh();
+        void setPos(float x, float y, float z);
 
-    void SetPos(float x, float y, float z);
+        void getPos(float &x, float &y, float &z);
 
-    void GetPos(float &x, float &y, float &z);
+        void getDirectionVector(float &x, float &y, float &z);
 
-    void GetDirectionVector(float &x, float &y, float &z);
+        void setYaw(float angle);
 
-    void SetYaw(float angle);
+        void setPitch(float angle);
 
-    void SetPitch(float angle);
+        // Navigation
+        virtual void move(float incr);
 
-    // Navigation
-    virtual void Move(float incr);
+        virtual void strafe(float incr);
 
-    virtual void Strafe(float incr);
+        virtual void fly(float incr);
 
-    virtual void Fly(float incr);
+        void rotateYaw(float angle);
 
-    void RotateYaw(float angle);
+        void rotatePitch(float angle);
 
-    void RotatePitch(float angle);
-
-protected:
-    float m_x, m_y, m_z;   // Position
-    float m_lx, m_ly, m_lz; // Direction vector of where we are looking at
-    float m_yaw, m_pitch; // Various rotation angles
-    float m_strafe_lx, m_strafe_lz; // Always 90 degree to direction vector
-};
+    protected:
+        float x_, y_, z_;   // Position
+        float lx_, ly_, lz_; // Direction vector of where we are looking at
+        float yaw_, pitch_; // Various rotation angles
+        float strafeLx_, strafeLz_; // Always 90 degree to direction vector
+    };
+}

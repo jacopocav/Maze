@@ -6,17 +6,16 @@
 
 
 #include <AL/al.h>
-#include "buffer.h"
+#include "Buffer.h"
 
 namespace audio {
 
-    class source {
+    class Source {
     private:
-        ALuint id;
-        audio::buffer buffer;
-        float x, y, z;
+        ALuint id_;
+        audio::Buffer buffer_;
     public:
-        source(ALuint sourceID, const audio::buffer &buf);
+        Source(ALuint sourceID, const audio::Buffer &buffer);
 
         void setPosition(float posX, float posY, float posZ);
 
@@ -32,9 +31,5 @@ namespace audio {
         ALuint getId() const;
 
         void release();
-
-        /*~source();
-        source(source&& other);
-        source& operator=(source&& other);*/
     };
 }

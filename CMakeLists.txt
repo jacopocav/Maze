@@ -3,9 +3,9 @@ project(Maze)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -static-libgcc -static-libstdc++")
 
-set(SOURCE_FILES src/main.cpp src/gfx/Camera.h src/gfx/Camera.cpp src/logic/MazeGenerator.cpp src/logic/MazeGenerator.h src/logic/Maze.cpp src/logic/Maze.h src/gfx/BigMess.cpp
-        src/gfx/BigMess.h src/gfx/MazeCamera.cpp src/gfx/MazeCamera.h src/gfx/Textures.cpp src/gfx/Textures.h src/gfx/Drawing.cpp
-        src/gfx/Drawing.h src/logic/Settings.cpp src/logic/Settings.h src/audio/source.cpp src/audio/source.h src/audio/buffer.cpp src/audio/buffer.h src/audio/listener.cpp src/audio/listener.h src/audio/manager.cpp src/audio/manager.h )
+set(SOURCE_FILES src/main.cpp src/gfx/Camera.h src/gfx/Camera.cpp src/game/MazeGenerator.cpp src/game/MazeGenerator.h src/game/Maze.cpp src/game/Maze.h src/BigMess.cpp
+        src/BigMess.h src/gfx/MazeCamera.cpp src/gfx/MazeCamera.h src/gfx/Textures.cpp src/gfx/Textures.h src/gfx/Drawing.cpp
+        src/gfx/Drawing.h src/game/Settings.cpp src/game/Settings.h src/audio/Source.cpp src/audio/Source.h src/audio/Buffer.cpp src/audio/Buffer.h src/audio/Listener.cpp src/audio/Listener.h src/audio/Manager.cpp src/audio/Manager.h)
 add_executable(Maze ${SOURCE_FILES})
 
 find_package(OpenGL REQUIRED)

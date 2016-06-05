@@ -7,16 +7,17 @@
 #include <string>
 #include <vector>
 #include <AL/al.h>
-#include "buffer.h"
-#include "../logic/Maze.h"
-#include "source.h"
+#include "Buffer.h"
+#include "../game/Maze.h"
+#include "Source.h"
 
 namespace audio {
-    class manager {
+    class Manager {
     private:
-        static const std::vector<std::string> audioFiles;
+        static const std::vector<std::string> audioFiles_;
     public:
-        static std::vector<audio::buffer> Init();
-        static std::map<Coordinates, audio::source> BindSourcesToAlarms(Maze *maze, const std::vector<audio::buffer> &bufs);
+        static std::vector<audio::Buffer> init();
+        static std::map<game::Coordinates, audio::Source> bindSourcesToAlarms(game::Maze *maze,
+                                                                        const std::vector<audio::Buffer> &bufs);
     };
 }

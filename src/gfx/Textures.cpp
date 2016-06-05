@@ -6,17 +6,17 @@
 #include <iostream>
 #include "Textures.h"
 
-GLuint *Textures::textures;
-int Textures::textureCount;
-std::map<std::string, int> Textures::textureTable;
+GLuint *gfx::Textures::textures_;
+int gfx::Textures::textureCount_;
+std::map<std::string, int> gfx::Textures::textureTable_;
 
-void Textures::InitTextures(int texCount) {
-    textures = new GLuint[texCount];
-    glGenTextures(texCount, textures);
-    textureCount = texCount;
+void gfx::Textures::initTextures(int texCount) {
+    textures_ = new GLuint[texCount];
+    glGenTextures(texCount, textures_);
+    textureCount_ = texCount;
 }
 
-void Textures::ReadFromBMP(std::string path, int textureIndex, std::string name = "") {
+void gfx::Textures::readFromBMP(std::string path, int textureIndex, std::string name = "") {
     // Data read from the header of the BMP file
     unsigned char header[54]; // Each BMP file begins by a 54-bytes header
     unsigned dataPos;     // Position in the file where the actual data begins
@@ -51,10 +51,10 @@ void Textures::ReadFromBMP(std::string path, int textureIndex, std::string name 
     if (imageSize == 0) imageSize = width * height * 3; // 3 : one byte for each Red, Green and Blue component
     if (dataPos == 0) dataPos = 54; // The BMP header is done that way
 
-    // Create a buffer
+    // Create a buffer_
     data = new GLubyte[imageSize];
 
-    // Read the actual data from the file into the buffer
+    // Read the actual data from the file into the buffer_
     fread(data, 1, imageSize, file);
 
     //Everything is in memory now, the file can be closed
@@ -66,10 +66,10 @@ void Textures::ReadFromBMP(std::string path, int textureIndex, std::string name 
         data[i + 2] = tmp;
     }
 
-    if (textureIndex < textureCount) {
-        textureTable[name] = textureIndex;
+    if (textureIndex < textureCount_) {
+        textureTable_[name] = textureIndex;
 
-        glBindTexture(GL_TEXTURE_2D, textures[textureIndex]);
+        glBindTexture(GL_TEXTURE_2D, textures_[textureIndex]);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -80,25 +80,18 @@ void Textures::ReadFromBMP(std::string path, int textureIndex, std::string name 
     delete data;
 }
 
-void Textures::BindTexture(int textureIndex) {
-    if (textureIndex < textureCount && textureIndex >= 0)
-        glBindTexture(GL_TEXTURE_2D, textures[textureIndex]);
-    else
-        glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void Textures::BindTexture(std::string name) {
+void gfx::Textures::bindTexture(std::string name) {
     if (name == "0") {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    if (textureTable.find(name) != textureTable.end()) {
-        glBindTexture(GL_TEXTURE_2D, textures[textureTable[name]]);
+    if (textureTable_.find(name) != textureTable_.end()) {
+        glBindTexture(GL_TEXTURE_2D, textures_[textureTable_[name]]);
     }
 }
 
-void Textures::ResetTextures() {
-    glDeleteTextures(textureCount, textures);
-    delete textures;
-    textureTable.clear();
+void gfx::Textures::resetTextures() {
+    glDeleteTextures(textureCount_, textures_);
+    delete textures_;
+    textureTable_.clear();
 }

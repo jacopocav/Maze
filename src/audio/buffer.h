@@ -9,13 +9,11 @@
 #include <string>
 
 namespace audio {
-    class buffer {
+    class Buffer {
     private:
-        ALuint id;
+        ALuint id_;
     public:
-        buffer(ALuint bufferID);
-
-        //~buffer();
+        Buffer(ALuint bufferID);
 
         ALuint getID() const;
 

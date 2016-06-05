@@ -5,15 +5,19 @@
 #pragma once
 
 
-#include "../logic/Maze.h"
+#include "../game/Maze.h"
+namespace gfx {
+    class Drawing {
+    private:
+        static int drawDistance_;
+        static const float PI;
+    public:
+        static void drawFloor(float x1, float x2, float y1, float z1, float z2);
 
-class Drawing {
-private:
-    static int draw_distance;
-    static const float PI;
-public:
-    static void DrawFloor(float x1, float x2, float y1, float z1, float z2);
-    static void DrawCeil(float x1, float x2, float y1, float z1, float z2);
-    static void DrawCube(float x1, float x2, float y1, float y2, float z1, float z2);
-    static void DrawMaze(Maze *maze, int pos_x, int pos_y);
-};
+        static void drawCeil(float x1, float x2, float y1, float z1, float z2);
+
+        static void drawCube(float x1, float x2, float y1, float y2, float z1, float z2);
+
+        static void drawMaze(game::Maze *maze, int pos_x, int pos_y);
+    };
+}

@@ -6,8 +6,8 @@
 
 
 #include <GL/glut.h>
-#include "../logic/MazeGenerator.h"
-#include "MazeCamera.h"
+#include "game/MazeGenerator.h"
+#include "gfx/MazeCamera.h"
 
 class BigMess {
 public:
@@ -43,23 +43,23 @@ private:
 
     static void Cleanup();
 
-    static int currTime;
-    static int timeLimit;
+    static int currTime_;
+    static int timeLimit_;
 
-    static Maze *m_maze;
-    static MazeCamera g_camera;
-    static bool g_key[256];
-    static bool g_special_key[4];
-    static bool g_fps_mode;
-    static int g_viewport_width;
-    static int g_viewport_height;
-    static bool g_mouse_left_down;
-    static bool g_mouse_right_down;
-    static bool just_warped;
+    static game::Maze *maze_;
+    static gfx::MazeCamera camera_;
+    static bool key_[256];
+    static bool specialKey_[4];
+    static bool fpsMode_;
+    static int viewportWidth_;
+    static int viewportHeight_;
+    static bool mouseLeftDown_;
+    static bool mouseRightDown_;
+    static bool justWarped_;
 
-    static const float light_pos[4];
+    static const float lightPos_[4];
 
     // Costanti che definiscono la velocità di movimento/rotazione
-    static const float g_translation_speed;
-    static const float g_rotation_speed;
+    static const float translationSpeed_;
+    static const float rotationSpeed_;
 };

@@ -3,14 +3,14 @@
 //
 
 #include <AL/al.h>
-#include "listener.h"
+#include "Listener.h"
 
 
-void audio::listener::SetOrientation(float atx, float aty, float atz, float upx, float upy, float upz) {
+void audio::Listener::setOrientation(float atx, float aty, float atz, float upx, float upy, float upz) {
     float ori[6] = {atx, aty, atz, upx, upy, upz};
     alListenerfv(AL_ORIENTATION, ori);
 }
 
-void audio::listener::SetPosition(float x, float y, float z) {
+void audio::Listener::setPosition(float x, float y, float z) {
     alListener3f(AL_POSITION, x, y, z);
 }

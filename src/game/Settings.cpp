@@ -6,9 +6,9 @@
 #include <algorithm>
 #include "Settings.h"
 
-const std::string Settings::settingsFilePath = "res/config.cfg";
+const std::string game::Settings::settingsFilePath_ = "res/config.cfg";
 
-const std::map<std::string, int> Settings::defaults = {
+const std::map<std::string, int> game::Settings::defaults_ = {
         {"MULTISAMPLING",   4},
         {"DRAW_DISTANCE",   15},
         {"MAZE_SIZE_X",     65},
@@ -19,7 +19,7 @@ const std::map<std::string, int> Settings::defaults = {
         {"ENABLE_FLIGHT",   0}
 };
 
-const std::map<std::string, int> Settings::minimums = {
+const std::map<std::string, int> game::Settings::minimums_ = {
         {"MULTISAMPLING",   0},
         {"DRAW_DISTANCE",   1},
         {"MAZE_SIZE_X",     5},
@@ -30,16 +30,16 @@ const std::map<std::string, int> Settings::minimums = {
         {"ENABLE_FLIGHT",   0}
 };
 
-const std::map<std::string, int> Settings::maximums = {
+const std::map<std::string, int> game::Settings::maximums_ = {
         {"MULTISAMPLING",   16},
         {"MAZE_RANDOMNESS", 100},
         {"DEAD_ENDS",       1},
         {"ENABLE_FLIGHT",   1}
 };
 
-Settings::Settings() {
+game::Settings::Settings() {
     std::ifstream cfg;
-    cfg.open(settingsFilePath);
+    cfg.open(settingsFilePath_);
 
     std::string line;
     while (std::getline(cfg, line, '\n')) { // Legge il file linea per linea
@@ -66,15 +66,15 @@ Settings::Settings() {
                 value = -1;
             }
 
-            if (defaults.find(name) != defaults.end()) { // Se il nome dell'impostazione è valido
+            if (defaults_.find(name) != defaults_.end()) { // Se il nome dell'impostazione è valido
 
-                if (minimums.find(name) != minimums.end() && value < minimums.at(name) ||
-                        maximums.find(name) != maximums.end() && value > maximums.at(name)) {
+                if (minimums_.find(name) != minimums_.end() && value < minimums_.at(name) ||
+                        maximums_.find(name) != maximums_.end() && value > maximums_.at(name)) {
                     // Il valore dell'impostazione è troppo alto o basso: viene usato quello predefinito
-                    value = defaults.at(name);
+                    value = defaults_.at(name);
                 }
 
-                settingsMap[name] = value;
+                settingsMap_[name] = value;
             }
 
         }
@@ -84,18 +84,18 @@ Settings::Settings() {
     cfg.close();
 }
 
-Settings& Settings::getInstance() {
+game::Settings& game::Settings::getInstance() {
     // instance viene inizializzato solo alla prima invocazione, dopo viene riutilizzato
     // Alla fine dell'esecuzione del programma viene distrutta automaticamente
-    static Settings instance;
+    static game::Settings instance;
     return instance;
 }
 
-int Settings::operator[](std::string name) const {
+int game::Settings::operator[](std::string name) const {
     // Se l'impostazione è stata letta correttamente, ne viene restituito il valore
-    if (settingsMap.find(name) != settingsMap.end()) return settingsMap.at(name);
+    if (settingsMap_.find(name) != settingsMap_.end()) return settingsMap_.at(name);
     // Altrimenti usa quello di default
-    if (defaults.find(name) != defaults.end()) return defaults.at(name);
+    if (defaults_.find(name) != defaults_.end()) return defaults_.at(name);
 
     // Se il nome dell'impostazione è errato, ritorna -1
     return -1;

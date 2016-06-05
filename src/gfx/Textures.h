@@ -8,22 +8,21 @@
 #include <GL/glut.h>
 #include <string>
 #include <map>
+namespace gfx {
+    class Textures {
+    private:
+        static std::map<std::string, int> textureTable_;
+        static GLuint *textures_;
+        static int textureCount_;
+    public:
 
-class Textures {
-private:
-    static std::map<std::string, int> textureTable;
-    static GLuint *textures;
-    static int textureCount;
-public:
+        static void initTextures(int texCount);
 
-    static void InitTextures(int texCount);
+        static void readFromBMP(std::string path, int textureIndex, std::string name);
 
-    static void ReadFromBMP(std::string path, int textureIndex, std::string name);
+        static void bindTexture(std::string name);
 
-    static void BindTexture(int textureIndex);
+        static void resetTextures();
+    };
 
-    static void BindTexture(std::string name);
-
-    static void ResetTextures();
-};
-
+}

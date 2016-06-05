@@ -3,23 +3,16 @@
 //
 
 #include <AL/alut.h>
-#include "buffer.h"
+#include "Buffer.h"
 
 
-audio::buffer::buffer(ALuint bufferID) : id(bufferID) {
-    //alGenBuffers(1, &id);
-    //id = alutCreateBufferFromFile(buffer.c_str());
+audio::Buffer::Buffer(ALuint bufferID) : id_(bufferID) {}
+
+ALuint audio::Buffer::getID() const {
+    return id_;
 }
 
-ALuint audio::buffer::getID() const {
-    return id;
-}
-
-/*audio::buffer::~buffer() {
-    alDeleteBuffers(1, &id);
-}*/
-
-void audio::buffer::release() {
-    alDeleteBuffers(1, &id);
-    id = 0;
+void audio::Buffer::release() {
+    alDeleteBuffers(1, &id_);
+    id_ = 0;
 }

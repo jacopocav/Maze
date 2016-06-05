@@ -6,25 +6,26 @@
 
 
 #include "Camera.h"
-#include "../logic/Maze.h"
+#include "../game/Maze.h"
+namespace gfx {
+    class MazeCamera : public Camera {
+    public:
+        MazeCamera(game::Maze *maze) : maze_(maze), Camera() { }
 
-class MazeCamera : public Camera {
-public:
-    MazeCamera(Maze *maze) : m_maze(maze), Camera() { }
+        virtual void move(float incr);
 
-    virtual void Move(float incr);
+        virtual void strafe(float incr);
 
-    virtual void Strafe(float incr);
+        virtual void fly(float incr);
 
-    virtual void Fly(float incr);
+        game::Coordinates getMazeCoordinates();
 
-    Coordinates getMazeCoordinates();
+        void setMaze(game::Maze *maze);
 
-    void SetMaze(Maze* maze);
+    private:
+        game::Maze *maze_;
 
-private:
-    Maze *m_maze;
+        bool checkBounds();
 
-    bool checkBounds();
-
-};
+    };
+}
