@@ -5,7 +5,6 @@
 #include <map>
 #include <AL/alut.h>
 #include "Manager.h"
-#include "Source.h"
 
 const std::vector<std::string> audio::Manager::audioFiles_ = {
         "res/audio/alarm0.wav",
@@ -15,28 +14,60 @@ const std::vector<std::string> audio::Manager::audioFiles_ = {
         "res/audio/alarm4.wav"
 };
 
-std::vector<audio::Buffer> audio::Manager::init() {
-    std::vector<audio::Buffer> bufs;
+audio::Manager::Manager() {
     for(auto it = audioFiles_.begin(); it != audioFiles_.end(); ++it){
+        alutInit(nullptr, nullptr);
+        ALenum err = alutGetError();
+        auto str = alutGetErrorString(err);
         ALuint id;
-        alGenSources(1, &id);
+        alGenBuffers(1, &id);
         id = alutCreateBufferFromFile(it->c_str());
-        bufs.push_back(audio::Buffer(id));
+        audioBuffers_.push_back(audio::Buffer(id));
     }
-    return bufs;
 }
 
-std::map<game::Coordinates, audio::Source> audio::Manager::bindSourcesToAlarms(game::Maze *maze,
-                                                                         const std::vector<audio::Buffer> &bufs) {
-    std::map<game::Coordinates, audio::Source> alarms;
+void audio::Manager::bindSources(game::Maze *maze) {
     for(int i = 0; i < maze->getAlarmCount(); ++i){
         game::Coordinates alm = maze->getAlarm(i);
         ALuint sid;
         alGenSources(1, &sid);
-        audio::Source almSound(sid, bufs[i % bufs.size()]);
-        almSound.setPitch(1.0f + ((i - (i % bufs.size())) / bufs.size() * 0.3f));
+        audio::Source almSound(sid, audioBuffers_[i % audioBuffers_.size()]);
+        almSound.setPitch(1.0f + ((i - (i % audioBuffers_.size())) / audioBuffers_.size() * 0.3f));
         almSound.setPosition(alm.first * 0.4f - 0.4f, 0.0f, alm.second * -0.4f + 0.4f);
-        alarms.insert(std::make_pair(alm, almSound));
+        alarmSounds_.insert(std::make_pair(alm, almSound));
     }
-    return alarms;
+}
+
+audio::Source audio::Manager::operator[](game::Coordinates pos) {
+    return alarmSounds_.at(pos);
+}
+
+void audio::Manager::playAll() {
+    for (auto it = alarmSounds_.begin(); it != alarmSounds_.end(); ++it) {
+        it->second.play();
+    }
+}
+
+void audio::Manager::pauseAll() {
+    for (auto it = alarmSounds_.begin(); it != alarmSounds_.end(); ++it) {
+        it->second.pause();
+    }
+}
+
+void audio::Manager::releaseSounds(){
+    for (auto it = alarmSounds_.begin(); it != alarmSounds_.end(); ++it) {
+        it->second.release();
+    }
+    alarmSounds_.clear();
+}
+
+audio::Manager::~Manager(){
+    for(auto it = audioBuffers_.begin(); it != audioBuffers_.end(); ++it){
+        it->release();
+    }
+}
+
+void audio::Manager::eraseSound(game::Coordinates pos) {
+    alarmSounds_.erase(pos);
+    alutExit();
 }

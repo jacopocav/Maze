@@ -44,7 +44,7 @@ game::Maze *game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
 
 
         Coordinates cell = activeCells.at(static_cast<unsigned>(index));
-        maze->set(cell, true);
+        maze->maze_[cell.first][cell.second] = true;
         Coordinates newCell;
 
         // Viene scelta la prossima scelta in base alla direzione.
@@ -74,8 +74,8 @@ game::Maze *game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
                 Coordinates middleCell((cell.first + newCell.first) / 2,
                                        (cell.second + newCell.second) / 2);
                 // Viene "scavato" il percorso dalla cella corrente a quella nuova
-                maze->set(middleCell, true);
-                maze->set(newCell, true);
+                maze->maze_[middleCell.first][middleCell.second] = true;
+                maze->maze_[newCell.first][newCell.second] = true;
 
                 index = -1;
                 break;
@@ -89,6 +89,7 @@ game::Maze *game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
     }
 
     if (braidedMaze_) { // Se l'utente ha disattivato i vicoli ciechi, ora vengono rimossi
+        maze->isBraided_ = true;
         for (int x = 1; x < maze->getHeight(); x += 2) {
             for (int y = 1; y < maze->getWidth(); y += 2) {
                 cullDeadEnd(maze, std::make_pair(x, y));
@@ -129,8 +130,7 @@ void game::MazeGenerator::addAlarmsToMaze(game::Maze *maze, int alarmCount) {
                 }
             }
         }
-
-        maze->setAlarm(std::make_pair(x, y));
+        maze->alarms_.push_back(game::Coordinates(x,y));
     }
 }
 
@@ -182,7 +182,7 @@ void game::MazeGenerator::cullDeadEnd(game::Maze *maze, Coordinates cell) {
     }
     if (links == 1) { // Se la cella è un vicolo cieco, viene abbattuto un muro a lei adiacente, in maniera casuale
         std::shuffle(candidates.begin(), candidates.end(), rndEngine_);
-        maze->set(candidates[0], true);
+        maze->maze_[candidates[0].first][candidates[0].second] = true;
     }
 
 }

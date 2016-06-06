@@ -1,8 +1,5 @@
 #pragma once
 
-/*
-Generic camera class by Nghia Ho
-*/
 namespace gfx {
     class Camera {
     public:

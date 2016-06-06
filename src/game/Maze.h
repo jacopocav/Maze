@@ -13,12 +13,12 @@ namespace game {
     typedef std::pair<unsigned, unsigned> Coordinates;
 
     class Maze {
+        friend class MazeGenerator;
     private:
         std::vector<std::vector<bool>> maze_;
         std::vector<std::vector<bool>> wasHere_;
         std::vector<Coordinates> alarms_;
-        const Coordinates start_, end_;
-
+        bool isBraided_;
         bool recursiveSolve(int x, int y, int endX, int endY);
 
 
@@ -34,23 +34,18 @@ namespace game {
 
         bool get(Coordinates coord) const;
 
-        // Impostano il valore di una cella
-        void set(int row, int col, bool val);
-
-        void set(Coordinates coord, bool val);
-
-        void setAlarm(Coordinates pos);
-
         void removeAlarm(Coordinates pos);
 
         int getAlarmCount() const;
 
-        Coordinates getAlarm(int index);
+        Coordinates getAlarm(int index) const;
 
         bool isAlarm(unsigned row, unsigned col) const;
 
         bool isAlarm(Coordinates pos) const;
 
-        int pathLength(int startX, int startY, int endX, int endY);
+        bool isBraided() const;
+
+        int pathLength(Coordinates start, Coordinates end);
     };
 }

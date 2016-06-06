@@ -18,7 +18,7 @@ bool game::Maze::get(int row, int col) const {
     return maze_[row][col];
 }
 
-game::Maze::Maze(unsigned height, unsigned width) : start_(1, 1), end_(height - 2, width - 2), alarms_() {
+game::Maze::Maze(unsigned height, unsigned width) : alarms_(), isBraided_(false) {
     if (height % 2 == 0) height++;
     if (width % 2 == 0) width++;
 
@@ -37,22 +37,14 @@ bool game::Maze::get(game::Coordinates coord) const {
     return get(coord.first, coord.second);
 }
 
-void game::Maze::set(game::Coordinates coord, bool val) {
-    set(coord.first, coord.second, val);
-}
-
-void game::Maze::set(int row, int col, bool val) {
-    maze_[row][col] = val;
-}
-
 int correctPathLength = 0;
 
-int game::Maze::pathLength(int startX, int startY, int endX, int endY) {
+int game::Maze::pathLength(Coordinates start, Coordinates end) {
     correctPathLength = 0;
     for(int i = 0; i < wasHere_.size(); ++i){
         wasHere_[i].assign(wasHere_[i].size(), false);
     }
-    recursiveSolve(startX, startY, endX, endY);
+    recursiveSolve(start.first, start.second, end.first, end.second);
     // Will leave you with a boolean array (correctPath)
     // with the path indicated by true values.
     // If b is false, there is no solution to the maze_
@@ -87,11 +79,6 @@ bool game::Maze::recursiveSolve(int x, int y, int endX, int endY) {
     return false;
 }
 
-void game::Maze::setAlarm(game::Coordinates pos) {
-    if(!isAlarm(pos))
-        alarms_.push_back(pos);
-}
-
 bool game::Maze::isAlarm(game::Coordinates pos) const {
     return std::find(alarms_.begin(), alarms_.end(), pos) != alarms_.end();
 }
@@ -112,13 +99,16 @@ int game::Maze::getAlarmCount() const {
     return alarms_.size();
 }
 
-game::Coordinates game::Maze::getAlarm(int index) {
+game::Coordinates game::Maze::getAlarm(int index) const {
     if(index >= 0 && index < getAlarmCount()){
         return alarms_[index];
     }
     return std::make_pair(-1, -1);
 }
 
+bool game::Maze::isBraided() const {
+    return isBraided_;
+}
 
 
 

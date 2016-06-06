@@ -4,9 +4,6 @@
 
 #include <cmath>
 #include "MazeCamera.h"
-#include "../BigMess.h"
-#include <GL/glut.h>
-#include <string>
 
 void gfx::MazeCamera::move(float incr) {
     float lx = cosf(yaw_) * cosf(pitch_);

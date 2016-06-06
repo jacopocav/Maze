@@ -15,9 +15,16 @@ namespace audio {
     class Manager {
     private:
         static const std::vector<std::string> audioFiles_;
+        std::vector<audio::Buffer> audioBuffers_;
+        std::map<game::Coordinates, audio::Source> alarmSounds_;
     public:
-        static std::vector<audio::Buffer> init();
-        static std::map<game::Coordinates, audio::Source> bindSourcesToAlarms(game::Maze *maze,
-                                                                        const std::vector<audio::Buffer> &bufs);
+        Manager();
+        void bindSources(game::Maze *maze);
+        audio::Source operator[](game::Coordinates);
+        void playAll();
+        void pauseAll();
+        void releaseSounds();
+        void eraseSound(game::Coordinates pos);
+        ~Manager();
     };
 }

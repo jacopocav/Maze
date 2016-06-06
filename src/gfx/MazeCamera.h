@@ -4,9 +4,9 @@
 
 #pragma once
 
-
 #include "Camera.h"
 #include "../game/Maze.h"
+
 namespace gfx {
     class MazeCamera : public Camera {
     public:
