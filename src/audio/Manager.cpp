@@ -17,8 +17,6 @@ const std::vector<std::string> audio::Manager::audioFiles_ = {
 audio::Manager::Manager() {
     for(auto it = audioFiles_.begin(); it != audioFiles_.end(); ++it){
         alutInit(nullptr, nullptr);
-        ALenum err = alutGetError();
-        auto str = alutGetErrorString(err);
         ALuint id;
         alGenBuffers(1, &id);
         id = alutCreateBufferFromFile(it->c_str());
@@ -68,6 +66,7 @@ audio::Manager::~Manager(){
 }
 
 void audio::Manager::eraseSound(game::Coordinates pos) {
+    alarmSounds_[pos].release();
     alarmSounds_.erase(pos);
     alutExit();
 }
