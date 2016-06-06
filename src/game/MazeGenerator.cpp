@@ -4,6 +4,7 @@
 
 #include "MazeGenerator.h"
 #include "Settings.h"
+#include "Time.h"
 #include <algorithm>
 #include <chrono>
 
@@ -49,6 +50,7 @@ game::Maze *game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
 
         // Viene scelta la prossima scelta in base alla direzione.
         // Le direzioni vengono esaminate in ordine casuale
+        // Vengono considerate solo le celle a dimensioni dispari, le altre simulano i "bordi"
         for (int i = 0; i < directions.size(); ++i) {
             newCell = cell;
             switch (directions[i]) {
@@ -110,22 +112,20 @@ void game::MazeGenerator::addAlarmsToMaze(game::Maze *maze, int alarmCount) {
             x = 1 + rndEngine_() % (maze->getHeight() - 2);
             y = 1 + rndEngine_() % (maze->getHeight() - 2);
 
-            /* Le nuove coordinate non devono coincidere con il punto di inizio del giocatore,
-             * non devono essere in corrispondenza di un muro,
-             * non devono corrispondere ad un altro allarme.
-             */
+            // Le nuove coordinate non devono coincidere con il punto di inizio del giocatore,
+            // non devono essere in corrispondenza di un muro, non devono corrispondere ad un altro allarme.
             if ((x != 1 || y != 1) && maze->get(x, y) &&
                 !maze->isAlarm(static_cast<unsigned>(x), static_cast<unsigned>(y))) {
                 if (maze->getAlarmCount() == 0) ok = true;
                 else {
-                    for (int k = 0; k < maze->getAlarmCount(); ++k) {
-                        /* Viene controllato che le coordinate non siano troppo vicine ad altri allarmi
-                         * La distanza minima, in linea d'aria, dev'essere pari al 10% delle dimensioni del labirinto
-                         */
+                    ok = true;
+                    for (int k = 0; k < maze->alarms_.size() && ok; ++k) {
+                        // Viene controllato che le coordinate non siano troppo vicine ad altri allarmi
+                        // La distanza minima, in linea d'aria, dev'essere pari al 10% delle dimensioni del labirinto
                         Coordinates alm = maze->getAlarm(k);
-                        if (abs(x - alm.first) > 0.1 * maze->getHeight() &&
-                            abs(y - alm.second) > 0.1 * maze->getWidth())
-                            ok = true;
+                        if (abs(x - alm.first) <= 0.1f * maze->getHeight() ||
+                            abs(y - alm.second) <= 0.1f * maze->getWidth())
+                            ok = false;
                     }
                 }
             }
@@ -136,9 +136,8 @@ void game::MazeGenerator::addAlarmsToMaze(game::Maze *maze, int alarmCount) {
 
 
 void game::MazeGenerator::cullDeadEnd(game::Maze *maze, Coordinates cell) {
-    int links = 0; /* Numero di celle percorribili adiacenti a cell
-                    * Se la cella ha solo 1 vicino percorribile, allora è un vicolo cieco
-                    */
+    int links = 0; // Numero di celle percorribili adiacenti a cell
+                   // Se la cella ha solo 1 vicino percorribile, allora è un vicolo cieco
 
     Coordinates neighbor = cell;
     std::vector<Coordinates> candidates; // Muri circostanti alla cella candidati all'abbattimento

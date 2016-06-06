@@ -7,11 +7,12 @@ namespace gfx {
 
         virtual ~Camera() { }
 
-        static const float PI;
-        static const float PI_2;
+        static const float PI; // Pi greco
+        static const float PI_2; // Pi/2
 
+        // Inizializza la posizione e la rotazione della camera
         void init();
-
+        // Aggiorna posizione e orientamento della camera
         void refresh();
 
         void setPos(float x, float y, float z);

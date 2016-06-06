@@ -24,55 +24,45 @@ game::Maze::Maze(unsigned height, unsigned width) : alarms_(), isBraided_(false)
 
     maze_.resize(height);
     for (auto i = 0; i < height; ++i) {
-        maze_[i].assign(width, false);
+        maze_[i].assign(width, false); // Tutti muri
     }
-
     wasHere_.resize(height);
-    for (auto i = 0; i < height; ++i) {
-        wasHere_[i].assign(width, false);
-    }
 }
 
 bool game::Maze::get(game::Coordinates coord) const {
     return get(coord.first, coord.second);
 }
 
-int correctPathLength = 0;
+int correctPathLength = 0; // Lunghezza del percorso calcolato in pathLength
 
 int game::Maze::pathLength(Coordinates start, Coordinates end) {
     correctPathLength = 0;
     for(int i = 0; i < wasHere_.size(); ++i){
-        wasHere_[i].assign(wasHere_[i].size(), false);
+        wasHere_[i].assign(maze_[i].size(), false);
     }
     recursiveSolve(start.first, start.second, end.first, end.second);
-    // Will leave you with a boolean array (correctPath)
-    // with the path indicated by true values.
-    // If b is false, there is no solution to the maze_
+
     return correctPathLength;
 }
 
 bool game::Maze::recursiveSolve(int x, int y, int endX, int endY) {
-    if (x == endX && y == endY) return true; // If you reached the end
-    if (!maze_[x][y] || wasHere_[x][y]) return false;
-    // If you are on a wall or already were here
+    if (x == endX && y == endY) return true; // Raggiunta la fine
+    if (!maze_[x][y] || wasHere_[x][y]) return false; // La posizione corrente è un muro o è già stata percorsa
+
     wasHere_[x][y] = true;
-    if (x != 0) // Checks if not on left edge
-    if (recursiveSolve(x - 1, y, endX, endY)) { // Recalls method one to the left
-        correctPathLength++; // Sets that path value to true;
-        return true;
-    }
-    if (x != maze_.size() - 1) // Checks if not on right edge
-    if (recursiveSolve(x + 1, y, endX, endY)) { // Recalls method one to the right
+    if (x != 0 && recursiveSolve(x - 1, y, endX, endY)) { // Se non siamo sul bordo sx, prova ad andare a sx
         correctPathLength++;
         return true;
     }
-    if (y != 0)  // Checks if not on top edge
-    if (recursiveSolve(x, y - 1, endX, endY)) { // Recalls method one up
+    if (x != maze_.size() - 1 && recursiveSolve(x + 1, y, endX, endY)) { // Destra
         correctPathLength++;
         return true;
     }
-    if (y != maze_[0].size() - 1) // Checks if not on bottom edge
-    if (recursiveSolve(x, y + 1, endX, endY)) { // Recalls method one down
+    if (y != 0 && recursiveSolve(x, y - 1, endX, endY)) { // Su
+        correctPathLength++;
+        return true;
+    }
+    if (y != maze_[0].size() - 1 && recursiveSolve(x, y + 1, endX, endY)) { // Giù
         correctPathLength++;
         return true;
     }

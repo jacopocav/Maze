@@ -15,7 +15,9 @@ namespace audio {
         ALuint id_;
         audio::Buffer buffer_;
     public:
-        Source(ALuint sourceID, const audio::Buffer &buffer);
+        Source(ALuint sourceID, const audio::Buffer &buffer, bool relative = false);
+
+        Source() {}
 
         void setPosition(float posX, float posY, float posZ);
 

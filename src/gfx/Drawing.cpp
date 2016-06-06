@@ -156,13 +156,15 @@ void gfx::Drawing::drawMaze(game::Maze *maze, int pos_x, int pos_y) {
                     float time = static_cast<float>(glutGet(GLUT_ELAPSED_TIME)) / 1000;
                     int intime = static_cast<int>(time);
                     time = time - intime;
-                    float mat[4] = {1.0f, 0.5f-(0.25f * (1+cosf(2*time*PI))), 0.0f, 1};
+                    float mat[4] = {2.0f-(0.7f * (1-cosf(2*time*PI))), 0.0f, 0.0f, 1};
                     float material[4] = {1, 1, 1, 1};
                     glMaterialfv(GL_FRONT, GL_DIFFUSE, mat);
                     glMaterialfv(GL_FRONT, GL_AMBIENT, mat);
                     glPushMatrix();
                     glTranslatef(0.4f * i + 0.2f, 0, -0.4f * j - 0.2f);
-                    glutSolidSphere(0.025f + (0.025f * 0.5f * (1+cosf(2*time*PI))), 64, 64);
+                    glRotatef(time*180, 0.0f, 1.0f, 0.0f);
+                    glutSolidTorus(0.01f, 0.06f, 64, 64);
+                    glutSolidSphere(0.02f + (0.02f * 0.5f * (1+cosf(2*time*PI))), 64, 64);
                     glPopMatrix();
                     glMaterialfv(GL_FRONT, GL_DIFFUSE, material);
                     glMaterialfv(GL_FRONT, GL_AMBIENT, material);

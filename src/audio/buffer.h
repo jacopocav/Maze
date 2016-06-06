@@ -15,6 +15,8 @@ namespace audio {
     public:
         Buffer(ALuint bufferID);
 
+        Buffer() {};
+
         ALuint getID() const;
 
         void release();

@@ -185,9 +185,6 @@ void GlutCallbacks::updateGameStatus(int timeDiff) {
 
     if (maze_->isAlarm(pos)) {
         maze_->removeAlarm(pos);
-        /*audioAlarms_.at(pos).release();
-        audioAlarms_.erase(pos);*/
-        audioManager_[pos].release();
         audioManager_.eraseSound(pos);
         if (maze_->getAlarmCount() > 0) {
             remainingTime_ = std::max(remainingTime_, game::Time::getTimeLimit(maze_, pos));

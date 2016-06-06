@@ -5,10 +5,11 @@
 #include "Source.h"
 
 
-audio::Source::Source(ALuint sourceID, const audio::Buffer &buffer) : id_(sourceID), buffer_(buffer) {
+audio::Source::Source(ALuint sourceID, const audio::Buffer &buffer, bool relative) : id_(sourceID), buffer_(buffer) {
     alSourcei(id_, AL_BUFFER, buffer_.getID());
     alSourcei(id_, AL_LOOPING, AL_TRUE);
-    alSourcei(id_, AL_SOURCE_RELATIVE, AL_FALSE);
+    if(relative) alSourcei(id_, AL_SOURCE_RELATIVE, AL_TRUE);
+    else alSourcei(id_, AL_SOURCE_RELATIVE, AL_FALSE);
     alSourcef(id_, AL_REFERENCE_DISTANCE, 0.8f);
     alSourcef(id_, AL_ROLLOFF_FACTOR, 2.0f);
 }
