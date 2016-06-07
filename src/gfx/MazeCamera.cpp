@@ -44,8 +44,11 @@ void gfx::MazeCamera::strafe(float incr) {
 }
 
 void gfx::MazeCamera::fly(float incr) {
+    auto mazeCoord = getMazeCoordinates();
     y_ += incr;
-    if (y_ < 0) y_ = 0;
+
+    if(!maze_->get(mazeCoord) && y_ < 0.25) y_ = 0.25; // Impedisce di volare dentro ad un muro
+    else if (y_ < 0) y_ = 0; // Impedisce di volare sotto al pavimento
 
     refresh();
 }

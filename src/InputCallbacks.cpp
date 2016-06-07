@@ -7,36 +7,35 @@
 #include "game/Time.h"
 #include "game/Settings.h"
 
-bool InputCallbacks::key_[256] = {};
-bool InputCallbacks::specialKey_[4] = {};
 const float InputCallbacks::TRANSLATION_SPEED = 0.0008;
 const float InputCallbacks::ROTATION_SPEED = gfx::Camera::PI / 180 * 0.15f;
-bool InputCallbacks::fpsMode_ = false;
+
+bool InputCallbacks::key_[256];
+bool InputCallbacks::specialKey_[4];
+bool InputCallbacks::movement_ = false;
 bool InputCallbacks::mouseLeftDown_ = false;
 bool InputCallbacks::mouseRightDown_ = false;
-bool InputCallbacks::justWarped_ = false;
 
 gfx::MazeCamera InputCallbacks::camera_(nullptr);
 
 int InputCallbacks::viewportWidth_ = 0;
 int InputCallbacks::viewportHeight_ = 0;
-
 int InputCallbacks::currTime_;
 
 void InputCallbacks::keyboard(unsigned char key, int, int) {
-    if (key == 27) {
+    if (key == 27) { // ESC chiude il gioco
         GlutCallbacks::cleanup();
         exit(0);
     }
 
-    if (key == 'r' || key == 'R') {
+    if (key == 'r' || key == 'R') { // Con R si chiude la partita corrente e se ne inizia una nuova
         GlutCallbacks::gameOver(false);
     }
 
-    if (key == ' ') {
-        fpsMode_ = !fpsMode_;
+    if (key == ' ') { // SPAZIO permette di (dis)attivare la pausa e (dis)abilitare il movimento
+        movement_ = !movement_;
 
-        if (fpsMode_) {
+        if (movement_) {
             GlutCallbacks::audioManager_.playAll();
             glutSetCursor(GLUT_CURSOR_NONE);
             glutWarpPointer(viewportWidth_ / 2, viewportHeight_ / 2);
@@ -97,7 +96,7 @@ void InputCallbacks::timer(int) {
     int newTime = game::Time::getCurrentTimeMillis();
     int timeDiff = newTime - currTime_;
     currTime_ = newTime;
-    if (fpsMode_) {
+    if (movement_) {
         if (key_['w'] || key_['W']) {
             InputCallbacks::camera_.move(TRANSLATION_SPEED * timeDiff);
         }
@@ -111,6 +110,7 @@ void InputCallbacks::timer(int) {
             InputCallbacks::camera_.strafe(-TRANSLATION_SPEED * timeDiff);
         }
 
+        // I Comandi di "volo" sono eseguiti solo se abilitati da impostazioni
         if (game::Settings::getInstance()["ENABLE_FLIGHT"] != 0) {
             if (mouseLeftDown_) {
                 InputCallbacks::camera_.fly(-2 * TRANSLATION_SPEED * timeDiff);
@@ -118,12 +118,13 @@ void InputCallbacks::timer(int) {
             else if (mouseRightDown_) {
                 InputCallbacks::camera_.fly(2 * TRANSLATION_SPEED * timeDiff);
             }
-        }
-        if (specialKey_[0]) {
-            InputCallbacks::camera_.rotatePitch(-ROTATION_SPEED * timeDiff);
-        }
-        else if (specialKey_[1]) {
-            InputCallbacks::camera_.rotatePitch(ROTATION_SPEED * timeDiff);
+
+            if (specialKey_[0]) {
+                InputCallbacks::camera_.fly(2 * TRANSLATION_SPEED * timeDiff);
+            }
+            else if (specialKey_[1]) {
+                InputCallbacks::camera_.fly(-2 * TRANSLATION_SPEED * timeDiff);
+            }
         }
         if (specialKey_[2]) {
             InputCallbacks::camera_.rotateYaw(-ROTATION_SPEED * timeDiff);
@@ -139,7 +140,7 @@ void InputCallbacks::timer(int) {
 }
 
 void InputCallbacks::mouse(int button, int state, int, int) {
-    if (state == GLUT_DOWN) {
+    if (state == GLUT_DOWN) { // Tasto premuto
         if (button == GLUT_LEFT_BUTTON) {
             mouseLeftDown_ = true;
         }
@@ -147,7 +148,7 @@ void InputCallbacks::mouse(int button, int state, int, int) {
             mouseRightDown_ = true;
         }
     }
-    else if (state == GLUT_UP) {
+    else if (state == GLUT_UP) { // Tasto rilasciato
         if (button == GLUT_LEFT_BUTTON) {
             mouseLeftDown_ = false;
         }
@@ -158,12 +159,15 @@ void InputCallbacks::mouse(int button, int state, int, int) {
 }
 
 void InputCallbacks::mouseMotion(int x, int y) {
-    if (justWarped_) {
-        justWarped_ = false;
-        return;
-    }
+    // Poiché glutWarpPointer provoca una chiamata ricorsiva a mouseMotion,
+    // justWarped serve ad evitare una catena infinita di invocazioni (warp->motion->warp->motion...).
+    static bool justWarped = false;
 
-    if (fpsMode_) {
+    if (movement_) {
+        if (justWarped) {
+            justWarped = false;
+            return;
+        }
         int dx = x - viewportWidth_ / 2;
         int dy = y - viewportHeight_ / 2;
 
@@ -175,8 +179,8 @@ void InputCallbacks::mouseMotion(int x, int y) {
             InputCallbacks::camera_.rotatePitch(ROTATION_SPEED * dy);
         }
 
-        glutWarpPointer(viewportWidth_ / 2, viewportHeight_ / 2);
+        glutWarpPointer(viewportWidth_ / 2, viewportHeight_ / 2); // Riporta il cursore al centro della finestra
 
-        justWarped_ = true;
+        justWarped = true;
     }
 }
