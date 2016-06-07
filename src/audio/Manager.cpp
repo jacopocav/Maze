@@ -15,8 +15,9 @@ const std::vector<std::string> audio::Manager::audioFiles_ = {
 };
 
 audio::Manager::Manager() {
+    alutInit(nullptr, nullptr);
+    alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
     for(auto it = audioFiles_.begin(); it != audioFiles_.end(); ++it){
-        alutInit(nullptr, nullptr);
         ALuint id;
         alGenBuffers(1, &id);
         id = alutCreateBufferFromFile(it->c_str());
@@ -60,6 +61,7 @@ void audio::Manager::releaseSounds(){
 }
 
 audio::Manager::~Manager(){
+    releaseSounds();
     for(auto it = audioBuffers_.begin(); it != audioBuffers_.end(); ++it){
         it->release();
     }

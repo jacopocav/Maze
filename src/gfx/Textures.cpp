@@ -80,7 +80,7 @@ void gfx::Textures::readFromBMP(const std::string &path, int textureIndex, const
     delete data;
 }
 
-void gfx::Textures::bindTexture(const std::string &name) {
+void gfx::Textures::useTexture(const std::string &name) {
     if (name == "0") {
         glBindTexture(GL_TEXTURE_2D, 0);
     }

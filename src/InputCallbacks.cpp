@@ -8,7 +8,7 @@
 #include "game/Settings.h"
 
 const float InputCallbacks::TRANSLATION_SPEED = 0.0008;
-const float InputCallbacks::ROTATION_SPEED = gfx::Camera::PI / 180 * 0.15f;
+const float InputCallbacks::ROTATION_SPEED = constants::PI / 180 * 0.15f;
 
 bool InputCallbacks::key_[256];
 bool InputCallbacks::specialKey_[4];

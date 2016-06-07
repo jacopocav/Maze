@@ -1,46 +1,65 @@
 #pragma once
 
+namespace constants {
+    // Costante Pi greco
+    const float PI = 4.0f * atanf(1);
+}
+
 namespace gfx {
-    // TODO commentare classe
+    // Classe che gestisce la telecamera di OpenGL
     class Camera {
+        friend class MazeCamera;
+
+    private:
+        // Posizione
+        float x_, y_, z_;
+        // Componenti del vettore normalizzato di direzione dello sguardo
+        float lx_, ly_, lz_;
+        // Angoli di imbardata e beccheggio
+        float yaw_, pitch_;
+        // Componenti del vettore orizzontale e perpendicolare a quello dello sguardo (usato per il movimento laterale)
+        float strafeLx_, strafeLz_;
     public:
         Camera() { init(); }
 
+        // Distruttore virtuale per permettere ereditarietà
         virtual ~Camera() { }
-
-        static const float PI; // Pi greco
-        static const float PI_2; // Pi/2
 
         // Inizializza la posizione e la rotazione della camera
         void init();
+
         // Aggiorna posizione e orientamento della camera
         void refresh();
 
+        // Imposta e aggiorna la posizione della telecamera (invoca refresh)
         void setPos(float x, float y, float z);
 
+        // Modifica le variabili passate per riferimento in modo che siano uguali alla posizione della telecamera
         void getPos(float &x, float &y, float &z);
 
+        // Modifica le variabili passate per riferimento in modo che rappresentino il vettore di direzione della camera
         void getDirectionVector(float &x, float &y, float &z);
 
-        void setYaw(float angle);
+        // Imposta l'angolo di imbardata (rotazione orizzontale, in radianti)
+        void setYaw(float radAngle);
 
-        void setPitch(float angle);
+        // Imposta l'angolo di beccheggio (rotazione verticale, in radianti)
+        void setPitch(float radAngle);
 
-        // Navigation
+        // Muove la telecamera avanti o indietro secondo la sua direzione
         virtual void move(float incr);
 
+        // Muove la telecamera orizzontalmente e in direzione perpendicolare alla sua direzione
         virtual void strafe(float incr);
 
+        // Muove la telecamera lungo l'asse y
         virtual void fly(float incr);
 
-        void rotateYaw(float angle);
+        // Ruota orizzontalmente la telecamera di un certo angolo (in radianti)
+        void rotateYaw(float radAngle);
 
-        void rotatePitch(float angle);
+        // Ruota verticalmente la telecamera di un certo angolo (in radianti)
+        void rotatePitch(float radAngle);
 
-    protected:
-        float x_, y_, z_;   // Position
-        float lx_, ly_, lz_; // Direction vector of where we are looking at
-        float yaw_, pitch_; // Various rotation angles
-        float strafeLx_, strafeLz_; // Always 90 degree to direction vector
     };
 }

@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include <GL/freeglut.h>
+#include <chrono>
 
 #include "GlutCallbacks.h"
 #include "gfx/Textures.h"
@@ -28,6 +29,7 @@ const int GlutCallbacks::ALARM_COUNT = game::Settings::getInstance()["ALARM_COUN
 
 void GlutCallbacks::initGame() {
     // Generazione nuovo labirinto
+
     maze_ = game::MazeGenerator::generateMaze(MAZE_HEIGHT, MAZE_WIDTH);
     game::MazeGenerator::addAlarmsToMaze(maze_, ALARM_COUNT);
 

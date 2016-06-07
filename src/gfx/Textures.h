@@ -21,7 +21,7 @@ namespace gfx {
 
         static void readFromBMP(const std::string &path, int textureIndex, const std::string &name);
 
-        static void bindTexture(const std::string &name);
+        static void useTexture(const std::string &name);
 
         static void resetTextures();
     };

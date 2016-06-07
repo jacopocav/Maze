@@ -17,6 +17,8 @@ void gfx::MazeCamera::move(float incr) {
 
     auto mazeCoord = getMazeCoordinates();
 
+    // Se siamo finiti in una cella muro o abbiamo oltrepassato i bordi del labirinto,
+    // fa "rimbalzare" indietro la telecamera
     if ((!maze_->get(mazeCoord) && y_ < 0.2 && y_ > -0.2) || !checkBounds()) {
         x_ = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.01f * lx;
         z_ = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.01f * lz;
@@ -34,7 +36,7 @@ void gfx::MazeCamera::strafe(float incr) {
 
     auto mazeCoord = getMazeCoordinates();
 
-
+    // Idem
     if ((!maze_->get(mazeCoord) && y_ < 0.2 && y_ > -0.2) || !checkBounds()) {
         x_ = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.01f * strafeLx_;
         z_ = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.01f * strafeLz_;
@@ -47,7 +49,7 @@ void gfx::MazeCamera::fly(float incr) {
     auto mazeCoord = getMazeCoordinates();
     y_ += incr;
 
-    if(!maze_->get(mazeCoord) && y_ < 0.25) y_ = 0.25; // Impedisce di volare dentro ad un muro
+    if (!maze_->get(mazeCoord) && y_ < 0.25) y_ = 0.25; // Impedisce di volare dentro ad un muro
     else if (y_ < 0) y_ = 0; // Impedisce di volare sotto al pavimento
 
     refresh();
@@ -66,5 +68,6 @@ game::Coordinates gfx::MazeCamera::getMazeCoordinates() {
 
 bool gfx::MazeCamera::checkBounds() {
     return x_ > -0.5 && z_ < 0.5 &&
-           x_ <= ((maze_->getHeight() - 1) * 0.4 - 0.2) - 0.1 && z_ >= (-(maze_->getWidth() - 1) * 0.4 +0.2) + 0.1;
+           x_ <= ((maze_->getHeight() - 1) * 0.4 - 0.2) - 0.1 &&
+           z_ >= (-(maze_->getWidth() - 1) * 0.4 + 0.2) + 0.1;
 }
