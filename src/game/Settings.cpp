@@ -16,7 +16,8 @@ const std::map<std::string, int> game::Settings::defaults_ = {
         {"MAZE_RANDOMNESS", 25},
         {"ALARM_COUNT",     5},
         {"DEAD_ENDS",       1},
-        {"ENABLE_FLIGHT",   0}
+        {"ENABLE_FLIGHT",   0},
+        {"DISABLE_LIGHT_ATTENUATION", 0}
 };
 
 const std::map<std::string, int> game::Settings::minimums_ = {
@@ -27,14 +28,16 @@ const std::map<std::string, int> game::Settings::minimums_ = {
         {"MAZE_RANDOMNESS", 0},
         {"ALARM_COUNT",     1},
         {"DEAD_ENDS",       0},
-        {"ENABLE_FLIGHT",   0}
+        {"ENABLE_FLIGHT",   0},
+        {"DISABLE_LIGHT_ATTENUATION", 0}
 };
 
 const std::map<std::string, int> game::Settings::maximums_ = {
         {"MULTISAMPLING",   16},
         {"MAZE_RANDOMNESS", 100},
         {"DEAD_ENDS",       1},
-        {"ENABLE_FLIGHT",   1}
+        {"ENABLE_FLIGHT",   1},
+        {"DISABLE_LIGHT_ATTENUATION", 1}
 };
 
 game::Settings::Settings() {

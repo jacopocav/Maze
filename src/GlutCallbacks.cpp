@@ -154,16 +154,19 @@ void GlutCallbacks::init() {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
 
-    float ambient_light[4] = {0.2f, 0.2f, 0.2f, 1.0f};
-    float diffuse_light[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-    float specular_light[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    const float ambient_light[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+    const float diffuse_light[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    const float specular_light[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.5f);
+    float attenuation = 1.5f;
+    if(game::Settings::getInstance()["DISABLE_LIGHT_ATTENUATION"] == 1)
+        attenuation = 0.0f;
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, attenuation);
 
-    float material[4] = {1, 1, 1, 1};
+    const float material[4] = {1, 1, 1, 1};
     glMaterialfv(GL_FRONT, GL_SPECULAR, material);
     glMaterialfv(GL_FRONT, GL_AMBIENT, material);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, material);
@@ -173,9 +176,9 @@ void GlutCallbacks::init() {
     glEnable(GL_TEXTURE_2D);
 
     gfx::Textures::initTextures(3);
-    gfx::Textures::readFromBMP("res/texture/alt_floor.bmp", 1, "floor");
-    gfx::Textures::readFromBMP("res/texture/lux_wall.bmp", 0, "wall");
-    gfx::Textures::readFromBMP("res/texture/lux_ceil.bmp", 2, "ceil");
+    gfx::Textures::readFromBMP("res/texture/alt_floor.bmp", "floor");
+    gfx::Textures::readFromBMP("res/texture/lux_wall.bmp", "wall");
+    gfx::Textures::readFromBMP("res/texture/lux_ceil.bmp", "ceil");
 
     initGame();
 
