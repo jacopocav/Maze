@@ -9,7 +9,7 @@
 #include "Maze.h"
 
 namespace game {
-
+    // Classe statica che permette di generare labirinti casuali
     class MazeGenerator {
     private:
         enum Direction {
@@ -33,6 +33,8 @@ namespace game {
 
     public:
         // Genera un labirinto con le dimensioni passate per parametro
+        // Implementa il Growing Tree Algorithm
+        // Tratto da: http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm
         static Maze *generateMaze(unsigned height, unsigned width);
 
         // Aggiunge un determinato numero di allarmi al labirinto, in posizione casuale

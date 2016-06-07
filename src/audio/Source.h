@@ -9,7 +9,7 @@
 #include "Buffer.h"
 
 namespace audio {
-
+    // TODO commentare classe
     class Source {
     private:
         ALuint id_;

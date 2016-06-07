@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 namespace game {
+    // Classe singleton che gestisce le impostazioni lette da file
     class Settings {
     private:
         // Percorso relativo del file di configurazione

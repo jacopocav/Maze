@@ -7,6 +7,7 @@
 #include "Maze.h"
 
 namespace game {
+    // Classe statica che gestisce gli aspetti relativi al tempo di gioco
     class Time {
     public:
         // Calcola un tempo limite ragionevole per la risoluzione del labirinto, partendo dalla posizione currentPos

@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 namespace gfx {
+    // TODO commentare classe
     class Textures {
     private:
         static std::map<std::string, int> textureTable_;

@@ -12,6 +12,7 @@
 #include "Source.h"
 
 namespace audio {
+    // TODO commentare classe
     class Manager {
     private:
         static const std::vector<std::string> audioFiles_;

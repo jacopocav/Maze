@@ -1,6 +1,7 @@
 #pragma once
 
 namespace gfx {
+    // TODO commentare classe
     class Camera {
     public:
         Camera() { init(); }

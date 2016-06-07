@@ -8,6 +8,7 @@
 #include "../game/Maze.h"
 
 namespace gfx {
+    // TODO commentare classe
     class MazeCamera : public Camera {
     public:
         MazeCamera(game::Maze *maze) : maze_(maze), Camera() { }

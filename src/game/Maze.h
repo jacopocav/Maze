@@ -12,6 +12,7 @@ namespace game {
     // Viene utilizzato questo tipo per indicare le coordinate di una cella nel labirinto
     typedef std::pair<unsigned, unsigned> Coordinates;
 
+    // Classe che modella un labirinto
     class Maze {
         // MazeGenerator può accedere ai membri privati di Maze,
         // per poter generare il labirinto e aggiungere gli allarmi
@@ -35,11 +36,12 @@ namespace game {
         // Funzione ricorsiva ausiliaria, usata da pathLength
         bool recursiveSolve(int x, int y, int endX, int endY);
 
-    public:
         // Costruisce un labirinto di altezza e larghezza definite (se le dimensioni non sono dispari,
         // vengono incrementate di 1.
         // Il labirinto creato è di soli muri.
+        // Il costruttore è privato perché i labirinti vanno creati esclusivamente con MazeGenerator
         Maze(unsigned height, unsigned width);
+    public:
 
         int getHeight() const;
 

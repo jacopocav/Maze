@@ -9,6 +9,7 @@
 #include <string>
 
 namespace audio {
+    // TODO commentare classe
     class Buffer {
     private:
         ALuint id_;

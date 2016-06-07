@@ -7,6 +7,7 @@
 
 #include "../game/Maze.h"
 namespace gfx {
+    // TODO commentare classe
     class Drawing {
     private:
         static int drawDistance_;
