@@ -53,7 +53,7 @@ void gfx::MazeCamera::fly(float incr) {
     refresh();
 }
 
-void gfx::MazeCamera::setMaze(game::Maze *maze) {
+void gfx::MazeCamera::setMaze(std::shared_ptr<game::Maze> maze) {
     maze_ = maze;
 }
 

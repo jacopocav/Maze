@@ -5,6 +5,7 @@
 #pragma once
 
 
+#include <memory>
 #include "../game/Maze.h"
 namespace gfx {
     // TODO commentare classe
@@ -19,6 +20,6 @@ namespace gfx {
 
         static void drawCube(float x1, float x2, float y1, float y2, float z1, float z2);
 
-        static void drawMaze(game::Maze *maze, int pos_x, int pos_y);
+        static void drawMaze(std::shared_ptr<game::Maze> maze, int pos_x, int pos_y);
     };
 }

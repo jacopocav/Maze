@@ -15,7 +15,7 @@
 #include "game/Time.h"
 #include "InputCallbacks.h"
 
-game::Maze *GlutCallbacks::maze_;
+std::shared_ptr<game::Maze> GlutCallbacks::maze_;
 int GlutCallbacks::remainingTime_;
 
 audio::Manager GlutCallbacks::audioManager_;
@@ -28,7 +28,6 @@ const int GlutCallbacks::ALARM_COUNT = game::Settings::getInstance()["ALARM_COUN
 
 void GlutCallbacks::initGame() {
     // Generazione nuovo labirinto
-    if (maze_ != nullptr) delete maze_;
     maze_ = game::MazeGenerator::generateMaze(MAZE_HEIGHT, MAZE_WIDTH);
     game::MazeGenerator::addAlarmsToMaze(maze_, ALARM_COUNT);
 
@@ -93,7 +92,6 @@ void GlutCallbacks::gameOver(bool win) {
 
 void GlutCallbacks::cleanup() {
     // Vengono cancellati il labirinto, le texture, buffer e sorgenti audio
-    delete maze_;
     gfx::Textures::resetTextures();
     audioManager_.releaseSounds();
 }

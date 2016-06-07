@@ -36,7 +36,7 @@ private:
     // Tempo rimanente alla fine della partita (in ms)
     static int remainingTime_;
     static audio::Manager audioManager_;
-    static game::Maze *maze_;
+    static std::shared_ptr<game::Maze> maze_;
     // Posizione della luce (costante perché corrisponde sempre a quella della camera)
     static const float lightPos_[4];
 

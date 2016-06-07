@@ -91,7 +91,7 @@ game::Settings& game::Settings::getInstance() {
     return instance;
 }
 
-int game::Settings::operator[](std::string name) const {
+int game::Settings::operator[](const std::string &name) const {
     // Se l'impostazione è stata letta correttamente, ne viene restituito il valore
     if (settingsMap_.find(name) != settingsMap_.end()) return settingsMap_.at(name);
     // Altrimenti usa quello di default

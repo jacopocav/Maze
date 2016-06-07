@@ -24,7 +24,7 @@ audio::Manager::Manager() {
     }
 }
 
-void audio::Manager::bindSources(game::Maze *maze) {
+void audio::Manager::bindSources(std::shared_ptr<game::Maze> maze) {
     for(int i = 0; i < maze->getAlarmCount(); ++i){
         game::Coordinates alm = maze->getAlarm(i);
         ALuint sid;
@@ -36,7 +36,7 @@ void audio::Manager::bindSources(game::Maze *maze) {
     }
 }
 
-audio::Source audio::Manager::operator[](game::Coordinates pos) {
+audio::Source audio::Manager::operator[](const game::Coordinates &pos) {
     return alarmSounds_.at(pos);
 }
 
@@ -65,7 +65,7 @@ audio::Manager::~Manager(){
     }
 }
 
-void audio::Manager::eraseSound(game::Coordinates pos) {
+void audio::Manager::eraseSound(const game::Coordinates &pos) {
     alarmSounds_[pos].release();
     alarmSounds_.erase(pos);
     alutExit();

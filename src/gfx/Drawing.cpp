@@ -134,7 +134,7 @@ void gfx::Drawing::drawCube(float x1, float x2, float y1, float y2, float z1, fl
 }
 
 
-void gfx::Drawing::drawMaze(game::Maze *maze, int pos_x, int pos_y) {
+void gfx::Drawing::drawMaze(std::shared_ptr<game::Maze> maze, int pos_x, int pos_y) {
     int min_x = 0, max_x = maze->getHeight(), min_y = 0, max_y = maze->getWidth();
 
     if ((pos_x - drawDistance_) > min_x)

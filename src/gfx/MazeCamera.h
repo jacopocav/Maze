@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include "Camera.h"
 #include "../game/Maze.h"
 
@@ -11,7 +12,7 @@ namespace gfx {
     // TODO commentare classe
     class MazeCamera : public Camera {
     public:
-        MazeCamera(game::Maze *maze) : maze_(maze), Camera() { }
+        MazeCamera(std::shared_ptr<game::Maze> maze) : maze_(maze), Camera() { }
 
         virtual void move(float incr);
 
@@ -21,10 +22,10 @@ namespace gfx {
 
         game::Coordinates getMazeCoordinates();
 
-        void setMaze(game::Maze *maze);
+        void setMaze(std::shared_ptr<game::Maze> maze);
 
     private:
-        game::Maze *maze_;
+        std::shared_ptr<game::Maze> maze_;
 
         bool checkBounds();
 

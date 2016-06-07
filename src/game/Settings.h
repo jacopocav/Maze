@@ -30,11 +30,11 @@ namespace game {
         static Settings &getInstance();
 
         // Ritorna il valore di una determinata impostazione (se non esiste, ritorna -1)
-        int operator[](std::string name) const;
+        int operator[](const std::string &name) const;
 
         // Per impedire la copia dell'oggetto singleton
-        Settings(Settings const &s) = delete;
+        Settings(const Settings &s) = delete;
 
-        Settings &operator=(Settings const &e) = delete;
+        Settings &operator=(const Settings &e) = delete;
     };
 }

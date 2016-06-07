@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <AL/al.h>
+#include <memory>
 #include "Buffer.h"
 #include "../game/Maze.h"
 #include "Source.h"
@@ -20,12 +21,12 @@ namespace audio {
         std::map<game::Coordinates, audio::Source> alarmSounds_;
     public:
         Manager();
-        void bindSources(game::Maze *maze);
-        audio::Source operator[](game::Coordinates);
+        void bindSources(std::shared_ptr<game::Maze> maze);
+        audio::Source operator[](const game::Coordinates &pos);
         void playAll();
         void pauseAll();
         void releaseSounds();
-        void eraseSound(game::Coordinates pos);
+        void eraseSound(const game::Coordinates &pos);
         ~Manager();
     };
 }

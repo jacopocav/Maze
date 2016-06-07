@@ -52,7 +52,7 @@ namespace game {
         bool get(Coordinates coord) const;
 
         // Rimuove l'allarme alle coordinate pos (se presente)
-        void removeAlarm(Coordinates pos);
+        void removeAlarm(const Coordinates &pos);
 
         // Ritorna il numero di allarmi presenti
         int getAlarmCount() const;
@@ -63,7 +63,7 @@ namespace game {
 
         // Ritornano true se in corrispondenza delle coordinate passate è presente un allarme
         bool isAlarm(unsigned row, unsigned col) const;
-        bool isAlarm(Coordinates pos) const;
+        bool isAlarm(const Coordinates &pos) const;
 
         // Ritorna true se il labirinto è senza vicoli ciechi
         bool isBraided() const;
@@ -71,6 +71,6 @@ namespace game {
         // Ritorna la lunghezza del percorso da start a end
         // Se il labirinto non ha vicoli ciechi, il percorso calcolato
         // non corrisponde necessariamente a quello più breve.
-        int pathLength(Coordinates start, Coordinates end);
+        int pathLength(const Coordinates &start, const Coordinates &end);
     };
 }

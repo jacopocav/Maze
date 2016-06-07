@@ -6,6 +6,7 @@
 
 
 #include <random>
+#include <memory>
 #include "Maze.h"
 
 namespace game {
@@ -29,15 +30,15 @@ namespace game {
         static const float mazeRandomness_;
 
         // Rimuove un vicolo cieco dal labirinto (se la cella è effettivamente il termine di un vicolo cieco)
-        static void cullDeadEnd(Maze *maze, Coordinates cell);
+        static void cullDeadEnd(std::shared_ptr<Maze> maze, Coordinates cell);
 
     public:
         // Genera un labirinto con le dimensioni passate per parametro
         // Implementa il Growing Tree Algorithm
         // Tratto da: http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm
-        static Maze *generateMaze(unsigned height, unsigned width);
+        static std::shared_ptr<Maze> generateMaze(unsigned height, unsigned width);
 
         // Aggiunge un determinato numero di allarmi al labirinto, in posizione casuale
-        static void addAlarmsToMaze(Maze *maze, int alarmCount);
+        static void addAlarmsToMaze(std::shared_ptr<Maze> maze, int alarmCount);
     };
 }

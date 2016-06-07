@@ -16,7 +16,7 @@ void gfx::Textures::initTextures(int texCount) {
     textureCount_ = texCount;
 }
 
-void gfx::Textures::readFromBMP(std::string path, int textureIndex, std::string name = "") {
+void gfx::Textures::readFromBMP(const std::string &path, int textureIndex, const std::string &name = "") {
     // Data read from the header of the BMP file
     unsigned char header[54]; // Each BMP file begins by a 54-bytes header
     unsigned dataPos;     // Position in the file where the actual data begins
@@ -80,7 +80,7 @@ void gfx::Textures::readFromBMP(std::string path, int textureIndex, std::string 
     delete data;
 }
 
-void gfx::Textures::bindTexture(std::string name) {
+void gfx::Textures::bindTexture(const std::string &name) {
     if (name == "0") {
         glBindTexture(GL_TEXTURE_2D, 0);
     }

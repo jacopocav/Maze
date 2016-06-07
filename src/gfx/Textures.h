@@ -19,9 +19,9 @@ namespace gfx {
 
         static void initTextures(int texCount);
 
-        static void readFromBMP(std::string path, int textureIndex, std::string name);
+        static void readFromBMP(const std::string &path, int textureIndex, const std::string &name);
 
-        static void bindTexture(std::string name);
+        static void bindTexture(const std::string &name);
 
         static void resetTextures();
     };

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include "Maze.h"
 
 namespace game {
@@ -14,9 +15,9 @@ namespace game {
         // Se il labirinto è senza vicoli ciechi, il tempo viene calcolato in basa alla distanza Manhattan media
         // da tutti gli allarmi, altrimenti viene considerata la lunghezza media dei percorsi dalla posizione
         // corrente verso tutti gli allarmi.
-        static int getTimeLimit(Maze *maze, game::Coordinates currentPos);
+        static int getTimeLimit(std::shared_ptr<Maze> maze, const Coordinates &currentPos);
         // Calcola la distanza Manhattan tra due celle del labirinto (somma delle differenze di coordinate)
-        static int manhattanDistance(game::Coordinates pos1, game::Coordinates pos2);
+        static int manhattanDistance(const Coordinates &pos1, const Coordinates &pos2);
         // Ritorna l'orario di sistema, in millisecondi dall'epoch time
         static int getCurrentTimeMillis();
     };

@@ -35,7 +35,7 @@ bool game::Maze::get(game::Coordinates coord) const {
 
 int correctPathLength = 0; // Lunghezza del percorso calcolato in pathLength
 
-int game::Maze::pathLength(Coordinates start, Coordinates end) {
+int game::Maze::pathLength(const Coordinates &start, const Coordinates &end) {
     correctPathLength = 0;
     for(int i = 0; i < wasHere_.size(); ++i){
         wasHere_[i].assign(maze_[i].size(), false);
@@ -69,7 +69,7 @@ bool game::Maze::recursiveSolve(int x, int y, int endX, int endY) {
     return false;
 }
 
-bool game::Maze::isAlarm(game::Coordinates pos) const {
+bool game::Maze::isAlarm(const Coordinates &pos) const {
     return std::find(alarms_.begin(), alarms_.end(), pos) != alarms_.end();
 }
 
@@ -77,7 +77,7 @@ bool game::Maze::isAlarm(unsigned row, unsigned col) const {
     return std::find(alarms_.begin(), alarms_.end(), std::make_pair(row, col)) != alarms_.end();
 }
 
-void game::Maze::removeAlarm(game::Coordinates pos) {
+void game::Maze::removeAlarm(const Coordinates &pos) {
     auto it = std::find(alarms_.begin(), alarms_.end(), pos);
     if(it != alarms_.end()) {
         *it = alarms_.back();

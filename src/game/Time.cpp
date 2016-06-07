@@ -6,11 +6,11 @@
 #include <chrono>
 #include "Time.h"
 
-int game::Time::manhattanDistance(game::Coordinates pos1, game::Coordinates pos2) {
+int game::Time::manhattanDistance(const Coordinates &pos1, const Coordinates &pos2) {
     return abs(pos1.first - pos2.first) + abs(pos1.second - pos2.second);
 }
 
-int game::Time::getTimeLimit(Maze *maze, game::Coordinates currentPos) {
+int game::Time::getTimeLimit(std::shared_ptr<Maze> maze, const Coordinates &currentPos) {
     if(maze->getAlarmCount() == 0) return 0;
 
     int totalSteps = 0;

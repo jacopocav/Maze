@@ -16,14 +16,14 @@ std::uniform_real_distribution<float> game::MazeGenerator::distribution_(0.0, 1.
 bool game::MazeGenerator::braidedMaze_ = Settings::getInstance()["DEAD_ENDS"] == 0;
 const float game::MazeGenerator::mazeRandomness_ = static_cast<float>(Settings::getInstance()["MAZE_RANDOMNESS"]) / 100;
 
-game::Maze *game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
+std::shared_ptr<game::Maze> game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
     // activeCells contiene tutte le celle che sono in fase di analisi dall'algoritmo
     // L'algoritmo finirà quando activeCells sarà vuoto
     auto activeCells = std::vector<Coordinates>();
 
     std::vector<Direction> directions = {N, S, E, W};
 
-    game::Maze *maze = new Maze(height, width);
+    std::shared_ptr<Maze> maze(new Maze(height, width));
 
     // L'algoritmo comincia a "scavare" dalla cella di inizio
     activeCells.push_back(Coordinates(1, 1));
@@ -103,7 +103,7 @@ game::Maze *game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
 }
 
 
-void game::MazeGenerator::addAlarmsToMaze(game::Maze *maze, int alarmCount) {
+void game::MazeGenerator::addAlarmsToMaze(std::shared_ptr<Maze> maze, int alarmCount) {
     for (int i = 0; i < alarmCount; ++i) {
         int x = 0, y = 0;
         bool ok = false;
@@ -135,7 +135,7 @@ void game::MazeGenerator::addAlarmsToMaze(game::Maze *maze, int alarmCount) {
 }
 
 
-void game::MazeGenerator::cullDeadEnd(game::Maze *maze, Coordinates cell) {
+void game::MazeGenerator::cullDeadEnd(std::shared_ptr<Maze> maze, Coordinates cell) {
     int links = 0; // Numero di celle percorribili adiacenti a cell
                    // Se la cella ha solo 1 vicino percorribile, allora è un vicolo cieco
 
