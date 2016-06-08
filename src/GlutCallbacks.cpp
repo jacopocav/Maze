@@ -41,7 +41,7 @@ void GlutCallbacks::initGame() {
 }
 
 void GlutCallbacks::updateGameStatus(int timeDiff) {
-    game::Coordinates pos = InputCallbacks::camera_.getMazeCoordinates();
+    const game::Coordinates pos = InputCallbacks::camera_.getMazeCoordinates();
 
     remainingTime_ -= timeDiff;
 
@@ -216,7 +216,7 @@ void GlutCallbacks::display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos_);
     glPopMatrix();
 
-    game::Coordinates pos = InputCallbacks::camera_.getMazeCoordinates();
+    const game::Coordinates pos = InputCallbacks::camera_.getMazeCoordinates();
 
     // Disegna la porzione di labirinto circostante al giocatore
     gfx::Drawing::drawMaze(maze_, pos.first, pos.second);
@@ -234,7 +234,7 @@ void GlutCallbacks::reshape(int width, int height) {
 
     glLoadIdentity();
 
-    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    const float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
     // Imposta la prospettiva (angolo di visione verticale, rapporto d'aspetto, distanza piano near, distanza piano far)
     // Utilizza internamente glFrustum
     gluPerspective(45, aspectRatio, 0.001, 10.0);

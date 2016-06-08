@@ -5,12 +5,12 @@
 #include "../game/Maze.h"
 
 namespace gfx {
-    // Estensione di Camera a cui aggiunge il rilevamento delle collisioni con i muri del labirinto
+    // Estensione di Camera a cui aggiunge il rilevamento delle collisioni contro i muri del labirinto
     class MazeCamera : public Camera {
     private:
         // Labirinto associato alla telecamera (per il rilevamento delle collisioni)
         std::shared_ptr<game::Maze> maze_;
-        // Ritorna true la telecamera si trova entro i limiti estremi del labirinto
+        // Ritorna true se la telecamera si trova entro i limiti estremi del labirinto
         bool checkBounds();
 
 

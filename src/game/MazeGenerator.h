@@ -19,19 +19,19 @@ namespace game {
         // Per generare numeri reali casuali in [0,1)
         static std::uniform_real_distribution<float> distribution_;
 
-        // Indica se il labirinto dev'essere senza vicoli ciechi o meno (letto da file)
+        // Indica se il labirinto debba essere intrecciato o meno (letto da file)
         static bool braidedMaze_;
 
         // Livello di casualità nella scelta di celle all'interno dell'algoritmo di generazione (letto da file)
         static const float mazeRandomness_;
 
         // Rimuove un vicolo cieco dal labirinto (se la cella è effettivamente il termine di un vicolo cieco)
-        static void cullDeadEnd(std::shared_ptr<Maze> maze, Coordinates cell);
+        static void removeDeadEnd(std::shared_ptr<Maze> maze, Coordinates cell);
 
     public:
         // Genera un labirinto con le dimensioni passate per parametro
-        // Implementa il Growing Tree Algorithm
-        // Tratto da: http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm
+        // Implementa il Growing Tree Algorithm,
+        // tratto da: http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm
         static std::shared_ptr<Maze> generateMaze(unsigned height, unsigned width);
 
         // Aggiunge un determinato numero di allarmi al labirinto, in posizione casuale

@@ -15,8 +15,6 @@ void gfx::Textures::initTextures(int texCount) {
 
 void gfx::Textures::readFromBMP(const std::string &path, const std::string &name) {
     unsigned char header[54]; // Header del BMP, sempre lungo 54 byte
-    unsigned width, height; // Larghezza, altezza immagine
-    unsigned imageSize;   // Dimensione immagine in byte= width*height*3
 
     GLubyte *data; // Conterrà i byte dell'immagine
 
@@ -29,9 +27,9 @@ void gfx::Textures::readFromBMP(const std::string &path, const std::string &name
         throw std::runtime_error("Not a correct BMP file\n");
     }
 
-    imageSize = *reinterpret_cast<unsigned *>(&(header[0x22]));
-    width = *reinterpret_cast<unsigned *>(&(header[0x12]));
-    height = *reinterpret_cast<unsigned *>(&(header[0x16]));
+    unsigned imageSize = *reinterpret_cast<unsigned *>(&(header[0x22]));
+    const unsigned width = *reinterpret_cast<unsigned *>(&(header[0x12]));
+    const unsigned height = *reinterpret_cast<unsigned *>(&(header[0x16]));
 
     // Alcuni BMP possono avere informazioni sbagliate sulle dimensioni dell'immagine
     if (imageSize == 0) imageSize = width * height * 3; // Deduce dimensione dell'immagine
@@ -58,7 +56,6 @@ void gfx::Textures::readFromBMP(const std::string &path, const std::string &name
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, height, width, GL_RGB, GL_UNSIGNED_BYTE, data);
         currTextureIndex_++;
     }

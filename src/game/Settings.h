@@ -23,15 +23,15 @@ namespace game {
         Settings();
 
     public:
-        // Ritorna l'unica istanza della classe
+        // Ritorna l'unica istanza della classe (e la genera, se non è stato ancora fatto)
         static Settings &getInstance();
 
         // Ritorna il valore di una determinata impostazione (se non esiste, ritorna -1)
         int operator[](const std::string &name) const;
 
-        // Per impedire la copia dell'oggetto singleton
+        // Per impedire la copia dell'oggetto singleton, viene rimosso il costruttore di copia di default
+        // e l'operatore di assegnamento di default
         Settings(const Settings &s) = delete;
-
         Settings &operator=(const Settings &e) = delete;
     };
 }

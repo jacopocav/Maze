@@ -4,10 +4,10 @@
 #include "../game/Maze.h"
 
 namespace gfx {
-    // Classe statica che fornisce le funzioni di disegno dei solidi OpenGL
+    // Classe statica che fornisce le funzioni di disegno per il gioco
     class Drawing {
     private:
-        // Distanza massima dall'osservatore a cui viene renderizzato il labirinto (espressa in celle)
+        // Distanza massima dall'osservatore a cui viene renderizzato il labirinto (espressa in celle del labirinto)
         static int drawDistance_;
     public:
         // Disegna il pavimento di una cella libera

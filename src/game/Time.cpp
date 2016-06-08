@@ -19,7 +19,7 @@ int game::Time::getTimeLimit(std::shared_ptr<Maze> maze, const Coordinates &curr
             totalSteps += maze->pathLength(currentPos, alarm);
         }
     }
-    int time = (totalSteps / maze->getAlarmCount()) * (maze->isBraided() ? 2000 : 1000);
+    const int time = (totalSteps / maze->getAlarmCount()) * (maze->isBraided() ? 2000 : 1000);
     return time;
 }
 

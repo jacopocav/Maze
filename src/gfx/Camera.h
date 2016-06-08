@@ -15,7 +15,7 @@ namespace gfx {
         float x_, y_, z_;
         // Componenti del vettore normalizzato di direzione dello sguardo
         float lx_, ly_, lz_;
-        // Angoli di imbardata e beccheggio
+        // Angoli di imbardata (rotazione orizzontale) e beccheggio (rotazione verticale)
         float yaw_, pitch_;
         // Componenti del vettore orizzontale e perpendicolare a quello dello sguardo (usato per il movimento laterale)
         float strafeLx_, strafeLz_;

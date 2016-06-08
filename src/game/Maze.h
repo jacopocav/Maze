@@ -23,10 +23,10 @@ namespace game {
         // durante la ricerca di una strada
         std::vector<std::vector<bool>> wasHere_;
 
-        // Vettore contenente le posizioni degli allarmi del labirinto
+        // Vettore contenente le posizioni degli allarmi nel labirinto
         std::vector<Coordinates> alarms_;
 
-        // Vero se il labirinto è "braided", ovvero senza vicoli ciechi
+        // Vero se il labirinto è "intrecciato", ovvero senza vicoli ciechi
         bool isBraided_;
 
         // Funzione ricorsiva ausiliaria, usata da pathLength
@@ -61,7 +61,7 @@ namespace game {
         bool isAlarm(unsigned row, unsigned col) const;
         bool isAlarm(const Coordinates &pos) const;
 
-        // Ritorna true se il labirinto è senza vicoli ciechi
+        // Ritorna true se il labirinto è intrecciato
         bool isBraided() const;
 
         // Ritorna la lunghezza del percorso da start a end

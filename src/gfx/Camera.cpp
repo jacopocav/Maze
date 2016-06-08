@@ -51,9 +51,9 @@ void gfx::Camera::getDirectionVector(float &x, float &y, float &z) {
 }
 
 void gfx::Camera::move(float incr) {
-    float lx = cosf(yaw_) * cosf(pitch_);
-    float ly = sinf(pitch_);
-    float lz = sinf(yaw_) * cosf(pitch_);
+    const float lx = cosf(yaw_) * cosf(pitch_);
+    const float ly = sinf(pitch_);
+    const float lz = sinf(yaw_) * cosf(pitch_);
 
     x_ = x_ + incr * lx;
     y_ = y_ + incr * ly;

@@ -12,7 +12,7 @@ namespace audio {
         ALuint id_;
     public:
         // Il costruttore non crea il buffer: dev'essere stato creato precedentemente alla costruzione.
-        // Questo perché C++ può creare implicitamente copie dell'oggetto, e inserire l'apertura del buffer nel
+        // Questo perché C++ può creare implicitamente copie dell'oggetto, quindi inserire l'apertura del buffer nel
         // costruttore comporterebbe l'apertura di molti buffer identici.
         Buffer(ALuint bufferID);
 

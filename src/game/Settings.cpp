@@ -5,34 +5,34 @@
 const std::string game::Settings::settingsFilePath_ = "res/config.cfg";
 
 const std::map<std::string, int> game::Settings::defaults_ = {
-        {"MULTISAMPLING",   4},
-        {"DRAW_DISTANCE",   15},
-        {"MAZE_SIZE_X",     65},
-        {"MAZE_SIZE_Y",     65},
-        {"MAZE_RANDOMNESS", 25},
-        {"ALARM_COUNT",     5},
-        {"DEAD_ENDS",       1},
-        {"ENABLE_FLIGHT",   0},
+        {"MULTISAMPLING",             4},
+        {"DRAW_DISTANCE",             15},
+        {"MAZE_SIZE_X",               65},
+        {"MAZE_SIZE_Y",               65},
+        {"MAZE_RANDOMNESS",           25},
+        {"ALARM_COUNT",               5},
+        {"BRAIDED_MAZE",              0},
+        {"ENABLE_FLIGHT",             0},
         {"DISABLE_LIGHT_ATTENUATION", 0}
 };
 
 const std::map<std::string, int> game::Settings::minimums_ = {
-        {"MULTISAMPLING",   0},
-        {"DRAW_DISTANCE",   1},
-        {"MAZE_SIZE_X",     5},
-        {"MAZE_SIZE_Y",     5},
-        {"MAZE_RANDOMNESS", 0},
-        {"ALARM_COUNT",     1},
-        {"DEAD_ENDS",       0},
-        {"ENABLE_FLIGHT",   0},
+        {"MULTISAMPLING",             0},
+        {"DRAW_DISTANCE",             1},
+        {"MAZE_SIZE_X",               5},
+        {"MAZE_SIZE_Y",               5},
+        {"MAZE_RANDOMNESS",           0},
+        {"ALARM_COUNT",               1},
+        {"BRAIDED_MAZE",              0},
+        {"ENABLE_FLIGHT",             0},
         {"DISABLE_LIGHT_ATTENUATION", 0}
 };
 
 const std::map<std::string, int> game::Settings::maximums_ = {
-        {"MULTISAMPLING",   16},
-        {"MAZE_RANDOMNESS", 100},
-        {"DEAD_ENDS",       1},
-        {"ENABLE_FLIGHT",   1},
+        {"MULTISAMPLING",             16},
+        {"MAZE_RANDOMNESS",           100},
+        {"BRAIDED_MAZE",              1},
+        {"ENABLE_FLIGHT",             1},
         {"DISABLE_LIGHT_ATTENUATION", 1}
 };
 
@@ -41,9 +41,9 @@ game::Settings::Settings() {
     cfg.open(settingsFilePath_);
 
     std::string line;
-    while (std::getline(cfg, line, '\n')) { // Legge il file linea per linea
+    while (std::getline(cfg, line)) { // Legge il file linea per linea
 
-        // Se è presente il carattere windows \r lo elimina
+        // Se è presente il carattere Windows \r lo elimina
         if (line.length() > 0 && line[line.length() - 1] == '\r')
             line.erase(line.length() - 1);
 
@@ -68,7 +68,7 @@ game::Settings::Settings() {
             if (defaults_.find(name) != defaults_.end()) { // Se il nome dell'impostazione è valido
 
                 if (minimums_.find(name) != minimums_.end() && value < minimums_.at(name) ||
-                        maximums_.find(name) != maximums_.end() && value > maximums_.at(name)) {
+                    maximums_.find(name) != maximums_.end() && value > maximums_.at(name)) {
                     // Il valore dell'impostazione è troppo alto o basso: viene usato quello predefinito
                     value = defaults_.at(name);
                 }
@@ -83,7 +83,7 @@ game::Settings::Settings() {
     cfg.close();
 }
 
-game::Settings& game::Settings::getInstance() {
+game::Settings &game::Settings::getInstance() {
     // instance viene inizializzato solo alla prima invocazione, dopo viene riutilizzato
     // Alla fine dell'esecuzione del programma viene distrutta automaticamente
     static game::Settings instance;

@@ -9,7 +9,7 @@ std::default_random_engine game::MazeGenerator::rndEngine_(
         static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
 
 std::uniform_real_distribution<float> game::MazeGenerator::distribution_(0.0, 1.0);
-bool game::MazeGenerator::braidedMaze_ = Settings::getInstance()["DEAD_ENDS"] == 0;
+bool game::MazeGenerator::braidedMaze_ = Settings::getInstance()["BRAIDED_MAZE"] == 1;
 const float game::MazeGenerator::mazeRandomness_ = static_cast<float>(Settings::getInstance()["MAZE_RANDOMNESS"]) / 100;
 
 std::shared_ptr<game::Maze> game::MazeGenerator::generateMaze(unsigned height, unsigned width) {
@@ -86,11 +86,11 @@ std::shared_ptr<game::Maze> game::MazeGenerator::generateMaze(unsigned height, u
         }
     }
 
-    if (braidedMaze_) { // Se l'utente ha disattivato i vicoli ciechi, ora vengono rimossi
+    if (braidedMaze_) { // Se l'utente ha richiesto un labirinto intrecciato, bisogna eliminare i vicoli ciechi
         maze->isBraided_ = true;
         for (int x = 1; x < maze->getHeight(); x += 2) {
             for (int y = 1; y < maze->getWidth(); y += 2) {
-                cullDeadEnd(maze, std::make_pair(x, y));
+                removeDeadEnd(maze, std::make_pair(x, y));
             }
         }
     }
@@ -117,7 +117,7 @@ void game::MazeGenerator::addAlarmsToMaze(std::shared_ptr<Maze> maze, int alarmC
                     ok = true;
                     for (int k = 0; k < maze->alarms_.size() && ok; ++k) {
                         // Viene controllato che le coordinate non siano troppo vicine ad altri allarmi
-                        // La distanza minima, in linea d'aria, dev'essere pari al 10% delle dimensioni del labirinto
+                        // La distanza minima, in coordinate, dev'essere pari al 10% delle dimensioni del labirinto
                         Coordinates alm = maze->getAlarm(k);
                         if (abs(x - alm.first) <= 0.1f * maze->getHeight() ||
                             abs(y - alm.second) <= 0.1f * maze->getWidth())
@@ -131,14 +131,14 @@ void game::MazeGenerator::addAlarmsToMaze(std::shared_ptr<Maze> maze, int alarmC
 }
 
 
-void game::MazeGenerator::cullDeadEnd(std::shared_ptr<Maze> maze, Coordinates cell) {
-    int links = 0; // Numero di celle percorribili adiacenti a cell
-                   // Se la cella ha solo 1 vicino percorribile, allora è un vicolo cieco
+void game::MazeGenerator::removeDeadEnd(std::shared_ptr<Maze> maze, Coordinates cell) {
+    int links = 0; // Numero di celle libere adiacenti a cell
+                   // Un vicolo cieco ha sempre e solo 1 cella libera a lui adiacente
 
     Coordinates neighbor = cell;
     std::vector<Coordinates> candidates; // Muri circostanti alla cella candidati all'abbattimento
 
-    if (!maze->get(cell)) return; // La cella è un muro
+    if (!maze->get(cell)) return; // La cella è un muro -> non è un vicolo cieco
 
     if (neighbor.first > 2) { // Cella a nord
         neighbor.first -= 1;

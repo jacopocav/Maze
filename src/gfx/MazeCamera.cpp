@@ -13,8 +13,8 @@ void gfx::MazeCamera::move(float incr) {
 
     auto mazeCoord = getMazeCoordinates();
 
-    // Se siamo finiti in una cella muro o abbiamo oltrepassato i bordi del labirinto,
-    // fa "rimbalzare" indietro la telecamera
+    // Se la camera è finita in una cella muro o ha oltrepassato i bordi del labirinto,
+    // si "rimbalza" indietro
     if ((!maze_->get(mazeCoord) && y_ < 0.2 && y_ > -0.2) || !checkBounds()) {
         x_ = old_x - 1 * ((incr > 0) - (incr < 0)) * 0.01f * lx;
         z_ = old_z - 1 * ((incr > 0) - (incr < 0)) * 0.01f * lz;
