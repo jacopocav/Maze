@@ -1,11 +1,7 @@
-//
-// Created by Admin on 05/06/2016.
-//
-
 #pragma once
 
-
 #include "gfx/MazeCamera.h"
+
 // Classe statica contenente le callback Glut relative all'input del giocatore
 class InputCallbacks {
     // GlutCallbacks può vedere i membri privati di questa classe

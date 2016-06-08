@@ -1,13 +1,10 @@
-//
-// Created by Admin on 28/05/2016.
-//
-
-#include <GL/gl.h>
 #include <cmath>
+#include <GL/gl.h>
+
 #include "Drawing.h"
 #include "Textures.h"
-#include "../game/Settings.h"
 #include "Camera.h"
+#include "../game/Settings.h"
 #include "../game/Time.h"
 
 int gfx::Drawing::drawDistance_ = game::Settings::getInstance()["DRAW_DISTANCE"];

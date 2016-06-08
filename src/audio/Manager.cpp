@@ -1,7 +1,3 @@
-//
-// Created by Admin on 04/06/2016.
-//
-
 #include <map>
 #include <AL/alut.h>
 #include "Manager.h"
@@ -31,6 +27,8 @@ void audio::Manager::bindSources(std::shared_ptr<game::Maze> maze) {
         ALuint sid;
         alGenSources(1, &sid);
         audio::Source almSound(sid, audioBuffers_[i % audioBuffers_.size()]);
+        // A ogni riutilizzo dello stesso file audio, il suo pitch viene aumentato di 0.3, in modo da renderlo
+        // distinguibile dai precedenti.
         almSound.setPitch(1.0f + ((i - (i % audioBuffers_.size())) / audioBuffers_.size() * 0.3f));
         almSound.setPosition(alm.first * 0.4f - 0.4f, 0.0f, alm.second * -0.4f + 0.4f);
         alarmSounds_.insert(std::make_pair(alm, almSound));

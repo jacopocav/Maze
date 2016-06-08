@@ -1,12 +1,7 @@
-//
-// Created by Admin on 24/05/2016.
-//
 #include <sstream>
 #include <iomanip>
-#include <cmath>
 
 #include <GL/freeglut.h>
-#include <chrono>
 
 #include "GlutCallbacks.h"
 #include "gfx/Textures.h"

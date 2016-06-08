@@ -1,12 +1,9 @@
-//
-// Created by Admin on 03/06/2016.
-//
-
 #pragma once
 
 
 #include <string>
 #include <map>
+
 namespace game {
     // Classe singleton che gestisce le impostazioni lette da file
     class Settings {

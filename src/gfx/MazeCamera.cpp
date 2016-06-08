@@ -1,7 +1,3 @@
-//
-// Created by Admin on 24/05/2016.
-//
-
 #include <cmath>
 #include "MazeCamera.h"
 

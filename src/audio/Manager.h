@@ -1,22 +1,22 @@
-//
-// Created by Admin on 04/06/2016.
-//
-
 #pragma once
 
 #include <string>
 #include <vector>
-#include <AL/al.h>
 #include <memory>
+
+#include <AL/al.h>
+
 #include "Buffer.h"
-#include "../game/Maze.h"
 #include "Source.h"
+#include "../game/Maze.h"
+
 
 namespace audio {
     // Classe che si occupa di gestire l'audio del gioco
     class Manager {
     private:
-        // Lista dei file audio da caricare
+        // Lista dei file audio da caricare. Se gli allarmi sono in numero maggiore rispetto ai file caricati,
+        // vengono utilizzati più volte, aumentandone il pitch a ogni riutilizzo.
         static const std::vector<std::string> audioFiles_;
         // Lista dei buffer audio aperti
         std::vector<audio::Buffer> audioBuffers_;

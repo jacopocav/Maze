@@ -1,7 +1,3 @@
-//
-// Created by Admin on 03/06/2016.
-//
-
 #include <fstream>
 #include <algorithm>
 #include "Settings.h"

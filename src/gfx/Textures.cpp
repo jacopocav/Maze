@@ -1,7 +1,3 @@
-//
-// Created by Admin on 26/05/2016.
-//
-
 #include <fstream>
 #include <iostream>
 #include "Textures.h"

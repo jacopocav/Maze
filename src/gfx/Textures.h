@@ -1,13 +1,9 @@
-//
-// Created by Admin on 26/05/2016.
-//
-
 #pragma once
 
-
-#include <GL/glut.h>
 #include <string>
 #include <map>
+#include <GL/glut.h>
+
 namespace gfx {
     // Classe statica che gestisce le texture del gioco
     class Textures {

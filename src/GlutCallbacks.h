@@ -1,7 +1,3 @@
-//
-// Created by Admin on 24/05/2016.
-//
-
 #pragma once
 
 #include <map>
