@@ -10,15 +10,24 @@ set(SOURCE_FILES src/main.cpp src/gfx/Camera.h src/gfx/Camera.cpp src/game/MazeG
         src/audio/Buffer.h src/audio/Listener.cpp src/audio/Listener.h src/audio/Manager.cpp src/audio/Manager.h
         src/game/Time.cpp src/game/Time.h src/InputCallbacks.cpp src/InputCallbacks.h)
 
-add_executable(Maze WIN32 ${SOURCE_FILES})
+
+if(WIN32)
+    # Se siamo su Windows è possibile nascondere la finestra di console che si apre insieme al gioco
+    # usando l'attributo WIN32
+    add_executable(Maze WIN32 ${SOURCE_FILES})
+else()
+    add_executable(Maze ${SOURCE_FILES})
+endif()
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 
+# Modificare le directori di freeglut, OpenAL e freealut a seconda di dove si trovano nel vostro computer
 include_directories(${OPENGL_INCLUDE_DIRS} "C:/freeglut/include" "C:/Program Files (x86)/OpenAL 1.1 SDK/include"
         "C:/freealut/include/")
-
+# Idem per le librerie
 target_link_libraries(Maze ${OPENGL_LIBRARIES} "C:/freeglut/lib/libfreeglut.a"
         "C:/Program Files (x86)/OpenAL 1.1 SDK/libs/Win32/OpenAL32.lib" "C:/freealut/lib/libalut.dll.a" )
 
+# Copia la cartella res (e il suo contenuto) nella cartella di destinazione
 file(COPY res/ DESTINATION res)
