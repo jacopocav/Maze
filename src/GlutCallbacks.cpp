@@ -176,9 +176,9 @@ void GlutCallbacks::init() {
     glEnable(GL_TEXTURE_2D);
 
     gfx::Textures::initTextures(3);
-    gfx::Textures::readFromBMP("res/texture/alt_floor.bmp", "floor");
-    gfx::Textures::readFromBMP("res/texture/lux_wall.bmp", "wall");
-    gfx::Textures::readFromBMP("res/texture/lux_ceil.bmp", "ceil");
+    gfx::Textures::readFromBMP("res/texture/floor.bmp", "floor");
+    gfx::Textures::readFromBMP("res/texture/wall.bmp", "wall");
+    gfx::Textures::readFromBMP("res/texture/ceil.bmp", "ceil");
 
     initGame();
 

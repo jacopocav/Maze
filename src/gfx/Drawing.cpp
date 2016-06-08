@@ -146,7 +146,9 @@ void gfx::Drawing::drawMaze(std::shared_ptr<game::Maze> maze, int posX, int posY
             else { // La cella è libera
                 if (maze->isAlarm(static_cast<unsigned>(i), static_cast<unsigned>(j))) { // C'è un allarme nella cella
                     Textures::useTexture("0");
+
                     // Usa il tempo per animare l'oggetto allarme
+                    // milliTime va continuamente da 0 a 0.999
                     float milliTime = (game::Time::getCurrentTimeMillis() % 1000) / 1000.0f;
 
                     // Colore rosso pulsante

@@ -65,7 +65,7 @@ game::Settings::Settings() {
 
             try { // Prova a convertire il valore in intero. Se non ci riesce, gli viene assegnato -1
                 value = stoi(line.substr(equal + 1));
-            } catch (const std::exception &ex) {
+            } catch (...) {
                 value = -1;
             }
 
