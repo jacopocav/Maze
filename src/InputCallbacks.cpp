@@ -174,9 +174,8 @@ void InputCallbacks::mouseMotion(int x, int y) {
         if (dy) {
             InputCallbacks::camera_.rotatePitch(ROTATION_SPEED * dy);
         }
-
         glutWarpPointer(viewportWidth_ / 2, viewportHeight_ / 2); // Riporta il cursore al centro della finestra
-
         justWarped = true;
     }
+
 }

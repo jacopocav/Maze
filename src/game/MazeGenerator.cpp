@@ -119,7 +119,7 @@ void game::MazeGenerator::addAlarmsToMaze(std::shared_ptr<Maze> maze, int alarmC
                         // Viene controllato che le coordinate non siano troppo vicine ad altri allarmi
                         // La distanza minima, in coordinate, dev'essere pari al 10% delle dimensioni del labirinto
                         Coordinates alm = maze->getAlarm(k);
-                        if (abs(x - alm.first) <= 0.1f * maze->getHeight() ||
+                        if (abs(x - alm.first) <= 0.1f * maze->getHeight() &&
                             abs(y - alm.second) <= 0.1f * maze->getWidth())
                             ok = false;
                     }
