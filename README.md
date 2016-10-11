@@ -44,4 +44,4 @@ Time limit is not fixed, insted it's based on the average distance between the p
 - If the newly calculated time limit is higher than the current remaining time, it is used as the new limit.
 - Else, remaining time doesn't change.
 
-This was done to make the game less frustrating and to give them more room for mistakes.
+This was done to make the game less frustrating and to give the player more room for mistakes.
