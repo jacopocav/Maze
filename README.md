@@ -3,6 +3,7 @@ A simple 3D maze traversal game, made using OpenGL (through freeGLUT) and OpenAL
 Project for the Multimedia Systems course<br/>
 MSc in Computer Science<br/>
 Università degli Studi di Padova<br/>
+Made by Jacopo Cavallarin
 
 ## Requirements
 OpenGL and OpenAL must be installed for the game to work. In the `executable` directory, a pre-compiled version of the game can be found.
